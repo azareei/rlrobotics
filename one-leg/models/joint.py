@@ -1,5 +1,7 @@
 from models.block import Block
 from coordinates import Coordinate
+import numpy as np
+
 
 class Joint:
     """
@@ -8,6 +10,10 @@ class Joint:
     def __init__(self):
         self.block_top = Block(10/100, 5/100)
         self.block_bot = Block(10/100, 5/100)
-        self.r = 3/100 # need to check that r is bigger the 
+        self.r = 3/100  # need to check that r is bigger than 2*self.d
         self.P = Coordinate(x=0, y=0)
         self.k = 1 / 0.05
+        self.d = 1/100  # distance between ancher of joint and the side of the block
+        self.theta_s = np.sqrt((self.d*2)**2 / self.r**2)
+        self.theta_i = -self.theta_s  # starting condition from the left
+
