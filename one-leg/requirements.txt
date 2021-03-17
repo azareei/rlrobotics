@@ -1,3 +1,4 @@
 coordinates
 flake8
 numpy
+matplotlib
