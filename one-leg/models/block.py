@@ -19,6 +19,11 @@ class Block:
         self.height = _height
         self.center = _center
 
+    def update_position(self, _x, _y):
+        print(_x)
+        print(_y)
+        self.center = self.center + Coordinate(x=_x, y=_y)
+
     def draw(self):
         return patches.Rectangle(
                 (
@@ -27,5 +32,5 @@ class Block:
                 ),
                 self.width,
                 self.height,
-                fill=False      # remove background
+                fill='C0'
             )
