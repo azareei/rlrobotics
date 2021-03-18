@@ -1,5 +1,6 @@
 from models.block import Block
 from models.bar import Bar
+from models.spring import Spring
 from coordinates import Coordinate
 import numpy as np
 
@@ -9,8 +10,6 @@ class Joint:
     Represent a joint constituted by two blocs linked with two arms and a spring.
     """
     def __init__(self):
-        self.r = 10/100  # need to check that r is bigger than 2*self.d
-        self.d = 1/100  # distance between ancher of joint and the side of the block
         # We define the following for now:
         #   anchor distance to side of the block is 1cm
         #   length of the bars are 4cm
@@ -36,18 +35,27 @@ class Joint:
             _l,
             self.block_bot.get_anchor_distance())
 
+        # Create the spring
+        self.spring = Spring(
+            _P=Coordinate(x=0, y=0),
+            _Q=Coordinate(x=0, y=_l)
+        )
+
         # Compute Theta_s - limits of the angle for the bar.
         self.theta_s = np.arccos(2 * self.block_bot.anchor_d / self.bars.length)
 
         self.theta_i = 0
 
-    def update_position(self, x_i):
+    def update_position(self, h_diff):
         """
         This apply only to the top block, as the bot block is fixed
         x_i is a one dimension displacement along x axis.
         """
-        self.theta_i = np.arcsin(x_i/self.r)
-        v_diff = self.r-(self.r * np.cos(self.theta_i))
-        self.block_top.update_position(x_i, v_diff)
-        self.Q = self.Q + Coordinate(x=x_i, y=v_diff)
-        print((self.P-self.Q).norm(order=2))
+        length = self.bars.length
+        theta_i = np.arcsin(x_i / length)
+        d_theta = theta_i - self.theta_i
+        v_diff = length * np.cos(theta_i)
+        self.block_top.set_position(x_i, v_height)
+        self.bars.low_anchor = self.block_bot.get_anchor(type="t")
+        self.bars.high_anchor = self.block_top.get_anchor(type="b")
+        self.theta_i = theta_i

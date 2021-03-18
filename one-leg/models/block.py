@@ -46,8 +46,9 @@ class Block:
         """
         return self.width - (2 * self.anchor_d)
 
-    def update_position(self, _x, _y):
-        self.center = self.center + Coordinate(x=_x, y=_y)
+    def set_position(self, _x, _y):
+        self.center.x = _x
+        self.center.y = _y
 
     def draw(self, ax):
         ax.add_patch(patches.Rectangle(
@@ -57,6 +58,6 @@ class Block:
                 ),
                 self.width,
                 self.height,
-                fill='C0'
+                fill='C1'
             )
         )

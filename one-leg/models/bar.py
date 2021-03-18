@@ -13,4 +13,8 @@ class Bar:
     def draw(self, ax):
         _x = (self.low_anchor.x, self.high_anchor.x)
         _y = (self.low_anchor.y, self.high_anchor.y)
-        ax.plot(_x, _y, 'r')
+        ax.plot(_x, _y, 'coral')
+        _x = (self.low_anchor.x + self.offset, self.high_anchor.x + self.offset)
+        _y = (self.low_anchor.y, self.high_anchor.y)
+        ax.plot(_x, _y, 'coral')
+        

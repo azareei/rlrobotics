@@ -8,7 +8,8 @@
             "name": "One Leg launch",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
+            "program": "main.py",
+            "cwd": "${workspaceFolder}/one-leg/",
             "console": "integratedTerminal"
         }
     ]
