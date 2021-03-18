@@ -10,14 +10,14 @@ class Simulation:
     def __init__(self):
         self.joint = Joint()
         # input movement
-        self.x = np.linspace(0, 3/100, num=5)
+        self.x = np.linspace(-3.46 / 100, 3.46 / 100, num=10)
 
     def simulate(self):
         self.draw()
-        prev = self.x[0]
+        # prev = self.x[0]
         for x_i in self.x:
-            self.joint.update_position(x_i-prev)
-            prev = x_i
+            self.joint.update_position(x_i)
+            # prev = x_i
             self.draw()
 
     def draw(self):

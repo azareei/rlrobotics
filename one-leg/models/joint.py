@@ -46,16 +46,21 @@ class Joint:
 
         self.theta_i = 0
 
-    def update_position(self, h_diff):
+    def update_position(self, u_i):
         """
         This apply only to the top block, as the bot block is fixed
         x_i is a one dimension displacement along x axis.
         """
         length = self.bars.length
-        theta_i = np.arcsin(x_i / length)
-        d_theta = theta_i - self.theta_i
+        if u_i > length:
+            return
+        theta_i = np.arcsin(u_i / length)
+        if np.abs(theta_i) > self.theta_s:
+            return
         v_diff = length * np.cos(theta_i)
-        self.block_top.set_position(x_i, v_height)
+        self.block_top.set_position(u_i, v_diff + (self.block_top.height / 2) - self.block_top.anchor_d)
         self.bars.low_anchor = self.block_bot.get_anchor(type="t")
         self.bars.high_anchor = self.block_top.get_anchor(type="b")
+        self.spring.Q.x = self.block_top.center.x
+        self.spring.Q.y = self.bars.high_anchor.y
         self.theta_i = theta_i
