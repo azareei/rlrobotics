@@ -28,23 +28,44 @@ class Joint:
         _center = Coordinate(x=0, y=_l - _d + (_h / 2))
         self.block_mid = Block(_w, _h, _center, _d)
 
+        # Create top block
+        _center = _center * 2
+        self.block_top = Block(_w, _h, _center, _d)
+
         # Create the bars_bot
         self.bars_bot = Bar(
             self.block_bot.get_anchor(type="t"),
             self.block_mid.get_anchor(type="b"),
             _l,
-            self.block_bot.get_anchor_distance())
+            self.block_bot.get_anchor_distance()
+        )
 
-        # Create the spring
+        # Create the bars_top
+        self.bars_top = Bar(
+            self.block_mid.get_anchor(type='t'),
+            self.block_top.get_anchor(type='b'),
+            _l,
+            self.block_mid.get_anchor_distance()
+        )
+
+        # Create the spring_bot
         self.spring_bot = Spring(
             _P=Coordinate(x=0, y=0),
             _Q=Coordinate(x=0, y=_l)
         )
 
-        # Compute Theta_s - limits of the angle for the bar.
-        self.theta_s = np.arccos(2 * self.block_bot.anchor_d / self.bars_bot.length)
+        # Create the spring_top
+        self.spring_top = Spring(
+            _P=Coordinate(x=0, y=_l),
+            _Q=Coordinate(x=0, y=2*_l)
+        )
 
-        self.theta_i = 0
+        # Compute Theta_s - limits of the angle for the bar.
+        self.theta_s_bot = np.arccos(2 * self.block_bot.anchor_d / self.bars_bot.length)
+        self.theta_s_top = np.arccos(2 * self.block_mid.anchor_d / self.bars_top.length)
+
+        self.theta_i_bot = 0
+        self.theta_i_top = 0
 
     def update_position(self, u_i):
         """
