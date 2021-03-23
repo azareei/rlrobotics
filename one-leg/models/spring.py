@@ -1,7 +1,7 @@
 class Spring:
     def __init__(self, _P, _Q):
         """
-        Define a sprnig between two blocks.
+        Define a spring between two blocks.
         """
         self.P = _P
         self.Q = _Q
