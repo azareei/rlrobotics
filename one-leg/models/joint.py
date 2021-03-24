@@ -29,7 +29,7 @@ class Joint:
         self.block_mid = Block(_w, _h, _center, _d)
 
         # Create top block
-        _center = _center * 2
+        _center = Coordinate(x=0, y=self.block_mid.get_anchor(type="t").y + _l - _d + (_h/2))
         self.block_top = Block(_w, _h, _center, _d)
 
         # Create the bars_bot
@@ -50,14 +50,14 @@ class Joint:
 
         # Create the spring_bot
         self.spring_bot = Spring(
-            _P=Coordinate(x=0, y=0),
-            _Q=Coordinate(x=0, y=_l)
+            _P=Coordinate(x=0, y=self.block_bot.get_anchor(type='t').y),
+            _Q=Coordinate(x=0, y=self.block_mid.get_anchor(type='b').y)
         )
 
         # Create the spring_top
         self.spring_top = Spring(
-            _P=Coordinate(x=0, y=_l),
-            _Q=Coordinate(x=0, y=2*_l)
+            _P=Coordinate(x=0, y=self.block_mid.get_anchor(type='t').y),
+            _Q=Coordinate(x=0, y=self.block_top.get_anchor(type='b').y)
         )
 
         # Compute Theta_s - limits of the angle for the bar.
@@ -66,14 +66,47 @@ class Joint:
 
         self.theta_i_bot = 0
         self.theta_i_top = 0
+        self.prev_ui = None
+        self.init_position()
+
+    def init_position(self):
+        self.theta_i_top = -self.theta_s_top
+        self.theta_i_bot = -self.theta_s_bot
+
+        # First move mid block
+        dh = np.sin(self.theta_i_bot) * self.bars_bot.length
+        dv = np.cos(self.theta_i_bot) * self.bars_bot.length
+
+        self.block_mid.set_position(
+            _x=dh,
+            _y=dv + (self.block_mid.height/2) - self.block_mid.anchor_d
+        )
+        self.bars_bot.low_anchor = self.block_bot.get_anchor(type='t')
+        self.bars_bot.high_anchor = self.block_mid.get_anchor(type='b')
+        self.spring_bot.Q.x = self.block_mid.center.x
+        self.spring_bot.Q.y = self.bars_bot.high_anchor.y
+
+        # Move top block 
+        dh = np.sin(self.theta_i_top) * self.bars_top.length
+        dv = np.cos(self.theta_i_top) * self.bars_top.length
+
+        self.block_top.set_position(
+            _x=self.block_mid.center.x + dh,
+            _y=self.block_mid.get_anchor(type='t').y + (self.block_top.height/2) - self.block_top.anchor_d + dv
+        )
+        self.bars_top.low_anchor = self.block_mid.get_anchor(type='t')
+        self.bars_top.high_anchor = self.block_top.get_anchor(type='b')
+        self.spring_top.Q.x = self.block_top.center.x
+        self.spring_top.Q.y = self.bars_top.high_anchor.y
+
 
     def update_position(self, u_i):
         """
-        This apply only to the mid block, as the bot block is fixed
+        This apply only to the mid block and top block, as the bot block is fixed
         x_i is a one dimension displacement along x axis.
         """
         length = self.bars_bot.length
-        if u_i > length:
+        if u_i > 2 * length:
             return
         theta_i = np.arcsin(u_i / length)
         if np.abs(theta_i) > self.theta_s:

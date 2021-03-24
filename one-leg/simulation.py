@@ -28,13 +28,16 @@ class Simulation:
 
         # Draw blocks
         self.joint.block_bot.draw(self.ax)
+        self.joint.block_mid.draw(self.ax)
         self.joint.block_top.draw(self.ax)
 
         # Draw bars
-        self.joint.bars.draw(self.ax)
+        self.joint.bars_bot.draw(self.ax)
+        self.joint.bars_top.draw(self.ax)
 
         # Draw spring
-        self.joint.spring.draw(self.ax)
+        self.joint.spring_bot.draw(self.ax)
+        self.joint.spring_top.draw(self.ax)
 
         self.ax.grid()
         plt.show()
