@@ -3,7 +3,7 @@ import matplotlib.patches as patches
 
 
 class Block:
-    def __init__(self, _width, _height, _center, _anchor_d):
+    def __init__(self, _width, _height, _center, _anchor_d, _color):
         """
         Create a new block given width and height
 
@@ -24,6 +24,7 @@ class Block:
         self.height = _height
         self.center = _center
         self.anchor_d = _anchor_d
+        self.color = _color
 
     def get_anchor(self, type):
         """
@@ -58,6 +59,6 @@ class Block:
                 ),
                 self.width,
                 self.height,
-                fill='C1'
+                color=self.color
             )
         )
