@@ -66,8 +66,17 @@ class Joint:
 
         self.theta_i_bot = 0
         self.theta_i_top = 0
+
+        # Compute Legs endpoint
+        self.compute_leg_height()
+
         self.prev_ui = None
         self.init_position()
+
+    def compute_leg_height(self):
+        legs_length = 5 / 100
+        tmp = legs_length**2 - ((self.block_mid.center - self.block_top.center).norm(order=2) / 2)**2
+        self.leg_position = np.sqrt(tmp)
 
     def init_position(self):
         self.theta_i_top = -self.theta_s_top
@@ -98,12 +107,13 @@ class Joint:
         self.bars_top.high_anchor = self.block_top.get_anchor(type='b')
         self.spring_top.Q.x = self.block_top.center.x
         self.spring_top.Q.y = self.bars_top.high_anchor.y
+        self.spring_top.P.x = self.block_mid.center.x
+        self.spring_top.P.y = self.block_mid.get_anchor(type='t').y
 
 
     def update_position(self, u_i):
         """
-        This apply only to the mid block and top block, as the bot block is fixed
-        x_i is a one dimension displacement along x axis.
+        u_i is the delta between the previous position et the one now.
         """
         length = self.bars_bot.length
         if u_i > 2 * length:
@@ -111,10 +121,37 @@ class Joint:
         theta_i = np.arcsin(u_i / length)
         if np.abs(theta_i) > self.theta_s:
             return
-        v_diff = length * np.cos(theta_i)
-        self.block_mid.set_position(u_i, v_diff + (self.block_mid.height / 2) - self.block_mid.anchor_d)
-        self.bars_bot.low_anchor = self.block_bot.get_anchor(type="t")
-        self.bars_bot.high_anchor = self.block_mid.get_anchor(type="b")
+
+        top_block_first = True
+        if top_block_first: # use the formula i wrote
+
+        self.theta_i_top = np.arcsin(u_i)
+        self.theta_i_bot = -self.theta_s_bot
+
+        # First move mid block
+        dh = np.sin(self.theta_i_bot) * self.bars_bot.length
+        dv = np.cos(self.theta_i_bot) * self.bars_bot.length
+
+        self.block_mid.set_position(
+            _x=dh,
+            _y=dv + (self.block_mid.height/2) - self.block_mid.anchor_d
+        )
+        self.bars_bot.low_anchor = self.block_bot.get_anchor(type='t')
+        self.bars_bot.high_anchor = self.block_mid.get_anchor(type='b')
         self.spring_bot.Q.x = self.block_mid.center.x
         self.spring_bot.Q.y = self.bars_bot.high_anchor.y
-        self.theta_i = theta_i
+
+        # Move top block 
+        dh = np.sin(self.theta_i_top) * self.bars_top.length
+        dv = np.cos(self.theta_i_top) * self.bars_top.length
+
+        self.block_top.set_position(
+            _x=self.block_mid.center.x + dh,
+            _y=self.block_mid.get_anchor(type='t').y + (self.block_top.height/2) - self.block_top.anchor_d + dv
+        )
+        self.bars_top.low_anchor = self.block_mid.get_anchor(type='t')
+        self.bars_top.high_anchor = self.block_top.get_anchor(type='b')
+        self.spring_top.Q.x = self.block_top.center.x
+        self.spring_top.Q.y = self.bars_top.high_anchor.y
+        self.spring_top.P.x = self.block_mid.center.x
+        self.spring_top.P.y = self.block_mid.get_anchor(type='t').y
