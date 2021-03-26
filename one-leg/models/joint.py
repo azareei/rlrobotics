@@ -17,7 +17,7 @@ class Joint:
         #   height is 6 cm
 
         # Define sequence
-        self.sequence = 'B'
+        self.sequence = 'A'
 
         # Create first block
         _l = 4/100
@@ -134,7 +134,7 @@ class Joint:
                 dh = position
 
                 _dh = dh - self.block_top.center.x
-                new_anchor_x_pos = self.bars_top.high_anchor.x + _dh
+                new_anchor_x_pos = self.bars_bot.high_anchor.x + _dh
                 dist = new_anchor_x_pos - self.bars_bot.low_anchor.x
                 self.theta_i_bot = np.arcsin(dist/length)
                 dv = np.cos(self.theta_i_bot) * length
@@ -189,8 +189,10 @@ class Joint:
                 dh = position
 
                 _dh = dh - self.block_top.center.x
-                new_anchor_x_pos = self.bars_top.high_anchor.x + _dh
+                new_anchor_x_pos = self.bars_bot.high_anchor.x + _dh
                 dist = new_anchor_x_pos - self.bars_bot.low_anchor.x
+                if dist >= length:
+                    print("ERROR case 3")
                 self.theta_i_bot = np.arcsin(dist/length)
                 dv = np.cos(self.theta_i_bot) * length
                 self.block_mid.set_position(
@@ -203,8 +205,8 @@ class Joint:
                 self.spring_bot.Q.y = self.bars_bot.high_anchor.y
 
                 # Move top block 
-                # Ensure theta_i is min
-                self.theta_i_top = -self.theta_s_top
+                # Ensure theta_i is max
+                self.theta_i_top = self.theta_s_top
                 dh = np.sin(self.theta_i_top) * self.bars_top.length
                 dv = np.cos(self.theta_i_top) * self.bars_top.length
 

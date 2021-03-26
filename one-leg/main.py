@@ -9,6 +9,7 @@ def initialize_env():
 
 
 def simulate():
+    global sim
     sim.simulate()
 
 

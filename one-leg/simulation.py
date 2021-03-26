@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from coordinates import Coordinate
+from pathlib import Path
 
 
 class Simulation:
@@ -14,6 +15,7 @@ class Simulation:
 
     def __init__(self):
         self.joint = Joint()
+        self.fig = plt.figure()
         # input movement
 
     def simulate(self):
@@ -43,7 +45,7 @@ class Simulation:
         self.gen_leg_animation()
 
     def draw(self):
-        
+        plt.close(self.fig)
         self.fig = plt.figure()
         self.ax = self.fig.add_subplot(111)
         self.ax.set_xlim(-0.20, 0.20)
@@ -65,16 +67,16 @@ class Simulation:
         self.ax.grid()
         plt.xlabel('x [m]')
         plt.ylabel('y [m]')
-        plt.savefig('/blocks/out_{}.png'.format(self.t))
+        plt.savefig('{0}/blocks/out_{1}.png'.format(Path(__file__).resolve().parent, self.t))
         self.t += 1
         plt.close('all')
         #plt.show()
 
-
     def gen_leg_animation(self):
-        
         self.t = 0
+        
         for A, B, C in zip(self.A, self.B, self.C):
+            plt.close(self.fig)
             self.fig = plt.figure()
             self.ax = self.fig.add_subplot(111)
             self.ax.set_xlim(-0.20, 0.20)
@@ -89,6 +91,6 @@ class Simulation:
             self.ax.plot(_x, _y, 'b')
             plt.xlabel('x [m]')
             plt.ylabel('z [m]')
-            plt.savefig('/legs/leg_{}.png'.format(self.t))
+            plt.savefig('{0}/legs/leg_{1}.png'.format(Path(__file__).resolve().parent, self.t))
             plt.close('all')
             self.t += 1
