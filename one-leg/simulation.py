@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from coordinates import Coordinate
 
+
 class Simulation:
     fig = None
     t = 0
@@ -64,7 +65,7 @@ class Simulation:
         self.ax.grid()
         plt.xlabel('x [m]')
         plt.ylabel('y [m]')
-        plt.savefig('out_{}.png'.format(self.t))
+        plt.savefig('/blocks/out_{}.png'.format(self.t))
         self.t += 1
         plt.close('all')
         #plt.show()
@@ -88,6 +89,6 @@ class Simulation:
             self.ax.plot(_x, _y, 'b')
             plt.xlabel('x [m]')
             plt.ylabel('z [m]')
-            plt.savefig('leg_{}.png'.format(self.t))
+            plt.savefig('/legs/leg_{}.png'.format(self.t))
             plt.close('all')
             self.t += 1
