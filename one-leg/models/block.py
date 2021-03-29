@@ -1,5 +1,6 @@
 from coordinates import Coordinate
-import matplotlib.patches as patches
+import cv2
+from utils import Utils
 
 
 class Block:
@@ -29,7 +30,7 @@ class Block:
     def get_anchor(self, type):
         """
         Returns the coordinate of the bottom left anchor location from the block
-        type is a string, can be 
+        type is a string, can be
             t for top anchors
             b for bottom anchors
         """
@@ -51,14 +52,14 @@ class Block:
         self.center.x = _x
         self.center.y = _y
 
-    def draw(self, ax):
-        ax.add_patch(patches.Rectangle(
-                (
-                    self.center.x - (self.width / 2),
-                    self.center.y - (self.height / 2)
-                ),
-                self.width,
-                self.height,
-                color=self.color
-            )
+    def draw(self, frame):
+        start = (
+            int(Utils.ConvertX(self.center.x - (self.width / 2))),
+            int(Utils.ConvertY(self.center.y - (self.height / 2)))
         )
+
+        end = (
+            int(Utils.ConvertX(self.center.x + (self.width / 2))),
+            int(Utils.ConvertY(self.center.y + (self.height / 2)))
+        )
+        return cv2.rectangle(frame, start, end, self.color, thickness=-1)

@@ -17,7 +17,7 @@ class Joint:
         #   height is 6 cm
 
         # Define sequence
-        self.sequence = 'A'
+        self.sequence = 'B'
 
         # Create first block
         _l = 4/100
@@ -25,15 +25,15 @@ class Joint:
         _w = 6/100
         _h = 6/100
         _center = Coordinate(x=0, y=_d - (_h / 2))
-        self.block_bot = Block(_w, _h, _center, _d, 'black')
+        self.block_bot = Block(_w, _h, _center, _d, (0, 0, 0))
 
         # Create mid block
         _center = Coordinate(x=0, y=_l - _d + (_h / 2))
-        self.block_mid = Block(_w, _h, _center, _d, 'blue')
+        self.block_mid = Block(_w, _h, _center, _d, (255, 0, 0))
 
         # Create top block
         _center = Coordinate(x=0, y=self.block_mid.get_anchor(type="t").y + _l - _d + (_h/2))
-        self.block_top = Block(_w, _h, _center, _d, 'green')
+        self.block_top = Block(_w, _h, _center, _d, (0, 255, 0))
 
         # Create the bars_bot
         self.bars_bot = Bar(

@@ -1,3 +1,7 @@
+import cv2
+from utils import Utils
+
+
 class Spring:
     def __init__(self, _P, _Q):
         """
@@ -8,7 +12,17 @@ class Spring:
         self.k = 20  # N/m
         self.l_0 = 1/100
 
-    def draw(self, ax):
-        _x = (self.P.x, self.Q.x)
-        _y = (self.P.y, self.Q.y)
-        ax.plot(_x, _y, 'fuchsia', linewidth=3)
+    def draw(self, frame):
+        return cv2.line(
+            frame,
+            (
+                int(Utils.ConvertX(self.P.x)),
+                int(Utils.ConvertY(self.P.y))
+            ),
+            (
+                int(Utils.ConvertX(self.Q.x)),
+                int(Utils.ConvertY(self.Q.y))
+            ),
+            (0, 100, 255),
+            thickness=3
+        )
