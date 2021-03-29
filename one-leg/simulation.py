@@ -94,7 +94,7 @@ class Simulation:
         self.save_video()
 
     def init_video(self, name):
-        fourcc = VideoWriter_fourcc(*'MP42')
+        fourcc = VideoWriter_fourcc('m','p','4','v')
         self.main_frame = np.ones((Utils.HEIGHT, Utils.WIDTH, 3), dtype=np.uint8) * 255
         self.video = VideoWriter(name, fourcc, float(Utils.FPS), (Utils.WIDTH, Utils.HEIGHT))
 

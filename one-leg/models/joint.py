@@ -130,7 +130,6 @@ class Joint:
         length = self.bars_bot.length
         if forward:
             if (u_i >= 0) and (u_i < self.d_bot):
-                print("Case 1")
                 dh = position
 
                 _dh = dh - self.block_top.center.x
@@ -164,7 +163,6 @@ class Joint:
                 self.spring_top.P.x = self.block_mid.center.x
                 self.spring_top.P.y = self.block_mid.get_anchor(type='t').y
             if (u_i >= self.d_bot) and (u_i <= (self.d_top+self.d_bot)):
-                print("Case 2")
                 # Still need to ensure the bottom block is theta_s
                 dh = position
 
@@ -185,14 +183,12 @@ class Joint:
                 self.spring_top.P.y = self.block_mid.get_anchor(type='t').y
         if forward is False:
             if (u_i <= (self.d_top + self.d_bot)) and (u_i > self.d_top):
-                print("Case 3")
                 dh = position
 
                 _dh = dh - self.block_top.center.x
                 new_anchor_x_pos = self.bars_bot.high_anchor.x + _dh
                 dist = new_anchor_x_pos - self.bars_bot.low_anchor.x
-                if dist >= length:
-                    print("ERROR case 3")
+
                 self.theta_i_bot = np.arcsin(dist/length)
                 dv = np.cos(self.theta_i_bot) * length
                 self.block_mid.set_position(
@@ -221,7 +217,6 @@ class Joint:
                 self.spring_top.P.x = self.block_mid.center.x
                 self.spring_top.P.y = self.block_mid.get_anchor(type='t').y
             if (u_i >= 0) and (u_i <= self.d_top):
-                print("Case 4")
                 # Still need to ensure the bottom block is -theta_s
                 dh = position
 
@@ -249,7 +244,6 @@ class Joint:
         length = self.bars_bot.length
         if forward:
             if (u_i >= 0) and (u_i < self.d_top):
-                print("Case 1")
                 dh = position
 
                 _dh = dh - self.block_top.center.x
@@ -268,7 +262,6 @@ class Joint:
                 self.spring_top.P.x = self.block_mid.center.x
                 self.spring_top.P.y = self.block_mid.get_anchor(type='t').y
             if (u_i >= self.d_top) and (u_i <= (self.d_top+self.d_bot)):
-                print("Case 2")
                 dh = position
 
                 _dh = dh - self.block_top.center.x
@@ -303,7 +296,6 @@ class Joint:
                 self.spring_top.P.y = self.block_mid.get_anchor(type='t').y
         if forward is False:
             if (u_i <= (self.d_top + self.d_bot)) and (u_i > self.d_bot):
-                print("Case 3")
                 # Copy from above
                 dh = position
 
@@ -323,7 +315,6 @@ class Joint:
                 self.spring_top.P.x = self.block_mid.center.x
                 self.spring_top.P.y = self.block_mid.get_anchor(type='t').y
             if (u_i <= self.d_bot) and (u_i >= 0):
-                print("Case 4")
                 # Ensure theta_s is min out
                 self.theta_i_top = -self.theta_s_top
                 dh = position
