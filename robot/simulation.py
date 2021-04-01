@@ -9,7 +9,7 @@ from utils import Utils
 
 class Simulation:
     def __init__(self):
-        self.joint = Joint()
+        self.joint = Joint('B', _structure_offset=Coordinate(x=20/100, y=20/100))
         # input movement
 
     def simulate(self):
@@ -18,7 +18,7 @@ class Simulation:
         self.blocks_video = self.init_video('{0}/blocks/out.mp4'.format(Path(__file__).resolve().parent))
         self.legs_video = self.init_video('{0}/legs/leg.mp4'.format(Path(__file__).resolve().parent))
 
-        self.x = np.linspace(0, 3.46 / 100 * 4, num=steps)
+        self.x = np.linspace(0, 0.044721 * 2, num=steps)
 
         # Forward pass
         for x_i in self.x:
@@ -27,7 +27,7 @@ class Simulation:
             self.draw_legs()
 
         # Backward pass
-        self.x = np.linspace(3.46 / 100 * 4, 0, num=steps)
+        self.x = np.linspace(0.044721 * 2, 0, num=steps)
         for x_i in self.x:
             self.joint.update_position(x_i, False)
             self.draw_blocks()
@@ -40,17 +40,7 @@ class Simulation:
         # Draw blocks
         self.new_frame()
 
-        self.joint.block_bot.draw(self.frame)
-        self.joint.block_mid.draw(self.frame)
-        self.joint.block_top.draw(self.frame)
-
-        # Draw bars
-        self.joint.bars_bot.draw(self.frame)
-        self.joint.bars_top.draw(self.frame)
-
-        # Draw spring
-        self.joint.spring_bot.draw(self.frame)
-        self.joint.spring_top.draw(self.frame)
+        self.joint.draw(self.frame)
 
         self.blocks_video.write(self.frame)
 

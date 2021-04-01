@@ -9,7 +9,7 @@ class Joint:
     """
     Represent a joint constituted by two blocs linked with two arms and a spring.
     """
-    def __init__(self):
+    def __init__(self, _sequence, _structure_offset):
         # We define the following for now:
         #   anchor distance to side of the block is 1cm
         #   length of the bars_bot are 4cm
@@ -17,7 +17,8 @@ class Joint:
         #   height is 6 cm
 
         # Define sequence
-        self.sequence = 'B'
+        self.sequence = _sequence
+        self.structure_offset = _structure_offset
 
         # Create first block
         _l = 3/100
@@ -248,18 +249,51 @@ class Joint:
                 self.move_top_block(position)
 
             if (u_i >= self.d_top) and (u_i <= (self.d_top+self.d_bot)):
-                delta = 0
-                # Need to ensure theta_top_i was maxed, otherwise move top block and compute delta
-                if self.theta_top_i < self.theta_s_top:
-                    gt = np.sin(self.theta_s_top) * length
-                    rel = np.sin(self.theta_i_top) * length
-                    delta = gt-rel
-                    self.move_top_block(self.block_top.center.x + delta)
+                # delta = 0
+                # # Need to ensure theta_top_i was maxed, otherwise move top block and compute delta
+                # if self.theta_i_top < self.theta_s_top:
+                #     gt = np.sin(self.theta_s_top) * length
+                #     rel = np.sin(self.theta_i_top) * length
+                #     delta = gt-rel
+                #     self.move_top_block(self.block_top.center.x + delta)
 
-                # Move bottom block
-                self.move_bot_block(position)
+                # # Move bottom block
+                # self.move_bot_block(position)
 
-                # Ensure theta_i is maxed for top block
+                # # Ensure theta_i is maxed for top block
+
+                # Ensure theta_s is min out
+                self.theta_i_top = self.theta_s_top
+                dh = position
+
+                _dh = dh - self.block_top.center.x
+                new_anchor_x_pos = self.bars_bot.high_anchor.x + _dh
+                dist = new_anchor_x_pos - self.bars_bot.low_anchor.x
+                self.theta_i_bot = np.arcsin(dist/length)
+                dv = np.cos(self.theta_i_bot) * length
+                self.block_mid.set_position(
+                    _x=self.block_mid.center.x + _dh,
+                    _y=dv + (self.block_mid.height/2) - self.block_mid.anchor_d
+                )
+                self.bars_bot.low_anchor = self.block_bot.get_anchor(type='t')
+                self.bars_bot.high_anchor = self.block_mid.get_anchor(type='b')
+                self.spring_bot.Q.x = self.block_mid.center.x
+                self.spring_bot.Q.y = self.bars_bot.high_anchor.y
+
+                # Move top block
+                dh = np.sin(self.theta_i_top) * self.bars_top.length
+                dv = np.cos(self.theta_i_top) * self.bars_top.length
+
+                self.block_top.set_position(
+                    _x=self.block_mid.center.x + dh,
+                    _y=self.block_mid.get_anchor(type='t').y + (self.block_top.height/2) - self.block_top.anchor_d + dv
+                )
+                self.bars_top.low_anchor = self.block_mid.get_anchor(type='t')
+                self.bars_top.high_anchor = self.block_top.get_anchor(type='b')
+                self.spring_top.Q.x = self.block_top.center.x
+                self.spring_top.Q.y = self.bars_top.high_anchor.y
+                self.spring_top.P.x = self.block_mid.center.x
+                self.spring_top.P.y = self.block_mid.get_anchor(type='t').y
                 
         if forward is False:
             if (u_i <= (self.d_top + self.d_bot)) and (u_i > self.d_bot):
@@ -334,3 +368,16 @@ class Joint:
         self.spring_top.Q.y = self.bars_top.high_anchor.y
         self.spring_top.P.x = self.block_mid.center.x
         self.spring_top.P.y = self.block_mid.get_anchor(type='t').y
+
+    def draw(self, frame):
+        self.block_bot.draw(frame, self.structure_offset)
+        self.block_mid.draw(frame, self.structure_offset)
+        self.block_top.draw(frame, self.structure_offset)
+
+        # Draw bars
+        self.bars_bot.draw(frame, self.structure_offset)
+        self.bars_top.draw(frame, self.structure_offset)
+
+        # Draw spring
+        self.spring_bot.draw(frame, self.structure_offset)
+        self.spring_top.draw(frame, self.structure_offset)

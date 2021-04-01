@@ -1,9 +1,10 @@
 from models.joint import Joint
+from coordinates import Coordinate
 
 
 class Robot:
     def __init__(self):
-        self.L1 = Joint()
-        self.L2 = Joint()
-        self.L3 = Joint()
-        self.L4 = Joint()
+        self.J1 = Joint('B', _structure_offset=Coordinate(x=20/100, y=20/100))
+        self.J2 = Joint('B', _structure_offset=Coordinate(x=-20/100, y=20/100)))
+        self.J3 = Joint('B', _structure_offset=Coordinate(x=20/100, y=-20/100)))
+        self.J4 = Joint('B', _structure_offset=Coordinate(x=-20/100, y=-20/100)))
