@@ -1,5 +1,5 @@
 class Utils:
-    ZOOM = 3000
+    ZOOM = 2000
     WIDTH = 1920
     HEIGHT = 1280
     FPS = 60

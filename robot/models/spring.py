@@ -12,16 +12,20 @@ class Spring:
         self.k = 20  # N/m
         self.l_0 = 1/100
 
-    def draw(self, frame, offset):
+    def draw(self, frame, offset, invert_y):
+        if invert_y:
+            inv = -1
+        else:
+            inv = 1
         return cv2.line(
             frame,
             (
                 int(Utils.ConvertX(self.P.x + offset.x)),
-                int(Utils.ConvertY(self.P.y + offset.y))
+                int(Utils.ConvertY(inv * (self.P.y + offset.y)))
             ),
             (
                 int(Utils.ConvertX(self.Q.x + offset.x)),
-                int(Utils.ConvertY(self.Q.y + offset.y))
+                int(Utils.ConvertY(inv * (self.Q.y + offset.y)))
             ),
             (0, 100, 255),
             thickness=3

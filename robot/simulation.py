@@ -9,7 +9,7 @@ from utils import Utils
 
 class Simulation:
     def __init__(self):
-        self.joint = Joint('B', _structure_offset=Coordinate(x=20/100, y=20/100))
+        self.joint = Joint('B', _structure_offset=Coordinate(x=10/100, y=10/100), _invert_y=True)
         # input movement
 
     def simulate(self):

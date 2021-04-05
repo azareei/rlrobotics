@@ -9,7 +9,7 @@ class Joint:
     """
     Represent a joint constituted by two blocs linked with two arms and a spring.
     """
-    def __init__(self, _sequence, _structure_offset):
+    def __init__(self, _sequence, _structure_offset, _invert_y=False):
         # We define the following for now:
         #   anchor distance to side of the block is 1cm
         #   length of the bars_bot are 4cm
@@ -19,6 +19,7 @@ class Joint:
         # Define sequence
         self.sequence = _sequence
         self.structure_offset = _structure_offset
+        self.invert_y = _invert_y
 
         # Create first block
         _l = 3/100
@@ -370,14 +371,14 @@ class Joint:
         self.spring_top.P.y = self.block_mid.get_anchor(type='t').y
 
     def draw(self, frame):
-        self.block_bot.draw(frame, self.structure_offset)
-        self.block_mid.draw(frame, self.structure_offset)
-        self.block_top.draw(frame, self.structure_offset)
+        self.block_bot.draw(frame, self.structure_offset, self.invert_y)
+        self.block_mid.draw(frame, self.structure_offset, self.invert_y)
+        self.block_top.draw(frame, self.structure_offset, self.invert_y)
 
         # Draw bars
-        self.bars_bot.draw(frame, self.structure_offset)
-        self.bars_top.draw(frame, self.structure_offset)
+        self.bars_bot.draw(frame, self.structure_offset, self.invert_y)
+        self.bars_top.draw(frame, self.structure_offset, self.invert_y)
 
         # Draw spring
-        self.spring_bot.draw(frame, self.structure_offset)
-        self.spring_top.draw(frame, self.structure_offset)
+        self.spring_bot.draw(frame, self.structure_offset, self.invert_y)
+        self.spring_top.draw(frame, self.structure_offset, self.invert_y)
