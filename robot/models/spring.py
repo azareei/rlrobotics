@@ -21,11 +21,11 @@ class Spring:
             frame,
             (
                 int(Utils.ConvertX(self.P.x + offset.x)),
-                int(Utils.ConvertY(inv * (self.P.y + offset.y)))
+                int(Utils.ConvertY(inv * (self.P.y) + offset.y))
             ),
             (
                 int(Utils.ConvertX(self.Q.x + offset.x)),
-                int(Utils.ConvertY(inv * (self.Q.y + offset.y)))
+                int(Utils.ConvertY(inv * (self.Q.y) + offset.y))
             ),
             (0, 100, 255),
             thickness=3
