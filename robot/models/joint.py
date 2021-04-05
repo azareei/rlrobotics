@@ -3,6 +3,8 @@ from models.bar import Bar
 from models.spring import Spring
 from coordinates import Coordinate
 import numpy as np
+import cv2
+from utils import Utils
 
 
 class Joint:
@@ -382,3 +384,36 @@ class Joint:
         # Draw spring
         self.spring_bot.draw(frame, self.structure_offset, self.invert_y)
         self.spring_top.draw(frame, self.structure_offset, self.invert_y)
+
+    def draw_legs(self, frame):
+        offset = 4 / 100
+        A = Coordinate(x=self.block_top.center.x - offset, y=0)
+        B = Coordinate(x=self.block_mid.center.x, y=0)
+        C = self.compute_leg_height(A, B)
+        frame = cv2.line(
+            frame,
+            (
+                int(Utils.ConvertX(A.x)),
+                int(Utils.ConvertY(A.y))
+            ),
+            (
+                int(Utils.ConvertX(C.x)),
+                int(Utils.ConvertY(C.y))
+            ),
+            (0, 255, 0),
+            thickness=3
+        )
+        frame = cv2.line(
+            frame,
+            (
+                int(Utils.ConvertX(B.x)),
+                int(Utils.ConvertY(B.y))
+            ),
+            (
+                int(Utils.ConvertX(C.x)),
+                int(Utils.ConvertY(C.y))
+            ),
+            (255, 0, 0),
+            thickness=3
+        )
+        return frame

@@ -17,6 +17,7 @@ class Spring:
             inv = -1
         else:
             inv = 1
+            
         return cv2.line(
             frame,
             (
