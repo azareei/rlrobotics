@@ -9,19 +9,19 @@ class Utils:
     yellow = (5, 226, 252)
 
     def ConvertY(p):
-        return p * Utils.ZOOM + (Utils.HEIGHT / 2)
+        return p * Utils.ZOOM + int(Utils.HEIGHT / 2)
 
     def ConvertX(p):
-        return p * Utils.ZOOM + (Utils.WIDTH / 2)
+        return p * Utils.ZOOM + int(Utils.WIDTH / 2)
 
     def ConvertX_location(p, location):
         if location == 'right':
-            return Utils.ConvertX(p) + (Utils.WIDTH / 4)
+            return Utils.ConvertX(p) + int(Utils.WIDTH / 3)
         elif location == 'left':
-            return Utils.ConvertX(p) - (Utils.WIDTH / 4)
+            return Utils.ConvertX(p) - int(Utils.WIDTH / 3)
 
     def ConvertY_location(p, location):
         if location == 'bottom':
-            return Utils.ConvertY(p) + (Utils.WIDTH / 4)
+            return Utils.ConvertY(p) + int(Utils.WIDTH / 4)
         elif location == 'top':
-            return Utils.ConvertY(p) - (Utils.WIDTH / 4)
+            return Utils.ConvertY(p) - int(Utils.WIDTH / 4)

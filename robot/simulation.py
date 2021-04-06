@@ -16,17 +16,38 @@ class Simulation:
         # Initialize the videos
         self.blocks_video = self.init_video('{0}/blocks/out.mp4'.format(Path(__file__).resolve().parent))
 
-        self.x = np.linspace(0, 0.044721 * 2, num=steps)
+        self.actuation1_direction = np.concatenate(
+            (np.zeros(steps), np.ones(steps)),
+            axis=0
+        ) < 1
 
-        # Forward pass
-        for x_i in self.x:
-            self.robot.update_position(x_i, forward=True)
-            self.draw_blocks()
+        self.actuation2_direction = np.concatenate(
+            (np.zeros(steps), np.ones(steps)),
+            axis=0
+        ) > 0
 
-        # Backward pass
-        self.x = np.linspace(0.044721 * 2, 0, num=steps)
-        for x_i in self.x:
-            self.robot.update_position(x_i, forward=False)
+        self.actuation1 = np.concatenate(
+            (
+                np.linspace(0, 0.044721 * 2, num=steps),
+                np.linspace(0.044721 * 2, 0, num=steps)
+            ),
+            axis=0
+        )
+
+        self.actuation2 = np.concatenate(
+            (
+                np.linspace(0, -0.044721 * 2, num=steps),
+                np.linspace(-0.044721 * 2, 0, num=steps)
+            ),
+            axis=0
+        )
+
+        for a_1, a_2, d_1, d_2, s in \
+                zip(self.actuation1, self.actuation2, self.actuation1_direction, self.actuation2_direction, range(2*steps)):
+            print('step : {}'.format(s))
+            if s == 109:
+                break
+            self.robot.update_position(a_1, a_2, d_1, d_2)
             self.draw_blocks()
 
         self.save_video(self.blocks_video)

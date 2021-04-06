@@ -5,13 +5,16 @@ from coordinates import Coordinate
 import numpy as np
 import cv2
 from utils import Utils
+from inspect import currentframe, getframeinfo
 
 
 class Joint:
     """
     Represent a joint constituted by two blocs linked with two arms and a spring.
     """
-    def __init__(self, _sequence, _structure_offset, _invert_y=False, bot_color=(0, 0, 0), top_color=(255, 0, 0)):
+    def __init__(self, _sequence, _structure_offset, _invert_y=False,
+                 invert_init_angle=False, bot_color=(0, 0, 0), 
+                 top_color=(255, 0, 0), _name='Joint'):
         # We define the following for now:
         #   anchor distance to side of the block is 1cm
         #   length of the bars_bot are 4cm
@@ -24,6 +27,8 @@ class Joint:
         self.invert_y = _invert_y
         self.bot_color = bot_color
         self.top_color = top_color
+        self.invert_init_angle = invert_init_angle
+        self.name = _name
 
         # Create first block
         _l = 3/100
@@ -87,8 +92,12 @@ class Joint:
         return Coordinate(x=(A.x + B.x)/2, y=np.sqrt(tmp))
 
     def init_position(self):
-        self.theta_i_top = -self.theta_s_top
-        self.theta_i_bot = -self.theta_s_bot
+        if self.invert_init_angle is False:
+            self.theta_i_top = -self.theta_s_top
+            self.theta_i_bot = -self.theta_s_bot
+        else:
+            self.theta_i_top = self.theta_s_top
+            self.theta_i_bot = self.theta_s_bot
 
         # First move mid block
         dh = np.sin(self.theta_i_bot) * self.bars_bot.length
@@ -103,7 +112,7 @@ class Joint:
         self.spring_bot.Q.x = self.block_mid.center.x
         self.spring_bot.Q.y = self.bars_bot.high_anchor.y
 
-        # Move top block 
+        # Move top block
         dh = np.sin(self.theta_i_top) * self.bars_top.length
         dv = np.cos(self.theta_i_top) * self.bars_top.length
 
@@ -123,7 +132,7 @@ class Joint:
         self.d_top = np.sin(self.theta_s_top) * self.bars_top.length * 2
         self.d_bot = np.sin(self.theta_s_bot) * self.bars_bot.length * 2
 
-    def update_position(self, u_i, forward=True):
+    def update_position(self, u_i, forward):
         """
         u_i is the delta between the previous position et the one now.
         """
@@ -142,7 +151,15 @@ class Joint:
                 _dh = dh - self.block_top.center.x
                 new_anchor_x_pos = self.bars_bot.high_anchor.x + _dh
                 dist = new_anchor_x_pos - self.bars_bot.low_anchor.x
-                self.theta_i_bot = np.arcsin(dist/length)
+
+                internal = dist / length
+                if internal > 1.0:
+                    frameinfo = getframeinfo(currentframe())
+                    raise ValueError('FILE {0}, LINE {1} : internal = {2}'.format(
+                        frameinfo.filename, frameinfo.lineno, internal))
+
+                self.theta_i_bot = np.arcsin(internal)
+
                 dv = np.cos(self.theta_i_bot) * length
                 self.block_mid.set_position(
                     _x=self.block_mid.center.x + _dh,
@@ -176,7 +193,15 @@ class Joint:
                 _dh = dh - self.block_top.center.x
                 new_anchor_x_pos = self.bars_top.high_anchor.x + _dh
                 dist = new_anchor_x_pos - self.bars_top.low_anchor.x
-                self.theta_i_top = np.arcsin(dist / length)
+
+                internal = dist / length
+                if internal > 1.0:
+                    frameinfo = getframeinfo(currentframe())
+                    raise ValueError('FILE {0}, LINE {1} : internal = {2}'.format(
+                        frameinfo.filename, frameinfo.lineno, internal))
+
+                self.theta_i_top = np.arcsin(internal)
+
                 dv = np.cos(self.theta_i_top) * length
                 self.block_top.set_position(
                     _x=dh,
@@ -188,7 +213,7 @@ class Joint:
                 self.spring_top.Q.y = self.bars_top.high_anchor.y
                 self.spring_top.P.x = self.block_mid.center.x
                 self.spring_top.P.y = self.block_mid.get_anchor(type='t').y
-        if forward is False:
+        else:
             if (u_i <= (self.d_top + self.d_bot)) and (u_i > self.d_top):
                 dh = position
 
@@ -196,7 +221,14 @@ class Joint:
                 new_anchor_x_pos = self.bars_bot.high_anchor.x + _dh
                 dist = new_anchor_x_pos - self.bars_bot.low_anchor.x
 
-                self.theta_i_bot = np.arcsin(dist/length)
+                internal = dist / length
+                if internal > 1.0:
+                    frameinfo = getframeinfo(currentframe())
+                    raise ValueError('FILE {0}, LINE {1} : internal = {2}'.format(
+                        frameinfo.filename, frameinfo.lineno, internal))
+
+                self.theta_i_bot = np.arcsin(internal)
+
                 dv = np.cos(self.theta_i_bot) * length
                 self.block_mid.set_position(
                     _x=self.block_mid.center.x + _dh,
@@ -230,7 +262,15 @@ class Joint:
                 _dh = dh - self.block_top.center.x
                 new_anchor_x_pos = self.bars_top.high_anchor.x + _dh
                 dist = new_anchor_x_pos - self.bars_top.low_anchor.x
-                self.theta_i_top = np.arcsin(dist / length)
+
+                internal = dist / length
+                if internal > 1.0:
+                    frameinfo = getframeinfo(currentframe())
+                    raise ValueError('FILE {0}, LINE {1} : internal = {2}'.format(
+                        frameinfo.filename, frameinfo.lineno, internal))
+
+                self.theta_i_top = np.arcsin(internal)
+
                 dv = np.cos(self.theta_i_top) * length
                 self.block_top.set_position(
                     _x=dh,
@@ -274,7 +314,15 @@ class Joint:
                 _dh = dh - self.block_top.center.x
                 new_anchor_x_pos = self.bars_bot.high_anchor.x + _dh
                 dist = new_anchor_x_pos - self.bars_bot.low_anchor.x
-                self.theta_i_bot = np.arcsin(dist/length)
+
+                internal = dist / length
+                if internal > 1.0:
+                    frameinfo = getframeinfo(currentframe())
+                    raise ValueError('FILE {0}, LINE {1} : internal = {2}'.format(
+                        frameinfo.filename, frameinfo.lineno, internal))
+
+                self.theta_i_bot = np.arcsin(internal)
+
                 dv = np.cos(self.theta_i_bot) * length
                 self.block_mid.set_position(
                     _x=self.block_mid.center.x + _dh,
@@ -299,8 +347,8 @@ class Joint:
                 self.spring_top.Q.y = self.bars_top.high_anchor.y
                 self.spring_top.P.x = self.block_mid.center.x
                 self.spring_top.P.y = self.block_mid.get_anchor(type='t').y
-                
-        if forward is False:
+
+        else:
             if (u_i <= (self.d_top + self.d_bot)) and (u_i > self.d_bot):
                 self.move_top_block(position)
 
@@ -312,7 +360,16 @@ class Joint:
                 _dh = dh - self.block_top.center.x
                 new_anchor_x_pos = self.bars_bot.high_anchor.x + _dh
                 dist = new_anchor_x_pos - self.bars_bot.low_anchor.x
-                self.theta_i_bot = np.arcsin(dist/length)
+
+                internal = dist / length
+
+                if internal > 1.0:
+                    frameinfo = getframeinfo(currentframe())
+                    raise ValueError('FILE {0}, LINE {1} : internal = {2}'.format(
+                        frameinfo.filename, frameinfo.lineno, internal))
+
+                self.theta_i_bot = np.arcsin(internal)
+
                 dv = np.cos(self.theta_i_bot) * length
                 self.block_mid.set_position(
                     _x=self.block_mid.center.x + _dh,
@@ -340,11 +397,20 @@ class Joint:
 
     def move_bot_block(self, dh=None, theta=None):
         length = self.bars_bot.length
-        
+
         _dh = dh - self.block_top.center.x
         new_anchor_x_pos = self.bars_bot.high_anchor.x + _dh
         dist = new_anchor_x_pos - self.bars_bot.low_anchor.x
-        self.theta_i_bot = np.arcsin(dist/length)
+
+        internal = dist / length
+
+        if internal > 1.0:
+            frameinfo = getframeinfo(currentframe())
+            raise ValueError('FILE {0}, LINE {1} : internal = {2}'.format(
+                frameinfo.filename, frameinfo.lineno, internal))
+
+        self.theta_i_bot = np.arcsin(internal)
+
         dv = np.cos(self.theta_i_bot) * length
         self.block_mid.set_position(
             _x=self.block_mid.center.x + _dh,
@@ -361,7 +427,15 @@ class Joint:
         _dh = dh - self.block_top.center.x
         new_anchor_x_pos = self.bars_top.high_anchor.x + _dh
         dist = new_anchor_x_pos - self.bars_top.low_anchor.x
-        self.theta_i_top = np.arcsin(dist / length)
+
+        internal = dist / length
+        if internal > 1.0:
+            frameinfo = getframeinfo(currentframe())
+            raise ValueError('FILE {0}, LINE {1} : internal = {2}'.format(
+                frameinfo.filename, frameinfo.lineno, internal))
+
+        self.theta_i_top = np.arcsin(internal)
+
         dv = np.cos(self.theta_i_top) * length
         self.block_top.set_position(
             _x=dh,
