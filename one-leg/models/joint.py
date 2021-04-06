@@ -81,8 +81,8 @@ class Joint:
         return Coordinate(x=(A.x + B.x)/2, y=np.sqrt(tmp))
 
     def init_position(self):
-        self.theta_i_top = -self.theta_s_top
-        self.theta_i_bot = -self.theta_s_bot
+        self.theta_i_top = self.theta_s_top
+        self.theta_i_bot = self.theta_s_bot
 
         # First move mid block
         dh = np.sin(self.theta_i_bot) * self.bars_bot.length

@@ -22,8 +22,9 @@ class Simulation:
         self.init_video('{0}/blocks/out.mp4'.format(Path(__file__).resolve().parent))
         self.x = np.linspace(0, 3.46 / 100 * 4, num=steps)
         offset = 4 / 100
-        for x_i in self.x:
-            self.joint.update_position(x_i, True)
+        for x_i, s in zip(self.x, range(steps)):
+            print(s)
+            self.joint.update_position(x_i, False)
             _A = Coordinate(x=self.joint.block_top.center.x - offset, y=0)
             _B = Coordinate(x=self.joint.block_mid.center.x, y=0)
             self.A.append(_A)
@@ -32,8 +33,9 @@ class Simulation:
             self.draw()
 
         self.x = np.linspace(3.46 / 100 * 4, 0, num=steps)
-        for x_i in self.x:
-            self.joint.update_position(x_i, False)
+        for x_i, s in zip(self.x, range(steps)):
+            print(s)
+            self.joint.update_position(x_i, True)
             _A = Coordinate(x=self.joint.block_top.center.x - offset, y=0)
             _B = Coordinate(x=self.joint.block_mid.center.x, y=0)
             self.A.append(_A)

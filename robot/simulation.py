@@ -45,8 +45,7 @@ class Simulation:
         for a_1, a_2, d_1, d_2, s in \
                 zip(self.actuation1, self.actuation2, self.actuation1_direction, self.actuation2_direction, range(2*steps)):
             print('step : {}'.format(s))
-            if s == 109:
-                break
+
             self.robot.update_position(a_1, a_2, d_1, d_2)
             self.draw_blocks()
 

@@ -144,8 +144,13 @@ class Joint:
     def update_seq_A(self, u_i, forward):
         position = u_i + self.x_offset
         length = self.bars_bot.length
+
+        max_left = - (self.d_bot / 2) - (self.d_top / 2)
+        max_right = (self.d_bot / 2) + (self.d_top / 2)
+
         if forward:
-            if (u_i >= 0) and (u_i < self.d_bot):
+            if (position >= max_left) and \
+                    (position < (max_left + self.d_bot)):
                 dh = position
 
                 _dh = dh - self.block_top.center.x
@@ -170,7 +175,7 @@ class Joint:
                 self.spring_bot.Q.x = self.block_mid.center.x
                 self.spring_bot.Q.y = self.bars_bot.high_anchor.y
 
-                # Move top block 
+                # Move top block
                 # Ensure theta_i is min
                 self.theta_i_top = -self.theta_s_top
                 dh = np.sin(self.theta_i_top) * self.bars_top.length
@@ -186,7 +191,8 @@ class Joint:
                 self.spring_top.Q.y = self.bars_top.high_anchor.y
                 self.spring_top.P.x = self.block_mid.center.x
                 self.spring_top.P.y = self.block_mid.get_anchor(type='t').y
-            if (u_i >= self.d_bot) and (u_i <= (self.d_top+self.d_bot)):
+
+            if (position >= (max_left + self.d_bot)) and (position <= max_right):
                 # Still need to ensure the bottom block is theta_s
                 dh = position
 
@@ -214,7 +220,7 @@ class Joint:
                 self.spring_top.P.x = self.block_mid.center.x
                 self.spring_top.P.y = self.block_mid.get_anchor(type='t').y
         else:
-            if (u_i <= (self.d_top + self.d_bot)) and (u_i > self.d_top):
+            if (position <= max_right) and (position > (max_right - self.d_bot)):
                 dh = position
 
                 _dh = dh - self.block_top.center.x
@@ -255,7 +261,7 @@ class Joint:
                 self.spring_top.Q.y = self.bars_top.high_anchor.y
                 self.spring_top.P.x = self.block_mid.center.x
                 self.spring_top.P.y = self.block_mid.get_anchor(type='t').y
-            if (u_i >= 0) and (u_i <= self.d_top):
+            if (position >= max_left) and (position <= (max_right - self.d_bot)):
                 # Still need to ensure the bottom block is -theta_s
                 dh = position
 
@@ -289,11 +295,15 @@ class Joint:
         """
         position = u_i + self.x_offset
         length = self.bars_bot.length
+
+        max_left = - (self.d_bot / 2) - (self.d_top / 2)
+        max_right = (self.d_bot / 2) + (self.d_top / 2)
+
         if forward:
-            if (u_i >= 0) and (u_i < self.d_top):
+            if (position >= max_left) and (position < (max_left + self.d_top)):
                 self.move_top_block(position)
 
-            if (u_i >= self.d_top) and (u_i <= (self.d_top+self.d_bot)):
+            if (position >= (max_left + self.d_top)) and (position <= max_right):
                 # delta = 0
                 # # Need to ensure theta_top_i was maxed, otherwise move top block and compute delta
                 # if self.theta_i_top < self.theta_s_top:
@@ -349,10 +359,10 @@ class Joint:
                 self.spring_top.P.y = self.block_mid.get_anchor(type='t').y
 
         else:
-            if (u_i <= (self.d_top + self.d_bot)) and (u_i > self.d_bot):
+            if (position <= max_right) and (position > (max_right - self.d_top)):
                 self.move_top_block(position)
 
-            if (u_i <= self.d_bot) and (u_i >= 0):
+            if (position <= (max_right - self.d_bot)) and (position >= max_left):
                 # Ensure theta_s is min out
                 self.theta_i_top = -self.theta_s_top
                 dh = position
