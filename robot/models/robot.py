@@ -9,7 +9,7 @@ class Robot:
         # Actuation 1
         self.J1 = Joint(
             'B',
-            _structure_offset=Coordinate(x=20/100, y=5/100),
+            _structure_offset=Coordinate(x=20/100, y=4/100),
             _invert_y=False,
             invert_init_angle=False,
             bot_color=Utils.yellow,
@@ -18,7 +18,7 @@ class Robot:
         )
         self.J4 = Joint(
             'B',
-            _structure_offset=Coordinate(x=-20/100, y=-5/100),
+            _structure_offset=Coordinate(x=-20/100, y=-4/100),
             _invert_y=True,
             invert_init_angle=False,
             bot_color=Utils.yellow,
@@ -29,7 +29,7 @@ class Robot:
         # Actuation 2
         self.J2 = Joint(
             'B',
-            _structure_offset=Coordinate(x=-20/100, y=5/100),
+            _structure_offset=Coordinate(x=-20/100, y=4/100),
             _invert_y=False,
             invert_init_angle=True,
             bot_color=Utils.yellow,
@@ -38,7 +38,7 @@ class Robot:
         )
         self.J3 = Joint(
             'B',
-            _structure_offset=Coordinate(x=20/100, y=-5/100),
+            _structure_offset=Coordinate(x=20/100, y=-4/100),
             _invert_y=True,
             invert_init_angle=True,
             bot_color=Utils.yellow,

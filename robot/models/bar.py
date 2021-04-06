@@ -30,7 +30,7 @@ class Bar:
                 int(Utils.ConvertY(inv * (self.high_anchor.y) + offset.y))
             ),
             (100, 100, 100),
-            thickness=3
+            thickness=5
         )
 
         return cv2.line(
@@ -44,5 +44,5 @@ class Bar:
                 int(Utils.ConvertY(inv * (self.high_anchor.y) + offset.y))
             ),
             (100, 100, 100),
-            thickness=3
+            thickness=5
         )
