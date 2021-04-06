@@ -28,6 +28,6 @@ class Spring:
                 int(Utils.ConvertX(self.Q.x + offset.x)),
                 int(Utils.ConvertY(inv * (self.Q.y) + offset.y))
             ),
-            (0, 100, 255),
+            (0, 100, 100),
             thickness=3
         )

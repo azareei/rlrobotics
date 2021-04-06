@@ -29,7 +29,7 @@ class Bar:
                 int(Utils.ConvertX(self.high_anchor.x + offset.x)),
                 int(Utils.ConvertY(inv * (self.high_anchor.y) + offset.y))
             ),
-            (0, 0, 255),
+            (100, 100, 100),
             thickness=3
         )
 
@@ -43,6 +43,6 @@ class Bar:
                 int(Utils.ConvertX(self.high_anchor.x + self.offset + offset.x)),
                 int(Utils.ConvertY(inv * (self.high_anchor.y) + offset.y))
             ),
-            (0, 0, 255),
+            (100, 100, 100),
             thickness=3
         )

@@ -11,7 +11,7 @@ class Joint:
     """
     Represent a joint constituted by two blocs linked with two arms and a spring.
     """
-    def __init__(self, _sequence, _structure_offset, _invert_y=False):
+    def __init__(self, _sequence, _structure_offset, _invert_y=False, bot_color=(0, 0, 0), top_color=(255, 0, 0)):
         # We define the following for now:
         #   anchor distance to side of the block is 1cm
         #   length of the bars_bot are 4cm
@@ -22,6 +22,8 @@ class Joint:
         self.sequence = _sequence
         self.structure_offset = _structure_offset
         self.invert_y = _invert_y
+        self.bot_color = bot_color
+        self.top_color = top_color
 
         # Create first block
         _l = 3/100
@@ -29,15 +31,15 @@ class Joint:
         _w = 5.5/100
         _h = 5.5/100
         _center = Coordinate(x=0, y=_d - (_h / 2))
-        self.block_bot = Block(_w, _h, _center, _d, (0, 0, 0))
+        self.block_bot = Block(_w, _h, _center, _d, bot_color)
 
         # Create mid block
         _center = Coordinate(x=0, y=_l - _d + (_h / 2))
-        self.block_mid = Block(_w, _h, _center, _d, (255, 0, 0))
+        self.block_mid = Block(_w, _h, _center, _d, (0, 0, 0))
 
         # Create top block
         _center = Coordinate(x=0, y=self.block_mid.get_anchor(type="t").y + _l - _d + (_h/2))
-        self.block_top = Block(_w, _h, _center, _d, (0, 255, 0))
+        self.block_top = Block(_w, _h, _center, _d, top_color)
 
         # Create the bars_bot
         self.bars_bot = Bar(
@@ -70,7 +72,7 @@ class Joint:
         # Compute Theta_s - limits of the angle for the bar.
         self.theta_s_bot = np.arccos(2 * self.block_bot.anchor_d / self.bars_bot.length)
         self.theta_s_top = np.arccos(2 * self.block_mid.anchor_d / self.bars_top.length)
-        print("Theta S : {}".format(self.theta_s_top))
+        # print("Theta S : {}".format(self.theta_s_top))
 
         self.theta_i_bot = 0
         self.theta_i_top = 0

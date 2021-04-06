@@ -4,6 +4,10 @@ class Utils:
     HEIGHT = 1280
     FPS = 60
 
+    magenta = (255, 0, 255)
+    green = (0, 255, 0)
+    yellow = (5, 226, 252)
+
     def ConvertY(p):
         return p * Utils.ZOOM + (Utils.HEIGHT / 2)
 
