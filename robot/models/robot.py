@@ -6,21 +6,7 @@ from utils import Utils
 
 class Robot:
     def __init__(self):
-        self.J2 = Joint(
-            'B',
-            _structure_offset=Coordinate(x=-20/100, y=5/100),
-            _invert_y=False,
-            bot_color=Utils.yellow,
-            top_color=Utils.green
-        )
-        self.J3 = Joint(
-            'B',
-            _structure_offset=Coordinate(x=20/100, y=-5/100),
-            _invert_y=True,
-            bot_color=Utils.yellow,
-            top_color=Utils.green
-        )
-
+        # Actuation 1
         self.J1 = Joint(
             'B',
             _structure_offset=Coordinate(x=20/100, y=5/100),
@@ -36,6 +22,22 @@ class Robot:
             top_color=Utils.magenta
         )
 
+        # Actuation 2
+        self.J2 = Joint(
+            'A',
+            _structure_offset=Coordinate(x=-20/100, y=5/100),
+            _invert_y=False,
+            bot_color=Utils.yellow,
+            top_color=Utils.green
+        )
+        self.J3 = Joint(
+            'A',
+            _structure_offset=Coordinate(x=20/100, y=-5/100),
+            _invert_y=True,
+            bot_color=Utils.yellow,
+            top_color=Utils.green
+        )
+
     def update_position(self, x_i, forward):
         self.J1.update_position(x_i, forward)
         self.J2.update_position(x_i, forward)
@@ -48,6 +50,10 @@ class Robot:
         self.J3.draw(frame)
         self.J4.draw(frame)
         self.draw_main_block(frame)
+        self.J1.draw_legs(frame, location_x='right', location_y='bottom')
+        self.J2.draw_legs(frame, location_x='left', location_y='bottom')
+        self.J3.draw_legs(frame, location_x='right', location_y='top')
+        self.J4.draw_legs(frame, location_x='left', location_y='top')
 
     def draw_main_block(self, frame):
         if self.J2.invert_y is True:
@@ -76,9 +82,3 @@ class Robot:
             Utils.yellow,
             thickness=10
         )
-
-    def draw_legs(self, frame):
-        self.J1.draw_legs(frame)
-        self.J2.draw_legs(frame)
-        self.J3.draw_legs(frame)
-        self.J4.draw_legs(frame)

@@ -15,7 +15,6 @@ class Simulation:
         steps = 100
         # Initialize the videos
         self.blocks_video = self.init_video('{0}/blocks/out.mp4'.format(Path(__file__).resolve().parent))
-        self.legs_video = self.init_video('{0}/legs/leg.mp4'.format(Path(__file__).resolve().parent))
 
         self.x = np.linspace(0, 0.044721 * 2, num=steps)
 
@@ -23,28 +22,20 @@ class Simulation:
         for x_i in self.x:
             self.robot.update_position(x_i, forward=True)
             self.draw_blocks()
-            self.draw_legs()
 
         # Backward pass
         self.x = np.linspace(0.044721 * 2, 0, num=steps)
         for x_i in self.x:
             self.robot.update_position(x_i, forward=False)
             self.draw_blocks()
-            self.draw_legs()
 
         self.save_video(self.blocks_video)
-        self.save_video(self.legs_video)
 
     def draw_blocks(self):
         # Draw blocks
         self.new_frame()
         self.robot.draw_blocks(self.frame)
         self.blocks_video.write(self.frame)
-
-    def draw_legs(self):
-        self.new_frame()
-        self.robot.draw_legs(self.frame)
-        self.legs_video.write(self.frame)
 
     def init_video(self, name):
         fourcc = VideoWriter_fourcc('m', 'p', '4', 'v')

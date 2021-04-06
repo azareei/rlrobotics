@@ -13,3 +13,15 @@ class Utils:
 
     def ConvertX(p):
         return p * Utils.ZOOM + (Utils.WIDTH / 2)
+
+    def ConvertX_location(p, location):
+        if location == 'right':
+            return Utils.ConvertX(p) + (Utils.WIDTH / 4)
+        elif location == 'left':
+            return Utils.ConvertX(p) - (Utils.WIDTH / 4)
+
+    def ConvertY_location(p, location):
+        if location == 'bottom':
+            return Utils.ConvertY(p) + (Utils.WIDTH / 4)
+        elif location == 'top':
+            return Utils.ConvertY(p) - (Utils.WIDTH / 4)

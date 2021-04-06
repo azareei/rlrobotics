@@ -387,35 +387,37 @@ class Joint:
         self.spring_bot.draw(frame, self.structure_offset, self.invert_y)
         self.spring_top.draw(frame, self.structure_offset, self.invert_y)
 
-    def draw_legs(self, frame):
+    def draw_legs(self, frame, location_x, location_y):
         offset = 4 / 100
+        legs_thickness = 3
+
         A = Coordinate(x=self.block_top.center.x - offset, y=0)
         B = Coordinate(x=self.block_mid.center.x, y=0)
         C = self.compute_leg_height(A, B)
         frame = cv2.line(
             frame,
             (
-                int(Utils.ConvertX(A.x)),
-                int(Utils.ConvertY(A.y))
+                int(Utils.ConvertX_location(A.x, location_x)),
+                int(Utils.ConvertY_location(A.y, location_y))
             ),
             (
-                int(Utils.ConvertX(C.x)),
-                int(Utils.ConvertY(C.y))
+                int(Utils.ConvertX_location(C.x, location_x)),
+                int(Utils.ConvertY_location(C.y, location_y))
             ),
-            (0, 255, 0),
-            thickness=3
+            self.top_color,
+            thickness=legs_thickness
         )
         frame = cv2.line(
             frame,
             (
-                int(Utils.ConvertX(B.x)),
-                int(Utils.ConvertY(B.y))
+                int(Utils.ConvertX_location(B.x, location_x)),
+                int(Utils.ConvertY_location(B.y, location_y))
             ),
             (
-                int(Utils.ConvertX(C.x)),
-                int(Utils.ConvertY(C.y))
+                int(Utils.ConvertX_location(C.x, location_x)),
+                int(Utils.ConvertY_location(C.y, location_y))
             ),
-            (255, 0, 0),
-            thickness=3
+            (0, 0, 0),
+            thickness=legs_thickness
         )
         return frame
