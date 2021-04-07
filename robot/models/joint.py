@@ -511,17 +511,27 @@ class Joint:
 
         # Show T if touching
         if touching:
-            font = cv2.FONT_HERSHEY_SIMPLEX
-            fontScale = 1
-            color = (0, 0, 255)
-            thickness = 2
+            
             position_bot_left = (
                 int(Utils.ConvertX_location(0, location_x)),
                 int(Utils.ConvertY_location(-0.01, location_y))
             )
-            frame = cv2.putText(frame, 'T', position_bot_left, font, fontScale, color, thickness, cv2.LINE_AA)
+            frame = cv2.putText(
+                frame,
+                'T',
+                position_bot_left,
+                Utils.font,
+                Utils.fontScale,
+                Utils.red,
+                Utils.text_thickness,
+                cv2.LINE_AA
+            )
 
         # Draw Ground
+        if touching:
+            ground_color = Utils.red
+        else:
+            ground_color = Utils.black
         frame = cv2.line(
             frame,
             (
@@ -532,7 +542,7 @@ class Joint:
                 int(Utils.ConvertX_location(0.1, location_x)),
                 int(Utils.ConvertY_location(ground, location_y))
             ),
-            color=(0, 0, 0),
+            color=ground_color,
             thickness=legs_thickness
         )
         return frame
