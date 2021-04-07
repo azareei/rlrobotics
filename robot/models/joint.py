@@ -13,8 +13,10 @@ class Joint:
     Represent a joint constituted by two blocs linked with two arms and a spring.
     """
     def __init__(self, _sequence, _structure_offset, _invert_y=False,
-                 invert_init_angle=False, bot_color=(0, 0, 0),
-                 top_color=(255, 0, 0), _name='Joint'):
+                 _invert_init_angle=False, _bot_color=(0, 0, 0),
+                 _top_color=(255, 0, 0), _name='Joint',
+                 _r1=3/100, _r2=3/100,
+                 _theta1=0.785, _theta2=0.785):
         # We define the following for now:
         #   anchor distance to side of the block is 1cm
         #   length of the bars_bot are 4cm
@@ -25,32 +27,31 @@ class Joint:
         self.sequence = _sequence
         self.structure_offset = _structure_offset
         self.invert_y = _invert_y
-        self.bot_color = bot_color
-        self.top_color = top_color
-        self.invert_init_angle = invert_init_angle
+        self.bot_color = _bot_color
+        self.top_color = _top_color
+        self.invert_init_angle = _invert_init_angle
         self.name = _name
 
         # Create first block
-        _l = 3/100
         _d = 1/100
         _w = 5.5/100
         _h = 5.5/100
         _center = Coordinate(x=0, y=_d - (_h / 2))
-        self.block_bot = Block(_w, _h, _center, _d, bot_color)
+        self.block_bot = Block(_w, _h, _center, _d, self.bot_color)
 
         # Create mid block
-        _center = Coordinate(x=0, y=_l - _d + (_h / 2))
+        _center = Coordinate(x=0, y=_r1 - _d + (_h / 2))
         self.block_mid = Block(_w, _h, _center, _d, (0, 0, 0))
 
         # Create top block
-        _center = Coordinate(x=0, y=self.block_mid.get_anchor(type="t").y + _l - _d + (_h/2))
-        self.block_top = Block(_w, _h, _center, _d, top_color)
+        _center = Coordinate(x=0, y=self.block_mid.get_anchor(type="t").y + _r2 - _d + (_h/2))
+        self.block_top = Block(_w, _h, _center, _d, self.top_color)
 
         # Create the bars_bot
         self.bars_bot = Bar(
             self.block_bot.get_anchor(type="t"),
             self.block_mid.get_anchor(type="b"),
-            _l,
+            _r1,
             self.block_bot.get_anchor_distance()
         )
 
@@ -58,7 +59,7 @@ class Joint:
         self.bars_top = Bar(
             self.block_mid.get_anchor(type='t'),
             self.block_top.get_anchor(type='b'),
-            _l,
+            _r2,
             self.block_mid.get_anchor_distance()
         )
 
@@ -495,6 +496,7 @@ class Joint:
             self.top_color,
             thickness=legs_thickness
         )
+
         frame = cv2.line(
             frame,
             (
@@ -511,7 +513,6 @@ class Joint:
 
         # Show T if touching
         if touching:
-            
             position_bot_left = (
                 int(Utils.ConvertX_location(0, location_x)),
                 int(Utils.ConvertY_location(-0.01, location_y))

@@ -9,21 +9,21 @@ class Robot:
     def __init__(self):
         # Actuation 1
         self.J1 = Joint(
-            'B',
+            'A',
             _structure_offset=Coordinate(x=20/100, y=4/100),
             _invert_y=False,
-            invert_init_angle=False,
-            bot_color=Utils.yellow,
-            top_color=Utils.magenta,
+            _invert_init_angle=False,
+            _bot_color=Utils.yellow,
+            _top_color=Utils.magenta,
             _name='J1'
         )
         self.J4 = Joint(
-            'B',
+            'A',
             _structure_offset=Coordinate(x=-20/100, y=-4/100),
             _invert_y=True,
-            invert_init_angle=False,
-            bot_color=Utils.yellow,
-            top_color=Utils.magenta,
+            _invert_init_angle=False,
+            _bot_color=Utils.yellow,
+            _top_color=Utils.magenta,
             _name='J4'
         )
 
@@ -32,18 +32,18 @@ class Robot:
             'A',
             _structure_offset=Coordinate(x=-20/100, y=4/100),
             _invert_y=False,
-            invert_init_angle=True,
-            bot_color=Utils.yellow,
-            top_color=Utils.green,
+            _invert_init_angle=True,
+            _bot_color=Utils.yellow,
+            _top_color=Utils.green,
             _name='J2'
         )
         self.J3 = Joint(
             'A',
             _structure_offset=Coordinate(x=20/100, y=-4/100),
             _invert_y=True,
-            invert_init_angle=True,
-            bot_color=Utils.yellow,
-            top_color=Utils.green,
+            _invert_init_angle=True,
+            _bot_color=Utils.yellow,
+            _top_color=Utils.green,
             _name='J3'
         )
 
