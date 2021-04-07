@@ -89,7 +89,7 @@ class Joint:
         legs_length = 5 / 100
 
         tmp = legs_length**2 - ((B.x - A.x) / 2)**2
-        return Coordinate(x=(A.x + B.x)/2, y=np.sqrt(tmp))
+        return Coordinate(x=(A.x + B.x)/2, y=(A.y + B.y)/2, z=np.sqrt(tmp))
 
     def init_position(self):
         if self.invert_init_angle is False:
@@ -140,6 +140,7 @@ class Joint:
             self.update_seq_A(u_i, forward)
         elif self.sequence == 'B':
             self.update_seq_B(u_i, forward)
+        self.update_legs()
 
     def update_seq_A(self, u_i, forward):
         position = u_i + self.x_offset
@@ -458,6 +459,12 @@ class Joint:
         self.spring_top.P.x = self.block_mid.center.x
         self.spring_top.P.y = self.block_mid.get_anchor(type='t').y
 
+    def update_legs(self):
+        offset = 4 / 100
+        self.A = Coordinate(x=self.block_top.center.x - offset, y=0, z=0)
+        self.B = Coordinate(x=self.block_mid.center.x, y=0, z=0)
+        self.C = self.compute_leg_height(self.A, self.B)
+
     def draw(self, frame):
         self.block_bot.draw(frame, self.structure_offset, self.invert_y)
         self.block_mid.draw(frame, self.structure_offset, self.invert_y)
@@ -472,21 +479,17 @@ class Joint:
         self.spring_top.draw(frame, self.structure_offset, self.invert_y)
 
     def draw_legs(self, frame, location_x, location_y):
-        offset = 4 / 100
         legs_thickness = 3
 
-        A = Coordinate(x=self.block_top.center.x - offset, y=0)
-        B = Coordinate(x=self.block_mid.center.x, y=0)
-        C = self.compute_leg_height(A, B)
         frame = cv2.line(
             frame,
             (
-                int(Utils.ConvertX_location(A.x, location_x)),
-                int(Utils.ConvertY_location(A.y, location_y))
+                int(Utils.ConvertX_location(self.A.x, location_x)),
+                int(Utils.ConvertY_location(self.A.z, location_y))
             ),
             (
-                int(Utils.ConvertX_location(C.x, location_x)),
-                int(Utils.ConvertY_location(C.y, location_y))
+                int(Utils.ConvertX_location(self.C.x, location_x)),
+                int(Utils.ConvertY_location(self.C.z, location_y))
             ),
             self.top_color,
             thickness=legs_thickness
@@ -494,12 +497,12 @@ class Joint:
         frame = cv2.line(
             frame,
             (
-                int(Utils.ConvertX_location(B.x, location_x)),
-                int(Utils.ConvertY_location(B.y, location_y))
+                int(Utils.ConvertX_location(self.B.x, location_x)),
+                int(Utils.ConvertY_location(self.B.z, location_y))
             ),
             (
-                int(Utils.ConvertX_location(C.x, location_x)),
-                int(Utils.ConvertY_location(C.y, location_y))
+                int(Utils.ConvertX_location(self.C.x, location_x)),
+                int(Utils.ConvertY_location(self.C.z, location_y))
             ),
             (0, 0, 0),
             thickness=legs_thickness
