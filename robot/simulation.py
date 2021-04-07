@@ -1,7 +1,5 @@
-from models.joint import Joint
 from models.robot import Robot
 import numpy as np
-from coordinates import Coordinate
 from pathlib import Path
 from cv2 import VideoWriter, VideoWriter_fourcc
 from utils import Utils
@@ -42,10 +40,13 @@ class Simulation:
             axis=0
         )
 
-        for a_1, a_2, d_1, d_2, s in \
-                zip(self.actuation1, self.actuation2, self.actuation1_direction, self.actuation2_direction, range(2*steps)):
-            print('step : {}'.format(s))
+        for a_1, a_2, d_1, d_2, s in zip(self.actuation1,
+                                         self.actuation2,
+                                         self.actuation1_direction,
+                                         self.actuation2_direction,
+                                         range(2*steps)):
 
+            print('step : {}'.format(s))
             self.robot.update_position(a_1, a_2, d_1, d_2)
             self.draw_blocks()
 

@@ -4,6 +4,7 @@ import cv2
 from utils import Utils
 import numpy as np
 
+
 class Robot:
     def __init__(self):
         # Actuation 1
