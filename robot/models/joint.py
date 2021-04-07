@@ -13,7 +13,7 @@ class Joint:
     Represent a joint constituted by two blocs linked with two arms and a spring.
     """
     def __init__(self, _sequence, _structure_offset, _invert_y=False,
-                 invert_init_angle=False, bot_color=(0, 0, 0), 
+                 invert_init_angle=False, bot_color=(0, 0, 0),
                  top_color=(255, 0, 0), _name='Joint'):
         # We define the following for now:
         #   anchor distance to side of the block is 1cm
@@ -107,6 +107,7 @@ class Joint:
             _x=dh,
             _y=dv + (self.block_mid.height/2) - self.block_mid.anchor_d
         )
+
         self.bars_bot.low_anchor = self.block_bot.get_anchor(type='t')
         self.bars_bot.high_anchor = self.block_mid.get_anchor(type='b')
         self.spring_bot.Q.x = self.block_mid.center.x
@@ -246,7 +247,7 @@ class Joint:
                 self.spring_bot.Q.x = self.block_mid.center.x
                 self.spring_bot.Q.y = self.bars_bot.high_anchor.y
 
-                # Move top block 
+                # Move top block
                 # Ensure theta_i is max
                 self.theta_i_top = self.theta_s_top
                 dh = np.sin(self.theta_i_top) * self.bars_top.length
@@ -478,7 +479,7 @@ class Joint:
         self.spring_bot.draw(frame, self.structure_offset, self.invert_y)
         self.spring_top.draw(frame, self.structure_offset, self.invert_y)
 
-    def draw_legs(self, frame, location_x, location_y):
+    def draw_legs(self, frame, location_x, location_y, touching, ground):
         legs_thickness = 3
 
         frame = cv2.line(
@@ -505,6 +506,33 @@ class Joint:
                 int(Utils.ConvertY_location(self.C.z, location_y))
             ),
             (0, 0, 0),
+            thickness=legs_thickness
+        )
+
+        # Show T if touching
+        if touching:
+            font = cv2.FONT_HERSHEY_SIMPLEX
+            fontScale = 1
+            color = (0, 0, 255)
+            thickness = 2
+            position_bot_left = (
+                int(Utils.ConvertX_location(0, location_x)),
+                int(Utils.ConvertY_location(-0.01, location_y))
+            )
+            frame = cv2.putText(frame, 'T', position_bot_left, font, fontScale, color, thickness, cv2.LINE_AA)
+
+        # Draw Ground
+        frame = cv2.line(
+            frame,
+            (
+                int(Utils.ConvertX_location(-0.1, location_x)),
+                int(Utils.ConvertY_location(ground, location_y))
+            ),
+            (
+                int(Utils.ConvertX_location(0.1, location_x)),
+                int(Utils.ConvertY_location(ground, location_y))
+            ),
+            color=(0, 0, 0),
             thickness=legs_thickness
         )
         return frame
