@@ -4,6 +4,7 @@ import cv2
 from utils import Utils
 import numpy as np
 import numpy.ma as ma
+from inspect import currentframe, getframeinfo
 
 
 class Robot:
@@ -48,6 +49,8 @@ class Robot:
             _name='J3'
         )
 
+        self.position = Coordinate(x=0, y=0, z=0)
+
     def update_position(self, actuation_1, actuation_2, actuation_1_dir, actuation_2_dir):
         mov1 = self.J1.update_position(actuation_1, actuation_1_dir)
         mov2 = self.J2.update_position(actuation_2, actuation_2_dir)
@@ -73,27 +76,31 @@ class Robot:
         nb_touching_legs = np.sum(self.touching_legs)
 
         delta_x = 0
-        detta_y = 0
-
-        # To compute attitude difference we consider the displacement of legs touching the floor
-        for i in range(4):
-            if self.touching_legs[i]:
-                mov_array_x[i] = mov_array_y[i] = 0
+        delta_y = 0  # for now we consider that it is symetrical
 
         # X Case
-        if np.abs(np.sum(np.sign(mov_array_x[np.where(mov_array_x != 0)]))) == nb_touching_legs:
+        mov_mx_x = ma.masked_array(mov_array_x, mask=np.invert(self.touching_legs))
+
+        if np.abs(np.sum(np.sign(mov_mx_x))) == nb_touching_legs:
             # Means that all legs touching the floor moved in same x direction
             # First move in X by the smallest common movement
-            mov_array_x_nz = mov_array_x[mov_array_x != 0]
-            min_mov = mov_array_x_nz[np.argmin(np.abs(mov_array_x_nz))]
-
+            min_mov = mov_mx_x[np.argmin(np.abs(mov_mx_x))]
             delta_x += min_mov
-            
-            # Need to check if some movement are left
-            
+            mov_mx_x -= min_mov
+
+            # Need to do somth with the rest of the movement
+            if np.sum(mov_mx_x) != 0:
+                frameinfo = getframeinfo(currentframe())
+                print('[ATT] FILE {0}, LINE {1} : Some movement not added'.format(
+                        frameinfo.filename, frameinfo.lineno))
         else:
             # Means that all legs touching the floor didn't moved in same x direction
-            pass
+            min_mov = mov_mx_x[np.argmin(np.abs(mov_mx_x))]
+            mov_mx_x -= min_mov
+            delta_x += np.sum(mov_mx_x)
+
+        self.position.x -= delta_x
+        self.position.y -= delta_y
 
     def draw_blocks(self, frame):
         self.J1.draw(frame)
@@ -101,10 +108,34 @@ class Robot:
         self.J3.draw(frame)
         self.J4.draw(frame)
         self.draw_main_block(frame)
-        self.J1.draw_legs(frame, location_x='right', location_y='bottom', touching=self.touching_legs[0], ground=self.ground)
-        self.J2.draw_legs(frame, location_x='left', location_y='bottom', touching=self.touching_legs[1], ground=self.ground)
-        self.J3.draw_legs(frame, location_x='right', location_y='top', touching=self.touching_legs[2], ground=self.ground)
-        self.J4.draw_legs(frame, location_x='left', location_y='top', touching=self.touching_legs[3], ground=self.ground)
+        self.J1.draw_legs(
+            frame,
+            location_x='right',
+            location_y='bottom',
+            touching=self.touching_legs[0],
+            ground=self.ground
+        )
+        self.J2.draw_legs(
+            frame,
+            location_x='left',
+            location_y='bottom',
+            touching=self.touching_legs[1],
+            ground=self.ground
+        )
+        self.J3.draw_legs(
+            frame,
+            location_x='right',
+            location_y='top',
+            touching=self.touching_legs[2],
+            ground=self.ground
+        )
+        self.J4.draw_legs(
+            frame,
+            location_x='left',
+            location_y='top',
+            touching=self.touching_legs[3],
+            ground=self.ground
+        )
 
     def draw_main_block(self, frame):
         if self.J2.invert_y is True:
