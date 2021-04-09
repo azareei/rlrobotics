@@ -3,6 +3,7 @@ from coordinates import Coordinate
 import cv2
 from utils import Utils
 import numpy as np
+import numpy.ma as ma
 
 
 class Robot:
@@ -55,8 +56,8 @@ class Robot:
         mov4 = self.J4.update_position(actuation_1, actuation_1_dir)
 
         # Fiter out to keep only x axis.
-        mov_array_x = [mov1.x, mov2.x, mov3.x, mov4.x]
-        mov_array_y = [mov1.y, mov2.y, mov3.y, mov4.y]
+        mov_array_x = np.array([mov1.x, mov2.x, mov3.x, mov4.x])
+        mov_array_y = np.array([mov1.y, mov2.y, mov3.y, mov4.y])
         self.update_attitude(mov_array_x, mov_array_y)
 
     def update_attitude(self, mov_array_x, mov_array_y):
@@ -71,15 +72,25 @@ class Robot:
         self.touching_legs = np.isin(np.arange(4), _touching_legs)
         nb_touching_legs = np.sum(self.touching_legs)
 
+        delta_x = 0
+        detta_y = 0
+
         # To compute attitude difference we consider the displacement of legs touching the floor
         for i in range(4):
             if self.touching_legs[i]:
                 mov_array_x[i] = mov_array_y[i] = 0
 
         # X Case
-        if np.sign(mov_array_x[np.where(mov_array_x != 0)]) == nb_touching_legs:
+        if np.abs(np.sum(np.sign(mov_array_x[np.where(mov_array_x != 0)]))) == nb_touching_legs:
             # Means that all legs touching the floor moved in same x direction
-            pass
+            # First move in X by the smallest common movement
+            mov_array_x_nz = mov_array_x[mov_array_x != 0]
+            min_mov = mov_array_x_nz[np.argmin(np.abs(mov_array_x_nz))]
+
+            delta_x += min_mov
+            
+            # Need to check if some movement are left
+            
         else:
             # Means that all legs touching the floor didn't moved in same x direction
             pass
@@ -90,10 +101,10 @@ class Robot:
         self.J3.draw(frame)
         self.J4.draw(frame)
         self.draw_main_block(frame)
-        self.J1.draw_legs(frame, location_x='right', location_y='bottom', touching=self.touching[0], ground=self.ground)
-        self.J2.draw_legs(frame, location_x='left', location_y='bottom', touching=self.touching[1], ground=self.ground)
-        self.J3.draw_legs(frame, location_x='right', location_y='top', touching=self.touching[2], ground=self.ground)
-        self.J4.draw_legs(frame, location_x='left', location_y='top', touching=self.touching[3], ground=self.ground)
+        self.J1.draw_legs(frame, location_x='right', location_y='bottom', touching=self.touching_legs[0], ground=self.ground)
+        self.J2.draw_legs(frame, location_x='left', location_y='bottom', touching=self.touching_legs[1], ground=self.ground)
+        self.J3.draw_legs(frame, location_x='right', location_y='top', touching=self.touching_legs[2], ground=self.ground)
+        self.J4.draw_legs(frame, location_x='left', location_y='top', touching=self.touching_legs[3], ground=self.ground)
 
     def draw_main_block(self, frame):
         if self.J2.invert_y is True:
