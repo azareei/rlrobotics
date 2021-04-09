@@ -19,7 +19,6 @@ class Joint:
                  _theta1=0.785, _theta2=0.785):
         # We define the following for now:
         #   anchor distance to side of the block is 1cm
-        #   length of the bars_bot are 4cm
         #   width is 6cm
         #   height is 6 cm
 
@@ -84,6 +83,11 @@ class Joint:
         self.theta_i_top = 0
 
         self.prev_ui = None
+
+        self.A = Coordinate(x=0, y=0, z=0)
+        self.B = Coordinate(x=0, y=0, z=0)
+        self.C = Coordinate(x=0, y=0, z=0)
+
         self.init_position()
 
     def compute_leg_height(self, A, B):
@@ -137,12 +141,16 @@ class Joint:
     def update_position(self, u_i, forward):
         """
         u_i is the delta between the previous position et the one now.
+
+        Return:
+            Coordinate vector corresponding to the translation before and
+            after the displacement of the legs.
         """
         if self.sequence == 'A':
             self.update_seq_A(u_i, forward)
         elif self.sequence == 'B':
             self.update_seq_B(u_i, forward)
-        self.update_legs()
+        return self.update_legs()
 
     def update_seq_A(self, u_i, forward):
         position = u_i + self.x_offset
@@ -463,9 +471,14 @@ class Joint:
 
     def update_legs(self):
         offset = 4 / 100
-        self.A = Coordinate(x=self.block_top.center.x - offset, y=0, z=0)
-        self.B = Coordinate(x=self.block_mid.center.x, y=0, z=0)
+        old_C = self.C
+        self.A = Coordinate(x=self.block_top.center.x - offset, y=self.block_top.center.y, z=0)
+        self.B = Coordinate(x=self.block_mid.center.x, y=self.block_mid.center.y, z=0)
         self.C = self.compute_leg_height(self.A, self.B)
+        movement = self.C - old_C
+        if (self.invert_y):
+            movement.y *= -1
+        return movement
 
     def draw(self, frame):
         self.block_bot.draw(frame, self.structure_offset, self.invert_y)
