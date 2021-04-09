@@ -31,7 +31,7 @@ class Robot:
 
         # Actuation 2
         self.J2 = Joint(
-            'A',
+            'B',
             _structure_offset=Coordinate(x=-20/100, y=4/100),
             _invert_y=False,
             _invert_init_angle=True,
@@ -40,7 +40,7 @@ class Robot:
             _name='J2'
         )
         self.J3 = Joint(
-            'A',
+            'B',
             _structure_offset=Coordinate(x=20/100, y=-4/100),
             _invert_y=True,
             _invert_init_angle=True,
@@ -102,12 +102,48 @@ class Robot:
         self.position.x -= delta_x
         self.position.y -= delta_y
 
-    def draw_blocks(self, frame):
+    def draw(self, frame):
+        self.draw_joints(frame)
+        self.draw_main_block(frame)
+        self.draw_legs(frame)
+        self.draw_ground(frame)
+
+    def draw_joints(self, frame):
         self.J1.draw(frame)
         self.J2.draw(frame)
         self.J3.draw(frame)
         self.J4.draw(frame)
-        self.draw_main_block(frame)
+
+    def draw_main_block(self, frame):
+        if self.J2.invert_y is True:
+            inv = -1
+        else:
+            inv = 1
+
+        end = (
+            int(Utils.ConvertX(self.J2.block_bot.center.x + self.J2.structure_offset.x)),
+            int(Utils.ConvertY(inv * self.J2.block_bot.center.y + self.J2.structure_offset.y))
+        )
+
+        if self.J3.invert_y is True:
+            inv = -1
+        else:
+            inv = 1
+
+        start = (
+            int(Utils.ConvertX(self.J3.block_bot.center.x + self.J3.structure_offset.x)),
+            int(Utils.ConvertY(inv * self.J3.block_bot.center.y + self.J3.structure_offset.y))
+        )
+
+        return cv2.rectangle(
+            frame,
+            start,
+            end,
+            Utils.yellow,
+            thickness=10
+        )
+
+    def draw_legs(self, frame):
         self.J1.draw_legs(
             frame,
             location_x='right',
@@ -137,31 +173,15 @@ class Robot:
             ground=self.ground
         )
 
-    def draw_main_block(self, frame):
-        if self.J2.invert_y is True:
-            inv = -1
-        else:
-            inv = 1
-
-        end = (
-            int(Utils.ConvertX(self.J2.block_bot.center.x + self.J2.structure_offset.x)),
-            int(Utils.ConvertY(inv * self.J2.block_bot.center.y + self.J2.structure_offset.y))
+    def draw_ground(self, frame):
+        center = (
+            Utils.ConvertX(-self.position.x),
+            Utils.ConvertY(-self.position.y)
         )
-
-        if self.J3.invert_y is True:
-            inv = -1
-        else:
-            inv = 1
-
-        start = (
-            int(Utils.ConvertX(self.J3.block_bot.center.x + self.J3.structure_offset.x)),
-            int(Utils.ConvertY(inv * self.J3.block_bot.center.y + self.J3.structure_offset.y))
-        )
-
-        return cv2.rectangle(
+        cv2.circle(
             frame,
-            start,
-            end,
-            Utils.yellow,
-            thickness=10
+            center,    
+            15,
+            Utils.red,
+            thickness=-1
         )

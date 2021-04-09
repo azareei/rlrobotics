@@ -499,12 +499,12 @@ class Joint:
         frame = cv2.line(
             frame,
             (
-                int(Utils.ConvertX_location(self.A.x, location_x)),
-                int(Utils.ConvertY_location(self.A.z, location_y))
+                Utils.ConvertX_location(self.A.x, location_x),
+                Utils.ConvertY_location(self.A.z, location_y)
             ),
             (
-                int(Utils.ConvertX_location(self.C.x, location_x)),
-                int(Utils.ConvertY_location(self.C.z, location_y))
+                Utils.ConvertX_location(self.C.x, location_x),
+                Utils.ConvertY_location(self.C.z, location_y)
             ),
             self.top_color,
             thickness=legs_thickness
@@ -513,12 +513,12 @@ class Joint:
         frame = cv2.line(
             frame,
             (
-                int(Utils.ConvertX_location(self.B.x, location_x)),
-                int(Utils.ConvertY_location(self.B.z, location_y))
+                Utils.ConvertX_location(self.B.x, location_x),
+                Utils.ConvertY_location(self.B.z, location_y)
             ),
             (
-                int(Utils.ConvertX_location(self.C.x, location_x)),
-                int(Utils.ConvertY_location(self.C.z, location_y))
+                Utils.ConvertX_location(self.C.x, location_x),
+                Utils.ConvertY_location(self.C.z, location_y)
             ),
             (0, 0, 0),
             thickness=legs_thickness
@@ -549,12 +549,12 @@ class Joint:
         frame = cv2.line(
             frame,
             (
-                int(Utils.ConvertX_location(-0.1, location_x)),
-                int(Utils.ConvertY_location(ground, location_y))
+                Utils.ConvertX_location(-0.1, location_x),
+                Utils.ConvertY_location(ground, location_y)
             ),
             (
-                int(Utils.ConvertX_location(0.1, location_x)),
-                int(Utils.ConvertY_location(ground, location_y))
+                Utils.ConvertX_location(0.1, location_x),
+                Utils.ConvertY_location(ground, location_y)
             ),
             color=ground_color,
             thickness=legs_thickness

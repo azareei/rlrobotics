@@ -21,12 +21,12 @@ class Spring:
         return cv2.line(
             frame,
             (
-                int(Utils.ConvertX(self.P.x + offset.x)),
-                int(Utils.ConvertY(inv * (self.P.y) + offset.y))
+                Utils.ConvertX(self.P.x + offset.x),
+                Utils.ConvertY(inv * (self.P.y) + offset.y)
             ),
             (
-                int(Utils.ConvertX(self.Q.x + offset.x)),
-                int(Utils.ConvertY(inv * (self.Q.y) + offset.y))
+                Utils.ConvertX(self.Q.x + offset.x),
+                Utils.ConvertY(inv * (self.Q.y) + offset.y)
             ),
             (0, 100, 100),
             thickness=3

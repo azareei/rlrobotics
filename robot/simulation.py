@@ -55,7 +55,7 @@ class Simulation:
     def draw_blocks(self):
         # Draw blocks
         self.new_frame()
-        self.robot.draw_blocks(self.frame)
+        self.robot.draw(self.frame)
         self.blocks_video.write(self.frame)
 
     def init_video(self, name):

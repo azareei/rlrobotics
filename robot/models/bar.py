@@ -1,6 +1,7 @@
 import cv2
 from utils import Utils
 
+
 class Bar:
     def __init__(self, _low_anchor, _high_anchor, _length, _offset):
         """
@@ -22,12 +23,12 @@ class Bar:
         frame = cv2.line(
             frame,
             (
-                int(Utils.ConvertX(self.low_anchor.x + offset.x)),
-                int(Utils.ConvertY(inv * (self.low_anchor.y) + offset.y))
+                Utils.ConvertX(self.low_anchor.x + offset.x),
+                Utils.ConvertY(inv * (self.low_anchor.y) + offset.y)
             ),
             (
-                int(Utils.ConvertX(self.high_anchor.x + offset.x)),
-                int(Utils.ConvertY(inv * (self.high_anchor.y) + offset.y))
+                Utils.ConvertX(self.high_anchor.x + offset.x),
+                Utils.ConvertY(inv * (self.high_anchor.y) + offset.y)
             ),
             (100, 100, 100),
             thickness=5
@@ -36,12 +37,12 @@ class Bar:
         return cv2.line(
             frame,
             (
-                int(Utils.ConvertX(self.low_anchor.x + self.offset + offset.x)),
-                int(Utils.ConvertY(inv * (self.low_anchor.y) + offset.y))
+                Utils.ConvertX(self.low_anchor.x + self.offset + offset.x),
+                Utils.ConvertY(inv * (self.low_anchor.y) + offset.y)
             ),
             (
-                int(Utils.ConvertX(self.high_anchor.x + self.offset + offset.x)),
-                int(Utils.ConvertY(inv * (self.high_anchor.y) + offset.y))
+                Utils.ConvertX(self.high_anchor.x + self.offset + offset.x),
+                Utils.ConvertY(inv * (self.high_anchor.y) + offset.y)
             ),
             (100, 100, 100),
             thickness=5

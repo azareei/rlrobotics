@@ -59,12 +59,12 @@ class Block:
             inv = 1
 
         start = (
-            int(Utils.ConvertX(self.center.x - (self.width / 2) + offset.x)),
-            int(Utils.ConvertY(inv * (self.center.y - (self.height / 2)) + offset.y))
+            Utils.ConvertX(self.center.x - (self.width / 2) + offset.x),
+            Utils.ConvertY(inv * (self.center.y - (self.height / 2)) + offset.y)
         )
 
         end = (
-            int(Utils.ConvertX(self.center.x + (self.width / 2) + offset.x)),
-            int(Utils.ConvertY(inv * (self.center.y + (self.height / 2)) + offset.y))
+            Utils.ConvertX(self.center.x + (self.width / 2) + offset.x),
+            Utils.ConvertY(inv * (self.center.y + (self.height / 2)) + offset.y)
         )
         return cv2.rectangle(frame, start, end, self.color, thickness=-1)

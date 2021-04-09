@@ -6,6 +6,8 @@ class Utils:
     WIDTH = 1920
     HEIGHT = 1280
     FPS = 60
+    HALF_HEIGHT = HEIGHT / 2
+    HALF_WIDTH = WIDTH / 2
 
     black = (0, 0, 0)
     magenta = (255, 0, 255)
@@ -19,19 +21,19 @@ class Utils:
     text_thickness = 2
 
     def ConvertY(p):
-        return p * Utils.ZOOM + int(Utils.HEIGHT / 2)
+        return int((p * Utils.ZOOM) + Utils.HALF_HEIGHT)
 
     def ConvertX(p):
-        return p * Utils.ZOOM + int(Utils.WIDTH / 2)
+        return int(p * Utils.ZOOM + Utils.HALF_WIDTH)
 
     def ConvertX_location(p, location):
         if location == 'right':
-            return Utils.ConvertX(p) + int(Utils.WIDTH / 3)
+            return int(Utils.ConvertX(p) + (Utils.WIDTH / 3))
         elif location == 'left':
-            return Utils.ConvertX(p) - int(Utils.WIDTH / 3)
+            return int(Utils.ConvertX(p) - (Utils.WIDTH / 3))
 
     def ConvertY_location(p, location):
         if location == 'bottom':
-            return Utils.ConvertY(p) + int(Utils.WIDTH / 4)
+            return int(Utils.ConvertY(p) + (Utils.WIDTH / 4))
         elif location == 'top':
-            return Utils.ConvertY(p) - int(Utils.WIDTH / 4)
+            return int(Utils.ConvertY(p) - (Utils.WIDTH / 4))
