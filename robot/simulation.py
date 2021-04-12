@@ -78,23 +78,8 @@ class Simulation:
 
     def new_frame(self, displacement):
         frame = self.main_frame.copy()
-        frame = np.roll(
-            np.roll(
-                frame,
-                Utils.ConvertY(displacement.y) - Utils.HALF_HEIGHT,
-                axis=0
-            ),
-            Utils.ConvertX(displacement.x) - Utils.HALF_WIDTH,
-            axis=1
-        )
-        self.frame = frame
-
-    def save_video(self, video):
-        video.release()
-
-    def create_main_frame(self):
-        frame = np.ones((Utils.HEIGHT, Utils.WIDTH, 3), dtype=np.uint8) * 255
-        # Get the visual plane coordinates
+        
+        # Add grid
         max_coordinates = Utils.Pixel2Coordinate(Utils.WIDTH, Utils.HEIGHT)
         max_x = max_coordinates.x
         max_y = max_coordinates.y
@@ -104,11 +89,11 @@ class Simulation:
             frame,
             (
                 Utils.ConvertX(-max_x),
-                Utils.ConvertY(0)
+                Utils.ConvertY(displacement.y)
             ),
             (
                 Utils.ConvertX(max_x),
-                Utils.ConvertY(0)
+                Utils.ConvertY(displacement.y)
             ),
             color=Utils.light_gray,
             thickness=1
@@ -119,11 +104,11 @@ class Simulation:
             cv2.line(
                 frame,
                 (
-                    Utils.ConvertX(c_x),
+                    Utils.ConvertX(c_x + displacement.x),
                     Utils.ConvertY(-max_y)
                 ),
                 (
-                    Utils.ConvertX(c_x),
+                    Utils.ConvertX(c_x + displacement.x),
                     Utils.ConvertY(max_y)
                 ),
                 color=Utils.light_gray,
@@ -133,16 +118,22 @@ class Simulation:
             cv2.line(
                 frame,
                 (
-                    Utils.ConvertX(-c_x),
+                    Utils.ConvertX(-c_x + displacement.x),
                     Utils.ConvertY(-max_y)
                 ),
                 (
-                    Utils.ConvertX(-c_x),
+                    Utils.ConvertX(-c_x + displacement.x),
                     Utils.ConvertY(max_y)
                 ),
                 color=Utils.light_gray,
                 thickness=1
             )
             c_x += 5 / 100
-            
-        self.main_frame = frame
+        self.frame = frame
+
+    def save_video(self, video):
+        video.release()
+
+    def create_main_frame(self):
+        self.main_frame = np.ones((Utils.HEIGHT, Utils.WIDTH, 3), dtype=np.uint8) * 255
+
