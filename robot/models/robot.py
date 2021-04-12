@@ -103,10 +103,10 @@ class Robot:
         self.position.y -= delta_y
 
     def draw(self, frame):
+        self.draw_ground(frame)
         self.draw_joints(frame)
         self.draw_main_block(frame)
         self.draw_legs(frame)
-        self.draw_ground(frame)
 
     def draw_joints(self, frame):
         self.J1.draw(frame)
@@ -180,7 +180,7 @@ class Robot:
         )
         cv2.circle(
             frame,
-            center,    
+            center,
             15,
             Utils.red,
             thickness=-1

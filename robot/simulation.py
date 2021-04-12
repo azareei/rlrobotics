@@ -1,6 +1,7 @@
 from models.robot import Robot
 import numpy as np
 from pathlib import Path
+import cv2
 from cv2 import VideoWriter, VideoWriter_fourcc
 from utils import Utils
 import time
@@ -60,7 +61,7 @@ class Simulation:
 
         end_time = time.time()
 
-        print("Simulation time : {0}s for {1}s of video".format(end_time - start_time, self.steps / Utils.FPS))
+        print("Simulation time : {0}s".format(end_time - start_time))
 
         self.save_video(self.blocks_video)
 
@@ -72,8 +73,45 @@ class Simulation:
 
     def init_video(self, name):
         fourcc = VideoWriter_fourcc('m', 'p', '4', 'v')
-        self.main_frame = np.ones((Utils.HEIGHT, Utils.WIDTH, 3), dtype=np.uint8) * 255
+        self.create_main_frame()
         return VideoWriter(name, fourcc, float(Utils.FPS), (Utils.WIDTH, Utils.HEIGHT))
+
+    def create_main_frame(self):
+        frame = np.ones((Utils.HEIGHT, Utils.WIDTH, 3), dtype=np.uint8) * 255
+        # Get the visual plane coordinates
+        max_coordinates = Utils.Pixel2Coordinate(Utils.WIDTH, Utils.HEIGHT)
+        max_x = max_coordinates.x
+        max_y = max_coordinates.y
+
+        # Draw middle cross lines
+        cv2.line(
+            frame,
+            (
+                Utils.ConvertX(0),
+                Utils.ConvertY(-max_y)
+            ),
+            (
+                Utils.ConvertX(0),
+                Utils.ConvertY(max_y)
+            ),
+            color=Utils.light_gray,
+            thickness=1
+        )
+
+        cv2.line(
+            frame,
+            (
+                Utils.ConvertX(-max_x),
+                Utils.ConvertY(0)
+            ),
+            (
+                Utils.ConvertX(max_x),
+                Utils.ConvertY(0)
+            ),
+            color=Utils.light_gray,
+            thickness=1
+        )
+        self.main_frame = frame
 
     def new_frame(self):
         self.frame = self.main_frame.copy()

@@ -1,4 +1,5 @@
 import cv2
+from coordinates import Coordinate
 
 
 class Utils:
@@ -14,6 +15,7 @@ class Utils:
     green = (0, 255, 0)
     yellow = (5, 226, 252)
     red = (0, 0, 255)
+    light_gray = (200, 200, 200)
 
     # Text settings
     font = cv2.FONT_HERSHEY_SIMPLEX
@@ -37,3 +39,9 @@ class Utils:
             return int(Utils.ConvertY(p) + (Utils.WIDTH / 4))
         elif location == 'top':
             return int(Utils.ConvertY(p) - (Utils.WIDTH / 4))
+
+    def Pixel2Coordinate(_x, _y):
+        return Coordinate(
+            x=(_x - Utils.HALF_WIDTH) / Utils.ZOOM,
+            y=(_y - Utils.HALF_HEIGHT) / Utils.ZOOM
+        )
