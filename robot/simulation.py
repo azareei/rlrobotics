@@ -55,13 +55,14 @@ class Simulation:
                                          self.actuation2_direction,
                                          range(len(self.actuation1))):
 
-            print('step : {}'.format(s))
+            if s % 20 == 0:
+                print('step : {}'.format(s))
             self.robot.update_position(a_1, a_2, d_1, d_2)
             self.draw_blocks()
 
         end_time = time.time()
 
-        print("Simulation time : {0}s".format(end_time - start_time))
+        print("Simulation time : {0:.2f}s".format(end_time - start_time))
 
         self.save_video(self.blocks_video)
 
@@ -78,7 +79,7 @@ class Simulation:
 
     def new_frame(self, displacement):
         frame = self.main_frame.copy()
-        
+
         # Add grid
         max_coordinates = Utils.Pixel2Coordinate(Utils.WIDTH, Utils.HEIGHT)
         max_x = max_coordinates.x
@@ -100,7 +101,7 @@ class Simulation:
         )
 
         c_x = 0
-        while c_x < max_x:
+        while c_x < (max_x + displacement.x):
             cv2.line(
                 frame,
                 (
@@ -136,4 +137,3 @@ class Simulation:
 
     def create_main_frame(self):
         self.main_frame = np.ones((Utils.HEIGHT, Utils.WIDTH, 3), dtype=np.uint8) * 255
-
