@@ -3,7 +3,7 @@ from coordinates import Coordinate
 
 
 class Utils:
-    ZOOM = 2000
+    ZOOM = 1000
     WIDTH = 1920
     HEIGHT = 1280
     FPS = 30

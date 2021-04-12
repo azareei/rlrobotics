@@ -90,26 +90,26 @@ class Simulation:
             frame,
             (
                 Utils.ConvertX(-max_x),
-                Utils.ConvertY(displacement.y)
+                Utils.ConvertY(0 - displacement.y)
             ),
             (
                 Utils.ConvertX(max_x),
-                Utils.ConvertY(displacement.y)
+                Utils.ConvertY(0 - displacement.y)
             ),
             color=Utils.light_gray,
             thickness=1
         )
 
         c_x = 0
-        while c_x < (max_x + displacement.x):
+        while c_x < (max_x + abs(displacement.x)):
             cv2.line(
                 frame,
                 (
-                    Utils.ConvertX(c_x + displacement.x),
+                    Utils.ConvertX(c_x - displacement.x),
                     Utils.ConvertY(-max_y)
                 ),
                 (
-                    Utils.ConvertX(c_x + displacement.x),
+                    Utils.ConvertX(c_x - displacement.x),
                     Utils.ConvertY(max_y)
                 ),
                 color=Utils.light_gray,
@@ -119,11 +119,11 @@ class Simulation:
             cv2.line(
                 frame,
                 (
-                    Utils.ConvertX(-c_x + displacement.x),
+                    Utils.ConvertX(-c_x - displacement.x),
                     Utils.ConvertY(-max_y)
                 ),
                 (
-                    Utils.ConvertX(-c_x + displacement.x),
+                    Utils.ConvertX(-c_x - displacement.x),
                     Utils.ConvertY(max_y)
                 ),
                 color=Utils.light_gray,
