@@ -3,14 +3,14 @@ import numpy as np
 from pathlib import Path
 from cv2 import VideoWriter, VideoWriter_fourcc
 from utils import Utils
+import time
 
 
 class Simulation:
     def __init__(self):
         self.robot = Robot()
 
-    def simulate(self):
-        steps = 100
+        steps = 50
         # Initialize the videos
         self.blocks_video = self.init_video('{0}/blocks/out.mp4'.format(Path(__file__).resolve().parent))
 
@@ -40,15 +40,27 @@ class Simulation:
             axis=0
         )
 
+        self.actuation1 = np.tile(self.actuation1, 2)
+        self.actuation2 = np.tile(self.actuation2, 2)
+        self.actuation1_direction = np.tile(self.actuation1_direction, 2)
+        self.actuation2_direction = np.tile(self.actuation2_direction, 2)
+        self.steps = steps
+
+    def simulate(self):
+        start_time = time.time()
         for a_1, a_2, d_1, d_2, s in zip(self.actuation1,
                                          self.actuation2,
                                          self.actuation1_direction,
                                          self.actuation2_direction,
-                                         range(2*steps)):
+                                         range(len(self.actuation1))):
 
             print('step : {}'.format(s))
             self.robot.update_position(a_1, a_2, d_1, d_2)
             self.draw_blocks()
+
+        end_time = time.time()
+
+        print("Simulation time : {0}s for {1}s of video".format(end_time - start_time, self.steps / Utils.FPS))
 
         self.save_video(self.blocks_video)
 
