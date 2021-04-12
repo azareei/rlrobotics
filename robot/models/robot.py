@@ -103,10 +103,10 @@ class Robot:
         self.position.y -= delta_y
 
     def draw(self, frame):
-        self.draw_ground(frame)
         self.draw_joints(frame)
         self.draw_main_block(frame)
         self.draw_legs(frame)
+        return frame
 
     def draw_joints(self, frame):
         self.J1.draw(frame)
@@ -135,7 +135,7 @@ class Robot:
             int(Utils.ConvertY(inv * self.J3.block_bot.center.y + self.J3.structure_offset.y))
         )
 
-        return cv2.rectangle(
+        cv2.rectangle(
             frame,
             start,
             end,
@@ -171,17 +171,4 @@ class Robot:
             location_y='top',
             touching=self.touching_legs[3],
             ground=self.ground
-        )
-
-    def draw_ground(self, frame):
-        center = (
-            Utils.ConvertX(-self.position.x),
-            Utils.ConvertY(-self.position.y)
-        )
-        cv2.circle(
-            frame,
-            center,
-            15,
-            Utils.red,
-            thickness=-1
         )

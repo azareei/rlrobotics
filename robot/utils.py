@@ -7,8 +7,8 @@ class Utils:
     WIDTH = 1920
     HEIGHT = 1280
     FPS = 30
-    HALF_HEIGHT = HEIGHT / 2
-    HALF_WIDTH = WIDTH / 2
+    HALF_HEIGHT = int(HEIGHT / 2)
+    HALF_WIDTH = int(WIDTH / 2)
 
     black = (0, 0, 0)
     magenta = (255, 0, 255)

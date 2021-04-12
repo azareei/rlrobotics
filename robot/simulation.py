@@ -67,7 +67,7 @@ class Simulation:
 
     def draw_blocks(self):
         # Draw blocks
-        self.new_frame()
+        self.new_frame(self.robot.position)
         self.robot.draw(self.frame)
         self.blocks_video.write(self.frame)
 
@@ -75,6 +75,18 @@ class Simulation:
         fourcc = VideoWriter_fourcc('m', 'p', '4', 'v')
         self.create_main_frame()
         return VideoWriter(name, fourcc, float(Utils.FPS), (Utils.WIDTH, Utils.HEIGHT))
+
+    def new_frame(self, displacement):
+        frame = self.main_frame.copy()
+        frame = np.roll(
+            frame,
+            Utils.ConvertX(displacement.x) - Utils.HALF_WIDTH,
+            axis=1
+        )
+        self.frame = frame
+
+    def save_video(self, video):
+        video.release()
 
     def create_main_frame(self):
         frame = np.ones((Utils.HEIGHT, Utils.WIDTH, 3), dtype=np.uint8) * 255
@@ -84,20 +96,6 @@ class Simulation:
         max_y = max_coordinates.y
 
         # Draw middle cross lines
-        cv2.line(
-            frame,
-            (
-                Utils.ConvertX(0),
-                Utils.ConvertY(-max_y)
-            ),
-            (
-                Utils.ConvertX(0),
-                Utils.ConvertY(max_y)
-            ),
-            color=Utils.light_gray,
-            thickness=1
-        )
-
         cv2.line(
             frame,
             (
@@ -111,10 +109,36 @@ class Simulation:
             color=Utils.light_gray,
             thickness=1
         )
+
+        c_x = 0
+        while c_x < max_x:
+            cv2.line(
+                frame,
+                (
+                    Utils.ConvertX(c_x),
+                    Utils.ConvertY(-max_y)
+                ),
+                (
+                    Utils.ConvertX(c_x),
+                    Utils.ConvertY(max_y)
+                ),
+                color=Utils.light_gray,
+                thickness=1
+            )
+
+            cv2.line(
+                frame,
+                (
+                    Utils.ConvertX(-c_x),
+                    Utils.ConvertY(-max_y)
+                ),
+                (
+                    Utils.ConvertX(-c_x),
+                    Utils.ConvertY(max_y)
+                ),
+                color=Utils.light_gray,
+                thickness=1
+            )
+            c_x += 5 / 100
+            
         self.main_frame = frame
-
-    def new_frame(self):
-        self.frame = self.main_frame.copy()
-
-    def save_video(self, video):
-        video.release()
