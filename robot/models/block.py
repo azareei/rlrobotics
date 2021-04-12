@@ -4,7 +4,7 @@ from utils import Utils
 
 
 class Block:
-    def __init__(self, _width, _height, _center, _anchor_d, _color):
+    def __init__(self, _width, _height, _center, _anchor_d, _color, _type):
         """
         Create a new block given width and height
 
@@ -26,6 +26,7 @@ class Block:
         self.center = _center
         self.anchor_d = _anchor_d
         self.color = _color
+        self.type = _type
 
     def get_anchor(self, type):
         """
@@ -58,13 +59,19 @@ class Block:
         else:
             inv = 1
 
+        if self.type == 'top':
+            start_x = Utils.ConvertX(self.center.x - (self.width / 2) + offset.x - Utils.LEG_OFFSET)
+            end_x = Utils.ConvertX(self.center.x + (self.width / 2) + offset.x)
+        else:
+            start_x = Utils.ConvertX(self.center.x - (self.width / 2) + offset.x)
+            end_x = Utils.ConvertX(self.center.x + (self.width / 2) + offset.x)
+
         start = (
-            Utils.ConvertX(self.center.x - (self.width / 2) + offset.x),
+            start_x,
             Utils.ConvertY(inv * (self.center.y - (self.height / 2)) + offset.y)
         )
-
         end = (
-            Utils.ConvertX(self.center.x + (self.width / 2) + offset.x),
+            end_x,
             Utils.ConvertY(inv * (self.center.y + (self.height / 2)) + offset.y)
         )
         return cv2.rectangle(frame, start, end, self.color, thickness=-1)

@@ -36,15 +36,36 @@ class Joint:
         _w = 5.5/100
         _h = 5.5/100
         _center = Coordinate(x=0, y=_d - (_h / 2))
-        self.block_bot = Block(_w, _h, _center, _d, self.bot_color)
+        self.block_bot = Block(
+            _width=_w,
+            _height=_h,
+            _center=_center,
+            _anchor_d=_d,
+            _color=self.bot_color,
+            _type='bottom'
+        )
 
         # Create mid block
         _center = Coordinate(x=0, y=_r1 - _d + (_h / 2))
-        self.block_mid = Block(_w, _h, _center, _d, (0, 0, 0))
+        self.block_mid = Block(
+            _width=_w,
+            _height=_h,
+            _center=_center,
+            _anchor_d=_d,
+            _color=Utils.black,
+            _type='middle'
+        )
 
         # Create top block
         _center = Coordinate(x=0, y=self.block_mid.get_anchor(type="t").y + _r2 - _d + (_h/2))
-        self.block_top = Block(_w, _h, _center, _d, self.top_color)
+        self.block_top = Block(
+            _width=_w,
+            _height=_h,
+            _center=_center,
+            _anchor_d=_d,
+            _color=self.top_color,
+            _type='top'
+        )
 
         # Create the bars_bot
         self.bars_bot = Bar(
@@ -470,10 +491,18 @@ class Joint:
         self.spring_top.P.y = self.block_mid.get_anchor(type='t').y
 
     def update_legs(self):
-        offset = 4 / 100
         old_C = self.C
-        self.A = Coordinate(x=self.block_top.center.x - offset, y=self.block_top.center.y, z=0)
-        self.B = Coordinate(x=self.block_mid.center.x, y=self.block_mid.center.y, z=0)
+        self.A = Coordinate(
+            x=self.block_top.center.x - Utils.LEG_OFFSET,
+            y=self.block_top.center.y,
+            z=0
+        )
+        self.B = Coordinate(
+            x=self.block_mid.center.x,
+            y=self.block_mid.center.y,
+            z=0
+        )
+
         self.C = self.compute_leg_height(self.A, self.B)
         movement = self.C - old_C
         if (self.invert_y):

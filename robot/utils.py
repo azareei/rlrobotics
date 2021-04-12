@@ -3,13 +3,17 @@ from coordinates import Coordinate
 
 
 class Utils:
-    ZOOM = 1000
+    ZOOM = 1800
     WIDTH = 1920
     HEIGHT = 1280
     FPS = 30
     HALF_HEIGHT = int(HEIGHT / 2)
     HALF_WIDTH = int(WIDTH / 2)
 
+    # LEGS Settings
+    LEG_OFFSET = 4 / 100
+
+    # Colors
     black = (0, 0, 0)
     magenta = (255, 0, 255)
     green = (0, 255, 0)
