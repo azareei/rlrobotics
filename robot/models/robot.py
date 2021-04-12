@@ -11,7 +11,7 @@ class Robot:
     def __init__(self):
         # Actuation 1
         self.J1 = Joint(
-            'B',
+            'A',
             _structure_offset=Coordinate(x=20/100, y=4/100),
             _invert_y=False,
             _invert_init_angle=False,
@@ -20,7 +20,7 @@ class Robot:
             _name='J1'
         )
         self.J4 = Joint(
-            'B',
+            'A',
             _structure_offset=Coordinate(x=-20/100, y=-4/100),
             _invert_y=True,
             _invert_init_angle=False,
@@ -31,7 +31,7 @@ class Robot:
 
         # Actuation 2
         self.J2 = Joint(
-            'B',
+            'A',
             _structure_offset=Coordinate(x=-20/100, y=4/100),
             _invert_y=False,
             _invert_init_angle=True,
@@ -40,7 +40,7 @@ class Robot:
             _name='J2'
         )
         self.J3 = Joint(
-            'B',
+            'A',
             _structure_offset=Coordinate(x=20/100, y=-4/100),
             _invert_y=True,
             _invert_init_angle=True,

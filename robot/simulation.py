@@ -79,7 +79,11 @@ class Simulation:
     def new_frame(self, displacement):
         frame = self.main_frame.copy()
         frame = np.roll(
-            frame,
+            np.roll(
+                frame,
+                Utils.ConvertY(displacement.y) - Utils.HALF_HEIGHT,
+                axis=0
+            ),
             Utils.ConvertX(displacement.x) - Utils.HALF_WIDTH,
             axis=1
         )
