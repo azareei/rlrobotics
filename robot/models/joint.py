@@ -110,11 +110,8 @@ class Joint:
         self.legs_length = _legs_length
 
         self.A = []
-        self.A.append(Coordinate(x=0, y=0, z=0))
         self.B = []
-        self.B.append(Coordinate(x=0, y=0, z=0))
         self.C = []
-        self.C.append(Coordinate(x=0, y=0, z=0))
 
         self.init_position()
 
@@ -496,7 +493,7 @@ class Joint:
         self.spring_top.P.y = self.block_mid.get_anchor(type='t').y
 
     def update_legs(self):
-        old_C = self.C[-1]
+        old_C = self.C[-1] if len(self.C) != 0 else Coordinate(x=0, y=0, z=0)
         self.A.append(
             Coordinate(
                 x=self.block_top.center.x - Utils.LEG_OFFSET,

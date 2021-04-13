@@ -50,7 +50,6 @@ class Robot:
         )
 
         self.position = []
-        self.position.append(Coordinate(x=0, y=0, z=0))
 
     def update_position(self, actuation_1, actuation_2, actuation_1_dir, actuation_2_dir):
         mov1 = self.J1.update_position(actuation_1, actuation_1_dir)
@@ -101,7 +100,10 @@ class Robot:
             delta_x += np.sum(mov_mx_x)
 
         delta = Coordinate(x=delta_x, y=delta_y, z=0)
-        self.position.append(self.position[-1] - delta)
+        if len(self.position) == 0:
+            self.position.append(-delta)
+        else:
+            self.position.append(self.position[-1] - delta)
 
     def draw(self, frame):
         self.draw_joints(frame)

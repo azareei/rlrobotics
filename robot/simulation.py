@@ -30,7 +30,7 @@ class Simulation:
             if s % 20 == 0:
                 print('step : {}'.format(s))
             self.robot.update_position(a_1, a_2, d_1, d_2)
-            self.draw_blocks()
+            # self.draw_blocks()
 
         end_time = time.time()
 
