@@ -33,7 +33,7 @@ class Utils:
 
     def ConvertX(p):
         return int((p + Utils.draw_offset_x) * Utils.ZOOM + Utils.HALF_WIDTH)
-    
+
     def ConvertY(p):
         return int(((p + Utils.draw_offset_y) * Utils.ZOOM) + Utils.HALF_HEIGHT)
 

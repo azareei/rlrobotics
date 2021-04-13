@@ -18,7 +18,6 @@ class Simulation:
         self.blocks_video = self.init_video('{0}/blocks/out.mp4'.format(Path(__file__).resolve().parent))
 
         self.generate_actuation()
-        self.generate_data_list()
 
     def simulate(self):
         start_time = time.time()
@@ -31,7 +30,6 @@ class Simulation:
             if s % 20 == 0:
                 print('step : {}'.format(s))
             self.robot.update_position(a_1, a_2, d_1, d_2)
-            self.save_positions()
             self.draw_blocks()
 
         end_time = time.time()
@@ -43,14 +41,14 @@ class Simulation:
     def draw_blocks(self):
         # Draw blocks
         if self.camera_in_robot_ref:
-            self.new_frame(self.robot.position)
+            self.new_frame(self.robot.position[-1])
             self.robot.draw(self.frame)
             self.blocks_video.write(self.frame)
         else:
             # Work in progress
             self.new_frame(Coordinate(x=0, y=0, z=0))
-            Utils.draw_offset_x = self.robot.position.x
-            Utils.draw_offset_y = self.robot.position.y
+            Utils.draw_offset_x = self.robot.position[-1].x
+            Utils.draw_offset_y = self.robot.position[-1].y
             self.robot.draw(self.frame)
             self.blocks_video.write(self.frame)
 
@@ -156,13 +154,3 @@ class Simulation:
         self.actuation1_direction = np.tile(self.actuation1_direction, 2)
         self.actuation2_direction = np.tile(self.actuation2_direction, 2)
         self.steps = steps
-
-    def create_dataframe(self):
-        data = {}
-        _cols = ['u', 'A', 'B', 'C', 'pos_x', 'pos_y']
-        data['J1'] = pd.DataFrame(columns=_cols)
-        data['J2'] = pd.DataFrame(columns=_cols)
-        data['J3'] = pd.DataFrame(columns=_cols)
-        data['J4'] = pd.DataFrame(columns=_cols)
-
-        self.position_data = pd.concat(data, axis=1)
