@@ -18,7 +18,7 @@ class Block:
         _center : Coordinate
             Represent the center of mass of the block
         _d : double
-            Represent the distance between the anchor point 
+            Represent the distance between the anchor point
             and the border of the block
         """
         self.width = _width

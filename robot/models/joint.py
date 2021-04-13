@@ -32,37 +32,40 @@ class Joint:
         self.name = _name
 
         # Create first block
-        _d = 1/100
-        _w = 5.5/100
-        _h = 5.5/100
-        _center = Coordinate(x=0, y=_d - (_h / 2))
+        _d_bot = np.arccos(_theta1) * _r1 / 2
+        _d_top = np.arccos(_theta2) * _r2 / 2
+        _d_mid = 1 / 100
+        _w = 5.5 / 100
+        _h = 5.5 / 100
+
+        _center = Coordinate(x=0, y=_d_bot - (_h / 2))
         self.block_bot = Block(
             _width=_w,
             _height=_h,
             _center=_center,
-            _anchor_d=_d,
+            _anchor_d=_d_bot,
             _color=self.bot_color,
             _type='bottom'
         )
 
         # Create mid block
-        _center = Coordinate(x=0, y=_r1 - _d + (_h / 2))
+        _center = Coordinate(x=0, y=_r1 - _d_mid + (_h / 2))
         self.block_mid = Block(
             _width=_w,
             _height=_h,
             _center=_center,
-            _anchor_d=_d,
+            _anchor_d=_d_mid,
             _color=Utils.black,
             _type='middle'
         )
 
         # Create top block
-        _center = Coordinate(x=0, y=self.block_mid.get_anchor(type="t").y + _r2 - _d + (_h/2))
+        _center = Coordinate(x=0, y=self.block_mid.get_anchor(type="t").y + _r2 - _d_top + (_h/2))
         self.block_top = Block(
             _width=_w,
             _height=_h,
             _center=_center,
-            _anchor_d=_d,
+            _anchor_d=_d_top,
             _color=self.top_color,
             _type='top'
         )

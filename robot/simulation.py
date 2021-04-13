@@ -15,6 +15,9 @@ class Simulation:
         # Initialize the videos
         self.blocks_video = self.init_video('{0}/blocks/out.mp4'.format(Path(__file__).resolve().parent))
 
+        # Get maximum actuation movement
+        max_1, max_2 = self.robot.max_actuation()
+
         self.actuation1_direction = np.concatenate(
             (np.zeros(steps), np.ones(steps)),
             axis=0
@@ -27,16 +30,16 @@ class Simulation:
 
         self.actuation1 = np.concatenate(
             (
-                np.linspace(0, 0.044721 * 2, num=steps),
-                np.linspace(0.044721 * 2, 0, num=steps)
+                np.linspace(0, max_1, num=steps),
+                np.linspace(max_1, 0, num=steps)
             ),
             axis=0
         )
 
         self.actuation2 = np.concatenate(
             (
-                np.linspace(0, -0.044721 * 2, num=steps),
-                np.linspace(-0.044721 * 2, 0, num=steps)
+                np.linspace(0, -max_2, num=steps),
+                np.linspace(-max_2, 0, num=steps)
             ),
             axis=0
         )

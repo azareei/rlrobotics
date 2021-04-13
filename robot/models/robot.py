@@ -172,3 +172,15 @@ class Robot:
             touching=self.touching_legs[3],
             ground=self.ground
         )
+
+    def max_actuation(self):
+        a1 = min(
+            self.J1.d_top + self.J1.d_bot,
+            self.J4.d_top + self.J4.d_bot
+        )
+        a2 = min(
+            self.J2.d_top + self.J2.d_bot,
+            self.J3.d_top + self.J3.d_bot
+        )
+
+        return a1, a2
