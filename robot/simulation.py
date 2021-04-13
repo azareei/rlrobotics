@@ -1,6 +1,7 @@
 from models.robot import Robot
 import numpy as np
 from pathlib import Path
+from coordinates import Coordinate
 import cv2
 from cv2 import VideoWriter, VideoWriter_fourcc
 from utils import Utils
@@ -10,6 +11,7 @@ import time
 class Simulation:
     def __init__(self):
         self.robot = Robot()
+        self.camera_in_robot_ref = False
 
         steps = 50
         # Initialize the videos
@@ -71,9 +73,17 @@ class Simulation:
 
     def draw_blocks(self):
         # Draw blocks
-        self.new_frame(self.robot.position)
-        self.robot.draw(self.frame)
-        self.blocks_video.write(self.frame)
+        if self.camera_in_robot_ref:
+            self.new_frame(self.robot.position)
+            self.robot.draw(self.frame)
+            self.blocks_video.write(self.frame)
+        else:
+            # Work in progress
+            self.new_frame(Coordinate(x=0, y=0, z=0))
+            Utils.draw_offset_x = self.robot.position.x
+            Utils.draw_offset_y = self.robot.position.y
+            self.robot.draw(self.frame)
+            self.blocks_video.write(self.frame)
 
     def init_video(self, name):
         fourcc = VideoWriter_fourcc('m', 'p', '4', 'v')
@@ -82,6 +92,9 @@ class Simulation:
 
     def new_frame(self, displacement):
         frame = self.main_frame.copy()
+        if not self.camera_in_robot_ref:
+            self.frame = frame
+            return
 
         # Add grid
         max_coordinates = Utils.Pixel2Coordinate(Utils.WIDTH, Utils.HEIGHT)
@@ -99,7 +112,7 @@ class Simulation:
                 Utils.ConvertX(max_x),
                 Utils.ConvertY(0 - displacement.y)
             ),
-            color=Utils.light_gray,
+            color=Utils.red,
             thickness=1
         )
 
@@ -115,7 +128,7 @@ class Simulation:
                     Utils.ConvertX(c_x - displacement.x),
                     Utils.ConvertY(max_y)
                 ),
-                color=Utils.light_gray,
+                color=Utils.red if c_x == 0 else Utils.light_gray,
                 thickness=1
             )
 
@@ -129,7 +142,7 @@ class Simulation:
                     Utils.ConvertX(-c_x - displacement.x),
                     Utils.ConvertY(max_y)
                 ),
-                color=Utils.light_gray,
+                color=Utils.red if c_x == 0 else Utils.light_gray,
                 thickness=1
             )
             c_x += 5 / 100

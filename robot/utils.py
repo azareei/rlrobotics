@@ -26,11 +26,16 @@ class Utils:
     fontScale = 1
     text_thickness = 2
 
-    def ConvertY(p):
-        return int((p * Utils.ZOOM) + Utils.HALF_HEIGHT)
+    # Drawing functions
+
+    draw_offset_x = 0
+    draw_offset_y = 0
 
     def ConvertX(p):
-        return int(p * Utils.ZOOM + Utils.HALF_WIDTH)
+        return int((p + Utils.draw_offset_x) * Utils.ZOOM + Utils.HALF_WIDTH)
+    
+    def ConvertY(p):
+        return int(((p + Utils.draw_offset_y) * Utils.ZOOM) + Utils.HALF_HEIGHT)
 
     def ConvertX_location(p, location):
         if location == 'right':
