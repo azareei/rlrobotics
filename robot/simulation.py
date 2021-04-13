@@ -11,7 +11,7 @@ import time
 class Simulation:
     def __init__(self):
         self.robot = Robot()
-        self.camera_in_robot_ref = False
+        self.camera_in_robot_ref = True
 
         steps = 50
         # Initialize the videos
