@@ -37,6 +37,7 @@ class Simulation:
         print("Simulation time : {0:.2f}s".format(end_time - start_time))
 
         self.save_video(self.blocks_video)
+        self.save_data()
 
     def draw_blocks(self):
         # Draw blocks
@@ -154,3 +155,38 @@ class Simulation:
         self.actuation1_direction = np.tile(self.actuation1_direction, 2)
         self.actuation2_direction = np.tile(self.actuation2_direction, 2)
         self.steps = steps
+
+    def save_data(self):
+        tmp = [self.actuation1, self.actuation1_direction, self.robot.J1.A, self.robot.J1.B, self.robot.J1.C]
+        J1 = pd.DataFrame(np.array(tmp).T, columns=['u', 'u_dir', 'A', 'B', 'C'])
+
+        tmp = [self.actuation1, self.actuation1_direction, self.robot.J4.A, self.robot.J4.B, self.robot.J4.C]
+        J4 = pd.DataFrame(np.array(tmp).T, columns=['u', 'u_dir', 'A', 'B', 'C'])
+
+        tmp = [self.actuation2, self.actuation2_direction, self.robot.J2.A, self.robot.J2.B, self.robot.J2.C]
+        J2 = pd.DataFrame(np.array(tmp).T, columns=['u', 'u_dir', 'A', 'B', 'C'])
+
+        tmp = [self.actuation2, self.actuation2_direction, self.robot.J3.A, self.robot.J3.B, self.robot.J3.C]
+        J3 = pd.DataFrame(np.array(tmp).T, columns=['u', 'u_dir', 'A', 'B', 'C'])
+
+        pos_x = []
+        pos_y = []
+        pos_z = []
+
+        for p in self.robot.position:
+            pos_x.append(p.x)
+            pos_y.append(p.y)
+            pos_z.append(p.z)
+
+        tmp = [self.actuation1, self.actuation1_direction, self.actuation2, self.actuation2_direction, pos_x, pos_y, pos_z]
+        robot = pd.DataFrame(np.array(tmp).T, columns=['u1', 'u1_dir', 'u2', 'u2_dir', 'x', 'y', 'z'])
+
+        self.data = {}
+        self.data['J1'] = J1
+        self.data['J2'] = J2
+        self.data['J3'] = J3
+        self.data['J4'] = J4
+        self.data['robot'] = robot
+        self.data = pd.concat(self.data, axis=1)
+
+        self.data.to_csv('data.csv')
