@@ -6,6 +6,7 @@ import cv2
 from cv2 import VideoWriter, VideoWriter_fourcc
 from utils import Utils
 import time
+import pandas as pd
 
 
 class Simulation:
@@ -13,44 +14,11 @@ class Simulation:
         self.robot = Robot()
         self.camera_in_robot_ref = True
 
-        steps = 50
         # Initialize the videos
         self.blocks_video = self.init_video('{0}/blocks/out.mp4'.format(Path(__file__).resolve().parent))
 
-        # Get maximum actuation movement
-        max_1, max_2 = self.robot.max_actuation()
-
-        self.actuation1_direction = np.concatenate(
-            (np.zeros(steps), np.ones(steps)),
-            axis=0
-        ) < 1
-
-        self.actuation2_direction = np.concatenate(
-            (np.zeros(steps), np.ones(steps)),
-            axis=0
-        ) > 0
-
-        self.actuation1 = np.concatenate(
-            (
-                np.linspace(0, max_1, num=steps),
-                np.linspace(max_1, 0, num=steps)
-            ),
-            axis=0
-        )
-
-        self.actuation2 = np.concatenate(
-            (
-                np.linspace(0, -max_2, num=steps),
-                np.linspace(-max_2, 0, num=steps)
-            ),
-            axis=0
-        )
-
-        self.actuation1 = np.tile(self.actuation1, 2)
-        self.actuation2 = np.tile(self.actuation2, 2)
-        self.actuation1_direction = np.tile(self.actuation1_direction, 2)
-        self.actuation2_direction = np.tile(self.actuation2_direction, 2)
-        self.steps = steps
+        self.generate_actuation()
+        self.generate_data_list()
 
     def simulate(self):
         start_time = time.time()
@@ -63,6 +31,7 @@ class Simulation:
             if s % 20 == 0:
                 print('step : {}'.format(s))
             self.robot.update_position(a_1, a_2, d_1, d_2)
+            self.save_positions()
             self.draw_blocks()
 
         end_time = time.time()
@@ -153,3 +122,47 @@ class Simulation:
 
     def create_main_frame(self):
         self.main_frame = np.ones((Utils.HEIGHT, Utils.WIDTH, 3), dtype=np.uint8) * 255
+
+    def generate_actuation(self):
+        # Get maximum actuation movement
+        steps = 50
+        max_1, max_2 = self.robot.max_actuation()
+        self.actuation1_direction = np.concatenate(
+            (np.zeros(steps), np.ones(steps)), axis=0
+        ) < 1
+
+        self.actuation2_direction = np.concatenate(
+            (np.zeros(steps), np.ones(steps)), axis=0
+        ) > 0
+
+        self.actuation1 = np.concatenate(
+            (
+                np.linspace(0, max_1, num=steps),
+                np.linspace(max_1, 0, num=steps)
+            ),
+            axis=0
+        )
+
+        self.actuation2 = np.concatenate(
+            (
+                np.linspace(0, -max_2, num=steps),
+                np.linspace(-max_2, 0, num=steps)
+            ),
+            axis=0
+        )
+
+        self.actuation1 = np.tile(self.actuation1, 2)
+        self.actuation2 = np.tile(self.actuation2, 2)
+        self.actuation1_direction = np.tile(self.actuation1_direction, 2)
+        self.actuation2_direction = np.tile(self.actuation2_direction, 2)
+        self.steps = steps
+
+    def create_dataframe(self):
+        data = {}
+        _cols = ['u', 'A', 'B', 'C', 'pos_x', 'pos_y']
+        data['J1'] = pd.DataFrame(columns=_cols)
+        data['J2'] = pd.DataFrame(columns=_cols)
+        data['J3'] = pd.DataFrame(columns=_cols)
+        data['J4'] = pd.DataFrame(columns=_cols)
+
+        self.position_data = pd.concat(data, axis=1)
