@@ -69,7 +69,7 @@ class Robot:
         Compute the ground height relative to the robot and compute the displacement of the robot with the legs
         that is touching the floor
         """
-        h = np.array([self.J1.C.z, self.J2.C.z, self.J3.C.z, self.J4.C.z])
+        h = np.array([self.J1.C[-1].z, self.J2.C[-1].z, self.J3.C[-1].z, self.J4.C[-1].z])
         self.ground = max(h)
         _touching_legs = np.where(h == self.ground)
         # Create self.touching = [True, False, True, False] or similar

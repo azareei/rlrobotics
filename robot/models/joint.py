@@ -16,7 +16,8 @@ class Joint:
                  _invert_init_angle=False, _bot_color=(0, 0, 0),
                  _top_color=(255, 0, 0), _name='Joint',
                  _r1=3/100, _r2=3/100,
-                 _theta1=0.785, _theta2=0.785):
+                 _theta1=0.785, _theta2=0.785,
+                 _legs_length = 5 / 100):
         # We define the following for now:
         #   anchor distance to side of the block is 1cm
         #   width is 6cm
@@ -106,19 +107,20 @@ class Joint:
         self.theta_i_bot = 0
         self.theta_i_top = 0
 
-        self.prev_ui = None
+        self.legs_length = _legs_length
 
-        self.A = Coordinate(x=0, y=0, z=0)
-        self.B = Coordinate(x=0, y=0, z=0)
-        self.C = Coordinate(x=0, y=0, z=0)
+        self.A = []
+        self.A.append(Coordinate(x=0, y=0, z=0))
+        self.B = []
+        self.B.append(Coordinate(x=0, y=0, z=0))
+        self.C = []
+        self.C.append(Coordinate(x=0, y=0, z=0))
 
         self.init_position()
 
-    def compute_leg_height(self, A, B):
-        legs_length = 5 / 100
-
-        tmp = legs_length**2 - ((B.x - A.x) / 2)**2
-        return Coordinate(x=(A.x + B.x)/2, y=(A.y + B.y)/2, z=np.sqrt(tmp))
+    def compute_leg_height(self, _A, _B):
+        tmp = self.legs_length**2 - ((_B.x - _A.x) / 2)**2
+        return Coordinate(x=(_A.x + _B.x)/2, y=(_A.y + _B.y)/2, z=np.sqrt(tmp))
 
     def init_position(self):
         if self.invert_init_angle is False:
@@ -494,20 +496,25 @@ class Joint:
         self.spring_top.P.y = self.block_mid.get_anchor(type='t').y
 
     def update_legs(self):
-        old_C = self.C
-        self.A = Coordinate(
-            x=self.block_top.center.x - Utils.LEG_OFFSET,
-            y=self.block_top.center.y,
-            z=0
-        )
-        self.B = Coordinate(
-            x=self.block_mid.center.x,
-            y=self.block_mid.center.y,
-            z=0
+        old_C = self.C[-1]
+        self.A.append(
+            Coordinate(
+                x=self.block_top.center.x - Utils.LEG_OFFSET,
+                y=self.block_top.center.y,
+                z=0
+            )
         )
 
-        self.C = self.compute_leg_height(self.A, self.B)
-        movement = self.C - old_C
+        self.B.append(
+            Coordinate(
+                x=self.block_mid.center.x,
+                y=self.block_mid.center.y,
+                z=0
+            )
+        )
+
+        self.C.append(self.compute_leg_height(self.A[-1], self.B[-1]))
+        movement = self.C[-1] - old_C
         if (self.invert_y):
             movement.y *= -1
         return movement
@@ -531,12 +538,12 @@ class Joint:
         frame = cv2.line(
             frame,
             (
-                Utils.ConvertX_location(self.A.x, location_x),
-                Utils.ConvertY_location(self.A.z, location_y)
+                Utils.ConvertX_location(self.A[-1].x, location_x),
+                Utils.ConvertY_location(self.A[-1].z, location_y)
             ),
             (
-                Utils.ConvertX_location(self.C.x, location_x),
-                Utils.ConvertY_location(self.C.z, location_y)
+                Utils.ConvertX_location(self.C[-1].x, location_x),
+                Utils.ConvertY_location(self.C[-1].z, location_y)
             ),
             self.top_color,
             thickness=legs_thickness
@@ -545,12 +552,12 @@ class Joint:
         frame = cv2.line(
             frame,
             (
-                Utils.ConvertX_location(self.B.x, location_x),
-                Utils.ConvertY_location(self.B.z, location_y)
+                Utils.ConvertX_location(self.B[-1].x, location_x),
+                Utils.ConvertY_location(self.B[-1].z, location_y)
             ),
             (
-                Utils.ConvertX_location(self.C.x, location_x),
-                Utils.ConvertY_location(self.C.z, location_y)
+                Utils.ConvertX_location(self.C[-1].x, location_x),
+                Utils.ConvertY_location(self.C[-1].z, location_y)
             ),
             (0, 0, 0),
             thickness=legs_thickness
