@@ -7,7 +7,10 @@ from cv2 import VideoWriter, VideoWriter_fourcc
 from utils import Utils
 import time
 import pandas as pd
-
+from matplotlib import pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+import re, seaborn as sns
+from matplotlib.colors import ListedColormap
 
 class Simulation:
     def __init__(self):
@@ -38,6 +41,7 @@ class Simulation:
 
         self.save_video(self.blocks_video)
         self.save_data()
+        self.plot_legs_movement()
 
     def draw_blocks(self):
         # Draw blocks
@@ -214,3 +218,26 @@ class Simulation:
 
         self.data.to_csv('{0}/blocks/data.csv'.format(Path(__file__).resolve().parent))
         self.data.to_pickle('{0}/blocks/data.pkl'.format(Path(__file__).resolve().parent))
+
+    def plot_legs_movement(self):
+        u = self.data['J1']['u']
+        x = self.data['J1']['c_x']
+        z = self.data['J1']['c_z']
+
+        fig = plt.figure(figsize=(6, 6))
+        ax = Axes3D(fig)
+        # get colormap from seaborn
+        cmap = ListedColormap(sns.color_palette("husl", 256).as_hex())
+        # plot
+        sc = ax.scatter(x, z, u, s=40, c=u, cmap=cmap, alpha=1)
+        ax.set_xlabel('X [m]')
+        ax.set_ylabel('Z [m]')
+        ax.set_zlabel('U [m]')
+        ax.azim = 90
+        ax.elev = 90
+
+        # legend
+        plt.legend(*sc.legend_elements(), bbox_to_anchor=(1.05, 1), loc=2)
+
+        # save
+        plt.savefig("scatter_hue", bbox_inches='tight')
