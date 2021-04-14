@@ -8,9 +8,9 @@ from utils import Utils
 import time
 import pandas as pd
 from matplotlib import pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-import re, seaborn as sns
 from matplotlib.colors import ListedColormap
+import seaborn as sns
+
 
 class Simulation:
     def __init__(self):
@@ -188,8 +188,8 @@ class Simulation:
 
     def save_data(self):
         J1 = self.get_joints_data(self.actuation1, self.actuation1_direction, self.robot.J1)
-        J2 = self.get_joints_data(self.actuation1, self.actuation1_direction, self.robot.J2)
-        J3 = self.get_joints_data(self.actuation1, self.actuation1_direction, self.robot.J3)
+        J2 = self.get_joints_data(self.actuation2, self.actuation1_direction, self.robot.J2)
+        J3 = self.get_joints_data(self.actuation2, self.actuation1_direction, self.robot.J3)
         J4 = self.get_joints_data(self.actuation1, self.actuation1_direction, self.robot.J4)
 
         x, y, z = Utils.list_coord2list(self.robot.position)
@@ -220,24 +220,66 @@ class Simulation:
         self.data.to_pickle('{0}/blocks/data.pkl'.format(Path(__file__).resolve().parent))
 
     def plot_legs_movement(self):
+        fig, axs = plt.subplots(2, 2, figsize=(20, 15))
+        cmap = ListedColormap(sns.color_palette("husl", 256).as_hex())
+
+        # J1
         u = self.data['J1']['u']
         x = self.data['J1']['c_x']
         z = self.data['J1']['c_z']
 
-        fig = plt.figure(figsize=(6, 6))
-        ax = Axes3D(fig)
-        # get colormap from seaborn
-        cmap = ListedColormap(sns.color_palette("husl", 256).as_hex())
-        # plot
-        sc = ax.scatter(x, z, u, s=40, c=u, cmap=cmap, alpha=1)
-        ax.set_xlabel('X [m]')
-        ax.set_ylabel('Z [m]')
-        ax.set_zlabel('U [m]')
-        ax.azim = 90
-        ax.elev = 90
+        j1_plot = axs[0, 0].scatter(x, z, c=u, cmap=cmap)
+        axs[0, 0].set_xlabel('X [m]')
+        axs[0, 0].set_ylabel('Z [m]')
+        dx, dz = x[int(len(x)/30)] - x[0], z[int(len(z)/30)] - z[0]
+        axs[0, 0].arrow(x[0], z[0], dx, dz, width=1e-4, head_width=1e-3, color=(1, 0, 0, 0.4))
+        axs[0, 0].title.set_text('J1')
 
-        # legend
-        plt.legend(*sc.legend_elements(), bbox_to_anchor=(1.05, 1), loc=2)
+        # J2
+        u = self.data['J2']['u']
+        x = self.data['J2']['c_x']
+        z = self.data['J2']['c_z']
 
-        # save
-        plt.savefig("scatter_hue", bbox_inches='tight')
+        j2_plot = axs[0, 1].scatter(x, z, c=u, cmap=cmap)
+        axs[0, 1].set_xlabel('X [m]')
+        axs[0, 1].set_ylabel('Z [m]')
+        dx, dz = x[int(len(x)/25)] - x[0], z[int(len(z)/25)] - z[0]
+        axs[0, 1].arrow(x[0], z[0], dx, dz, width=1e-4, head_width=1e-3, color=(1, 0, 0, 0.4))
+        axs[0, 1].title.set_text('J2')
+
+        # J3
+        u = self.data['J3']['u']
+        x = self.data['J3']['c_x']
+        z = self.data['J3']['c_z']
+
+        j3_plot = axs[1, 0].scatter(x, z, c=u, cmap=cmap)
+        axs[1, 0].set_xlabel('X [m]')
+        axs[1, 0].set_ylabel('Z [m]')
+        dx, dz = x[int(len(x)/25)] - x[0], z[int(len(z)/25)] - z[0]
+        axs[1, 0].arrow(x[0], z[0], dx, dz, width=1e-4, head_width=1e-3, color=(1, 0, 0, 0.4))
+        axs[1, 0].title.set_text('J3')
+
+        # J4
+        u = self.data['J4']['u']
+        x = self.data['J4']['c_x']
+        z = self.data['J4']['c_z']
+
+        j4_plot = axs[1, 1].scatter(x, z, c=u, cmap=cmap)
+        axs[1, 1].set_xlabel('X [m]')
+        axs[1, 1].set_ylabel('Z [m]')
+        dx, dz = x[int(len(x)/25)] - x[0], z[int(len(z)/25)] - z[0]
+        axs[1, 1].arrow(x[0], z[0], dx, dz, width=1e-4, head_width=1e-3, color=(1, 0, 0, 0.4))
+        axs[1, 1].title.set_text('J4')
+
+        plt.colorbar(j1_plot, label='u [m]', ax=axs[0, 0])
+        plt.colorbar(j2_plot, label='u [m]', ax=axs[0, 1])
+        plt.colorbar(j3_plot, label='u [m]', ax=axs[1, 0])
+        plt.colorbar(j4_plot, label='u [m]', ax=axs[1, 1])
+
+        plt.savefig('legs_movement.png')
+
+
+
+
+
+
