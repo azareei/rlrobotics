@@ -14,11 +14,21 @@ import seaborn as sns
 
 class Simulation:
     def __init__(self):
-        self.robot = Robot()
+        self.robot = Robot('A', 'A', 'A', 'A')
         self.camera_in_robot_ref = True
+        self.actuation_steps = 50
+        self.nb_cycles = 1
+        self.draw = True
 
-        # Initialize the videos
-        self.blocks_video = self.init_video('{0}/blocks/out.mp4'.format(Path(__file__).resolve().parent))
+        if self.draw:
+            # Initialize the videos
+            self.blocks_video = self.init_video('{0}/blocks/{1}{2}{3}{4}.mp4'.format(
+                Path(__file__).resolve().parent,
+                self.robot.J1.sequence,
+                self.robot.J2.sequence,
+                self.robot.J3.sequence,
+                self.robot.J4.sequence
+            ))
 
         self.generate_actuation()
 
@@ -33,13 +43,16 @@ class Simulation:
             if s % 20 == 0:
                 print('step : {}'.format(s))
             self.robot.update_position(a_1, a_2, d_1, d_2)
-            # self.draw_blocks()
+            if self.draw:
+                self.draw_blocks()
 
         end_time = time.time()
 
         print("Simulation time : {0:.2f}s".format(end_time - start_time))
 
-        self.save_video(self.blocks_video)
+        if self.draw:
+            self.save_video(self.blocks_video)
+
         self.save_data()
         self.plot_legs_movement()
 
@@ -128,7 +141,7 @@ class Simulation:
 
     def generate_actuation(self):
         # Get maximum actuation movement
-        steps = 50
+        steps = self.actuation_steps
         max_1, max_2 = self.robot.max_actuation()
         self.actuation1_direction = np.concatenate(
             (np.zeros(steps), np.ones(steps)), axis=0
@@ -154,11 +167,10 @@ class Simulation:
             axis=0
         )
 
-        self.actuation1 = np.tile(self.actuation1, 2)
-        self.actuation2 = np.tile(self.actuation2, 2)
-        self.actuation1_direction = np.tile(self.actuation1_direction, 2)
-        self.actuation2_direction = np.tile(self.actuation2_direction, 2)
-        self.steps = steps
+        self.actuation1 = np.tile(self.actuation1, self.nb_cycles)
+        self.actuation2 = np.tile(self.actuation2, self.nb_cycles)
+        self.actuation1_direction = np.tile(self.actuation1_direction, self.nb_cycles)
+        self.actuation2_direction = np.tile(self.actuation2_direction, self.nb_cycles)
 
     def get_joints_data(self, actuation, actuation_direction, joint):
         a_x, a_y, a_z = Utils.list_coord2list(joint.A)
@@ -216,8 +228,20 @@ class Simulation:
         self.data['robot'] = robot
         self.data = pd.concat(self.data, axis=1)
 
-        self.data.to_csv('{0}/blocks/data.csv'.format(Path(__file__).resolve().parent))
-        self.data.to_pickle('{0}/blocks/data.pkl'.format(Path(__file__).resolve().parent))
+        self.data.to_csv('{0}/blocks/{1}{2}{3}{4}.csv'.format(
+            Path(__file__).resolve().parent,
+            self.robot.J1.sequence,
+            self.robot.J2.sequence,
+            self.robot.J3.sequence,
+            self.robot.J4.sequence
+        ))
+        self.data.to_pickle('{0}/blocks/{1}{2}{3}{4}.pkl'.format(
+            Path(__file__).resolve().parent,
+            self.robot.J1.sequence,
+            self.robot.J2.sequence,
+            self.robot.J3.sequence,
+            self.robot.J4.sequence
+        ))
 
     def plot_legs_movement(self):
         fig, axs = plt.subplots(2, 2, figsize=(20, 15))
@@ -276,10 +300,10 @@ class Simulation:
         plt.colorbar(j3_plot, label='u [m]', ax=axs[1, 0])
         plt.colorbar(j4_plot, label='u [m]', ax=axs[1, 1])
 
-        plt.savefig('legs_movement.png')
-
-
-
-
-
-
+        plt.savefig('{0}/blocks/{1}{2}{3}{4}.png'.format(
+            Path(__file__).resolve().parent,
+            self.robot.J1.sequence,
+            self.robot.J2.sequence,
+            self.robot.J3.sequence,
+            self.robot.J4.sequence
+        ))
