@@ -156,30 +156,53 @@ class Simulation:
         self.actuation2_direction = np.tile(self.actuation2_direction, 2)
         self.steps = steps
 
+    def get_joints_data(self, actuation, actuation_direction, joint):
+        a_x, a_y, a_z = Utils.list_coord2list(joint.A)
+        b_x, b_y, b_z = Utils.list_coord2list(joint.B)
+        c_x, c_y, c_z = Utils.list_coord2list(joint.C)
+
+        data = [
+            actuation,
+            actuation_direction,
+            a_x, a_y, a_z,
+            b_x, b_y, b_z,
+            c_x, c_y, c_z
+        ]
+
+        df = pd.DataFrame(
+            np.array(data).T,
+            columns=[
+                'u',
+                'u_dir',
+                'a_x', 'a_y', 'a_z',
+                'b_x', 'b_y', 'b_z',
+                'c_x', 'c_y', 'c_z'
+            ]
+        )
+
+        return df
+
     def save_data(self):
-        tmp = [self.actuation1, self.actuation1_direction, self.robot.J1.A, self.robot.J1.B, self.robot.J1.C]
-        J1 = pd.DataFrame(np.array(tmp).T, columns=['u', 'u_dir', 'A', 'B', 'C'])
+        J1 = self.get_joints_data(self.actuation1, self.actuation1_direction, self.robot.J1)
+        J2 = self.get_joints_data(self.actuation1, self.actuation1_direction, self.robot.J2)
+        J3 = self.get_joints_data(self.actuation1, self.actuation1_direction, self.robot.J3)
+        J4 = self.get_joints_data(self.actuation1, self.actuation1_direction, self.robot.J4)
 
-        tmp = [self.actuation1, self.actuation1_direction, self.robot.J4.A, self.robot.J4.B, self.robot.J4.C]
-        J4 = pd.DataFrame(np.array(tmp).T, columns=['u', 'u_dir', 'A', 'B', 'C'])
-
-        tmp = [self.actuation2, self.actuation2_direction, self.robot.J2.A, self.robot.J2.B, self.robot.J2.C]
-        J2 = pd.DataFrame(np.array(tmp).T, columns=['u', 'u_dir', 'A', 'B', 'C'])
-
-        tmp = [self.actuation2, self.actuation2_direction, self.robot.J3.A, self.robot.J3.B, self.robot.J3.C]
-        J3 = pd.DataFrame(np.array(tmp).T, columns=['u', 'u_dir', 'A', 'B', 'C'])
-
-        pos_x = []
-        pos_y = []
-        pos_z = []
-
-        for p in self.robot.position:
-            pos_x.append(p.x)
-            pos_y.append(p.y)
-            pos_z.append(p.z)
-
-        tmp = [self.actuation1, self.actuation1_direction, self.actuation2, self.actuation2_direction, pos_x, pos_y, pos_z]
-        robot = pd.DataFrame(np.array(tmp).T, columns=['u1', 'u1_dir', 'u2', 'u2_dir', 'x', 'y', 'z'])
+        x, y, z = Utils.list_coord2list(self.robot.position)
+        robot = pd.DataFrame(
+            np.array([
+                self.actuation1,
+                self.actuation1_direction,
+                self.actuation2,
+                self.actuation2_direction,
+                x, y, z
+            ]).T,
+            columns=[
+                'u1', 'u1_dir',
+                'u2', 'u2_dir',
+                'x', 'y', 'z'
+            ]
+        )
 
         self.data = {}
         self.data['J1'] = J1
@@ -189,4 +212,5 @@ class Simulation:
         self.data['robot'] = robot
         self.data = pd.concat(self.data, axis=1)
 
-        self.data.to_csv('data.csv')
+        self.data.to_csv('{0}/blocks/data.csv'.format(Path(__file__).resolve().parent))
+        self.data.to_pickle('{0}/blocks/data.pkl'.format(Path(__file__).resolve().parent))

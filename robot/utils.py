@@ -54,3 +54,15 @@ class Utils:
             x=(_x - Utils.HALF_WIDTH) / Utils.ZOOM,
             y=(_y - Utils.HALF_HEIGHT) / Utils.ZOOM
         )
+
+    # General utilization
+    def list_coord2list(list_coordinates):
+        """
+        Convert a list(Coordinates) to 3 list of axis coordinate
+        x[], y[] and z[]
+        """
+        x = [c.x for c in list_coordinates]
+        y = [c.y for c in list_coordinates]
+        z = [c.z for c in list_coordinates]
+
+        return x, y, z
