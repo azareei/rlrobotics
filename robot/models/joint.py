@@ -17,7 +17,7 @@ class Joint:
                  _top_color=(255, 0, 0), _name='Joint',
                  _r1=3/100, _r2=3/100,
                  _theta1=0.785, _theta2=0.785,
-                 _legs_length = 5 / 100):
+                 _legs_length=5 / 100):
         # We define the following for now:
         #   anchor distance to side of the block is 1cm
         #   width is 6cm

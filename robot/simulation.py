@@ -13,7 +13,7 @@ import seaborn as sns
 
 
 class Simulation:
-    def __init__(self):
+    def __init__(self, **params):
         self.robot = Robot('A', 'A', 'A', 'A')
         self.camera_in_robot_ref = True
         self.actuation_steps = 50
