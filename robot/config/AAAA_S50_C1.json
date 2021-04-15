@@ -1,0 +1,24 @@
+{
+    "simulation":{
+        "camera_robot_ref": true,
+        "actuation":{
+            "steps": 50,
+            "cycles": 1
+        },
+        "draw": false
+    },
+    "robot": {
+        "J1": {
+            "sequence": "A"                
+        },
+        "J2": {
+            "sequence": "A"                
+        },
+        "J3": {
+            "sequence": "A"                
+        },
+        "J4": {
+            "sequence": "A"                
+        }
+    }
+}

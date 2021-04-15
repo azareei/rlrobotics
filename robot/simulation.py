@@ -13,12 +13,20 @@ import seaborn as sns
 
 
 class Simulation:
-    def __init__(self, **params):
-        self.robot = Robot('A', 'A', 'A', 'A')
-        self.camera_in_robot_ref = True
-        self.actuation_steps = 50
-        self.nb_cycles = 1
-        self.draw = True
+    def __init__(self, *params):
+        s = params[0]['simulation']
+        r = params[0]['robot']
+        self.robot = Robot(
+            _seq1=r['J1']['sequence'],
+            _seq2=r['J2']['sequence'],
+            _seq3=r['J3']['sequence'],
+            _seq4=r['J4']['sequence']
+        )
+
+        self.camera_in_robot_ref = s['camera_robot_ref']
+        self.actuation_steps = s['actuation']['steps']
+        self.nb_cycles = s['actuation']['cycles']
+        self.draw = s['draw']
 
         if self.draw:
             # Initialize the videos

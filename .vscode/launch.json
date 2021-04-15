@@ -5,19 +5,55 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "AAAA 1C Draw",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "cwd": "${workspaceFolder}/robot/",
+            "args": [
+                "--config", "AAAA_S50_C1_D.json"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "AAAA 1C No Draw",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "cwd": "${workspaceFolder}/robot/",
+            "args": [
+                "--config", "AAAA_S50_C1.json"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "BBBB 1C Draw",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "cwd": "${workspaceFolder}/robot/",
+            "args": [
+                "--config", "BBBB_S50_C1_D.json"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "BBBB 1C No Draw",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "cwd": "${workspaceFolder}/robot/",
+            "args": [
+                "--config", "BBBB_S50_C1.json"
+            ],
+            "console": "integratedTerminal"
+        },        
+        {
             "name": "One Leg launch",
             "type": "python",
             "request": "launch",
             "program": "main.py",
             "cwd": "${workspaceFolder}/one-leg/",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Multi legs launch",
-            "type": "python",
-            "request": "launch",
-            "program": "main.py",
-            "cwd": "${workspaceFolder}/robot/",
             "console": "integratedTerminal"
         }
     ]
