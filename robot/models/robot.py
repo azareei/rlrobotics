@@ -20,7 +20,7 @@ class Robot:
             _name='J1'
         )
         self.J4 = Joint(
-            _seq2,
+            _seq4,
             _structure_offset=Coordinate(x=-20/100, y=-4/100),
             _invert_y=True,
             _invert_init_angle=False,
@@ -31,7 +31,7 @@ class Robot:
 
         # Actuation 2
         self.J2 = Joint(
-            _seq3,
+            _seq2,
             _structure_offset=Coordinate(x=-20/100, y=4/100),
             _invert_y=False,
             _invert_init_angle=True,
@@ -40,7 +40,7 @@ class Robot:
             _name='J2'
         )
         self.J3 = Joint(
-            _seq4,
+            _seq3,
             _structure_offset=Coordinate(x=20/100, y=-4/100),
             _invert_y=True,
             _invert_init_angle=True,
@@ -58,7 +58,6 @@ class Robot:
         mov3 = self.J3.update_position(actuation_2, actuation_2_dir)
         mov4 = self.J4.update_position(actuation_1, actuation_1_dir)
 
-        # Fiter out to keep only x axis.
         mov_array_x = np.array([mov1.x, mov2.x, mov3.x, mov4.x])
         mov_array_y = np.array([mov1.y, mov2.y, mov3.y, mov4.y])
         self.update_attitude(mov_array_x, mov_array_y)
