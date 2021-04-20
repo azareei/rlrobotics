@@ -67,42 +67,47 @@ class Robot:
         Compute the ground height relative to the robot and compute the displacement of the robot with the legs
         that is touching the floor
         """
-        h = np.array([self.J1.C[-1].z, self.J2.C[-1].z, self.J3.C[-1].z, self.J4.C[-1].z])
-        self.ground = max(h)
-        _touching_legs = np.where(h == self.ground)
-        # Create self.touching = [True, False, True, False] or similar
-        self.touching_legs = np.isin(np.arange(4), _touching_legs)
-        nb_touching_legs = np.sum(self.touching_legs)
+        self.update_orientation()
+        # h = np.array([self.J1.C[-1].z, self.J2.C[-1].z, self.J3.C[-1].z, self.J4.C[-1].z])
+        # self.ground = max(h)
+        # _touching_legs = np.where(h == self.ground)
+        # # Create self.touching = [True, False, True, False] or similar
+        # self.touching_legs = np.isin(np.arange(4), _touching_legs)
+        # nb_touching_legs = np.sum(self.touching_legs)
 
-        delta_x = 0
-        delta_y = 0  # for now we consider that it is symetrical
+        # delta_x = 0
+        # delta_y = 0  # for now we consider that it is symetrical
 
-        # X Case
-        mov_mx_x = ma.masked_array(mov_array_x, mask=np.invert(self.touching_legs))
+        # # X Case
+        # mov_mx_x = ma.masked_array(mov_array_x, mask=np.invert(self.touching_legs))
 
-        if np.abs(np.sum(np.sign(mov_mx_x))) == nb_touching_legs:
-            # Means that all legs touching the floor moved in same x direction
-            # First move in X by the smallest common movement
-            min_mov = mov_mx_x[np.argmin(np.abs(mov_mx_x))]
-            delta_x += min_mov
-            mov_mx_x -= min_mov
+        # if np.abs(np.sum(np.sign(mov_mx_x))) == nb_touching_legs:
+        #     # Means that all legs touching the floor moved in same x direction
+        #     # First move in X by the smallest common movement
+        #     min_mov = mov_mx_x[np.argmin(np.abs(mov_mx_x))]
+        #     delta_x += min_mov
+        #     mov_mx_x -= min_mov
 
-            # Need to do somth with the rest of the movement
-            if np.sum(mov_mx_x) != 0:
-                frameinfo = getframeinfo(currentframe())
-                print('[ATT] FILE {0}, LINE {1} : Some movement not added'.format(
-                        frameinfo.filename, frameinfo.lineno))
-        else:
-            # Means that all legs touching the floor didn't moved in same x direction
-            min_mov = mov_mx_x[np.argmin(np.abs(mov_mx_x))]
-            mov_mx_x -= min_mov
-            delta_x += np.sum(mov_mx_x)
+        #     # Need to do somth with the rest of the movement
+        #     if np.sum(mov_mx_x) != 0:
+        #         frameinfo = getframeinfo(currentframe())
+        #         print('[ATT] FILE {0}, LINE {1} : Some movement not added'.format(
+        #                 frameinfo.filename, frameinfo.lineno))
+        # else:
+        #     # Means that all legs touching the floor didn't moved in same x direction
+        #     min_mov = mov_mx_x[np.argmin(np.abs(mov_mx_x))]
+        #     mov_mx_x -= min_mov
+        #     delta_x += np.sum(mov_mx_x)
 
-        delta = Coordinate(x=delta_x, y=delta_y, z=0)
+        delta_x, delta_y, delta_z = 0, 0, 0
+        delta = Coordinate(x=delta_x, y=delta_y, z=delta_z)
         if len(self.position) == 0:
             self.position.append(-delta)
         else:
             self.position.append(self.position[-1] - delta)
+
+    def update_orientation(self):
+        pass
 
     def draw(self, frame):
         self.draw_joints(frame)

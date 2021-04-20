@@ -47,7 +47,51 @@
                 "--config", "BBBB_S50_C1.json"
             ],
             "console": "integratedTerminal"
-        },        
+        },     
+        {
+            "name": "4 legs contact",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "cwd": "${workspaceFolder}/robot/",
+            "args": [
+                "--config", "4_legs_contact.json"
+            ],
+            "console": "integratedTerminal"
+        },   
+        {
+            "name": "3 legs contact",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "cwd": "${workspaceFolder}/robot/",
+            "args": [
+                "--config", "3_legs_contact.json"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "2 legs diagonal contact",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "cwd": "${workspaceFolder}/robot/",
+            "args": [
+                "--config", "2_legs_diag_contact.json"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "2 legs no diagonal contact",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "cwd": "${workspaceFolder}/robot/",
+            "args": [
+                "--config", "2_legs_contact.json"
+            ],
+            "console": "integratedTerminal"
+        },   
         {
             "name": "One Leg launch",
             "type": "python",
