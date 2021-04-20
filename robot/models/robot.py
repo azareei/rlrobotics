@@ -8,13 +8,17 @@ from inspect import currentframe, getframeinfo
 
 
 class Robot:
-    def __init__(self, _seq1, _seq2, _seq3, _seq4):
+    def __init__(self,
+                 _seq1, _invert_y1, _invert_init_angle1,
+                 _seq2, _invert_y2, _invert_init_angle2,
+                 _seq3, _invert_y3, _invert_init_angle3,
+                 _seq4, _invert_y4, _invert_init_angle4):
         # Actuation 1
         self.J1 = Joint(
             _seq1,
             _structure_offset=Coordinate(x=20/100, y=4/100),
-            _invert_y=False,
-            _invert_init_angle=False,
+            _invert_y=_invert_y1,
+            _invert_init_angle=_invert_init_angle1,
             _bot_color=Utils.yellow,
             _top_color=Utils.magenta,
             _name='J1'
@@ -22,8 +26,8 @@ class Robot:
         self.J4 = Joint(
             _seq4,
             _structure_offset=Coordinate(x=-20/100, y=-4/100),
-            _invert_y=True,
-            _invert_init_angle=False,
+            _invert_y=_invert_y4,
+            _invert_init_angle=_invert_init_angle4,
             _bot_color=Utils.yellow,
             _top_color=Utils.magenta,
             _name='J4'
@@ -33,8 +37,8 @@ class Robot:
         self.J2 = Joint(
             _seq2,
             _structure_offset=Coordinate(x=-20/100, y=4/100),
-            _invert_y=False,
-            _invert_init_angle=True,
+            _invert_y=_invert_y2,
+            _invert_init_angle=_invert_init_angle2,
             _bot_color=Utils.yellow,
             _top_color=Utils.green,
             _name='J2'
@@ -42,8 +46,8 @@ class Robot:
         self.J3 = Joint(
             _seq3,
             _structure_offset=Coordinate(x=20/100, y=-4/100),
-            _invert_y=True,
-            _invert_init_angle=True,
+            _invert_y=_invert_y3,
+            _invert_init_angle=_invert_init_angle3,
             _bot_color=Utils.yellow,
             _top_color=Utils.green,
             _name='J3'
@@ -67,37 +71,38 @@ class Robot:
         Compute the ground height relative to the robot and compute the displacement of the robot with the legs
         that is touching the floor
         """
-        self.update_orientation()
-        # h = np.array([self.J1.C[-1].z, self.J2.C[-1].z, self.J3.C[-1].z, self.J4.C[-1].z])
-        # self.ground = max(h)
-        # _touching_legs = np.where(h == self.ground)
-        # # Create self.touching = [True, False, True, False] or similar
-        # self.touching_legs = np.isin(np.arange(4), _touching_legs)
-        # nb_touching_legs = np.sum(self.touching_legs)
+        #self.update_orientation()
 
-        # delta_x = 0
-        # delta_y = 0  # for now we consider that it is symetrical
+        h = np.array([self.J1.C[-1].z, self.J2.C[-1].z, self.J3.C[-1].z, self.J4.C[-1].z])
+        self.ground = max(h)
+        _touching_legs = np.where(h == self.ground)
+        # Create self.touching = [True, False, True, False] or similar
+        self.touching_legs = np.isin(np.arange(4), _touching_legs)
+        nb_touching_legs = np.sum(self.touching_legs)
 
-        # # X Case
-        # mov_mx_x = ma.masked_array(mov_array_x, mask=np.invert(self.touching_legs))
+        delta_x = 0
+        delta_y = 0  # for now we consider that it is symetrical
 
-        # if np.abs(np.sum(np.sign(mov_mx_x))) == nb_touching_legs:
-        #     # Means that all legs touching the floor moved in same x direction
-        #     # First move in X by the smallest common movement
-        #     min_mov = mov_mx_x[np.argmin(np.abs(mov_mx_x))]
-        #     delta_x += min_mov
-        #     mov_mx_x -= min_mov
+        # X Case
+        mov_mx_x = ma.masked_array(mov_array_x, mask=np.invert(self.touching_legs))
 
-        #     # Need to do somth with the rest of the movement
-        #     if np.sum(mov_mx_x) != 0:
-        #         frameinfo = getframeinfo(currentframe())
-        #         print('[ATT] FILE {0}, LINE {1} : Some movement not added'.format(
-        #                 frameinfo.filename, frameinfo.lineno))
-        # else:
-        #     # Means that all legs touching the floor didn't moved in same x direction
-        #     min_mov = mov_mx_x[np.argmin(np.abs(mov_mx_x))]
-        #     mov_mx_x -= min_mov
-        #     delta_x += np.sum(mov_mx_x)
+        if np.abs(np.sum(np.sign(mov_mx_x))) == nb_touching_legs:
+            # Means that all legs touching the floor moved in same x direction
+            # First move in X by the smallest common movement
+            min_mov = mov_mx_x[np.argmin(np.abs(mov_mx_x))]
+            delta_x += min_mov
+            mov_mx_x -= min_mov
+
+            # Need to do somth with the rest of the movement
+            if np.sum(mov_mx_x) != 0:
+                frameinfo = getframeinfo(currentframe())
+                print('[ATT] FILE {0}, LINE {1} : Some movement not added'.format(
+                        frameinfo.filename, frameinfo.lineno))
+        else:
+            # Means that all legs touching the floor didn't moved in same x direction
+            min_mov = mov_mx_x[np.argmin(np.abs(mov_mx_x))]
+            mov_mx_x -= min_mov
+            delta_x += np.sum(mov_mx_x)
 
         delta_x, delta_y, delta_z = 0, 0, 0
         delta = Coordinate(x=delta_x, y=delta_y, z=delta_z)
@@ -107,7 +112,27 @@ class Robot:
             self.position.append(self.position[-1] - delta)
 
     def update_orientation(self):
+        legs_c = np.array([
+            self.J1.C[-1].to_list(),
+            self.J2.C[-1].to_list(),
+            self.J3.C[-1].to_list(),
+            self.J4.C[-1].to_list()
+        ])
+
+        # get max distance to frame
+        legs_z = legs_c[:, 2]
+        h = max(legs_z)
+
+        # First pass to understand touching legs
+        touching_legs = np.where(legs_z == h)
+        # Create self.touching = [True, False, True, False] or similar
+        touching_legs = np.isin(np.arange(4), touching_legs)
+        nb_touching_legs = np.sum(touching_legs)
+        print('[FIRST PASS] : {} touch'.format(nb_touching_legs))
         pass
+        
+        
+        
 
     def draw(self, frame):
         self.draw_joints(frame)

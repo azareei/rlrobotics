@@ -18,9 +18,17 @@ class Simulation:
         r = params[0]['robot']
         self.robot = Robot(
             _seq1=r['J1']['sequence'],
+            _invert_y1=r['J1']['invert_y'],
+            _invert_init_angle1=r['J1']['invert_init_angle'],
             _seq2=r['J2']['sequence'],
+            _invert_y2=r['J2']['invert_y'],
+            _invert_init_angle2=r['J2']['invert_init_angle'],
             _seq3=r['J3']['sequence'],
-            _seq4=r['J4']['sequence']
+            _invert_y3=r['J3']['invert_y'],
+            _invert_init_angle3=r['J3']['invert_init_angle'],
+            _seq4=r['J4']['sequence'],
+            _invert_y4=r['J4']['invert_y'],
+            _invert_init_angle4=r['J4']['invert_init_angle']
         )
 
         self.camera_in_robot_ref = s['camera_robot_ref']
@@ -38,7 +46,7 @@ class Simulation:
                 self.robot.J4.sequence
             ))
 
-        self.generate_actuation()
+        self.generate_actuation(s['actuation']['phase'])
 
     def simulate(self):
         start_time = time.time()
@@ -147,33 +155,58 @@ class Simulation:
     def create_main_frame(self):
         self.main_frame = np.ones((Utils.HEIGHT, Utils.WIDTH, 3), dtype=np.uint8) * 255
 
-    def generate_actuation(self):
+    def generate_actuation(self, phase):
         # Get maximum actuation movement
         steps = self.actuation_steps
         max_1, max_2 = self.robot.max_actuation()
-        self.actuation1_direction = np.concatenate(
-            (np.zeros(steps), np.ones(steps)), axis=0
-        ) < 1
+        if phase == 180:
+            self.actuation1_direction = np.concatenate(
+                (np.zeros(steps), np.ones(steps)), axis=0
+            ) < 1
 
-        self.actuation2_direction = np.concatenate(
-            (np.zeros(steps), np.ones(steps)), axis=0
-        ) > 0
+            self.actuation2_direction = np.concatenate(
+                (np.zeros(steps), np.ones(steps)), axis=0
+            ) > 0
 
-        self.actuation1 = np.concatenate(
-            (
-                np.linspace(0, max_1, num=steps),
-                np.linspace(max_1, 0, num=steps)
-            ),
-            axis=0
-        )
+            self.actuation1 = np.concatenate(
+                (
+                    np.linspace(0, max_1, num=steps),
+                    np.linspace(max_1, 0, num=steps)
+                ),
+                axis=0
+            )
 
-        self.actuation2 = np.concatenate(
-            (
-                np.linspace(0, -max_2, num=steps),
-                np.linspace(-max_2, 0, num=steps)
-            ),
-            axis=0
-        )
+            self.actuation2 = np.concatenate(
+                (
+                    np.linspace(0, -max_2, num=steps),
+                    np.linspace(-max_2, 0, num=steps)
+                ),
+                axis=0
+            )
+        elif phase == 0:
+            self.actuation1_direction = np.concatenate(
+                (np.zeros(steps), np.ones(steps)), axis=0
+            ) < 1
+
+            self.actuation2_direction = np.concatenate(
+                (np.zeros(steps), np.ones(steps)), axis=0
+            ) < 1
+
+            self.actuation1 = np.concatenate(
+                (
+                    np.linspace(0, max_1, num=steps),
+                    np.linspace(max_1, 0, num=steps)
+                ),
+                axis=0
+            )
+
+            self.actuation2 = np.concatenate(
+                (
+                    np.linspace(0, max_2, num=steps),
+                    np.linspace(max_2, 0, num=steps)
+                ),
+                axis=0
+            )
 
         self.actuation1 = np.tile(self.actuation1, self.nb_cycles)
         self.actuation2 = np.tile(self.actuation2, self.nb_cycles)
