@@ -71,7 +71,7 @@ class Robot:
         Compute the ground height relative to the robot and compute the displacement of the robot with the legs
         that is touching the floor
         """
-        #self.update_orientation()
+        self.update_orientation()
 
         h = np.array([self.J1.C[-1].z, self.J2.C[-1].z, self.J3.C[-1].z, self.J4.C[-1].z])
         self.ground = max(h)
@@ -128,11 +128,18 @@ class Robot:
         # Create self.touching = [True, False, True, False] or similar
         touching_legs = np.isin(np.arange(4), touching_legs)
         nb_touching_legs = np.sum(touching_legs)
-        print('[FIRST PASS] : {} touch'.format(nb_touching_legs))
-        pass
-        
-        
-        
+
+        if nb_touching_legs == 4:  # TODO 4 legs update
+            print('[FIRST PASS 4 legs]')
+        if nb_touching_legs == 3:  # TODO 3 legs update
+            print('[FIRST PASS 3 legs]')
+        if nb_touching_legs == 2:  # TODO 2 legs update
+            if (touching_legs[0] == touching_legs[2]) or (touching_legs[1] == touching_legs[3]):  # TODO 2 legs diag update
+                print('[FIRST PASS 2 legs diag]')
+            else:  # TODO 2 legs no dial update
+                print('[FIRST PASS 2 legs no diag]')
+        if nb_touching_legs == 1:  # TODO one legs update
+            print('[FIRST PASS 1 legs]')
 
     def draw(self, frame):
         self.draw_joints(frame)
