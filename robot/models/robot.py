@@ -54,6 +54,8 @@ class Robot:
         )
 
         self.position = []
+        self.angle = []
+        self.ground = 0  # Represente the high on the Centre of Gravity of the robot
 
     def update_position(self, actuation_1, actuation_2, actuation_1_dir, actuation_2_dir):
         mov1 = self.J1.update_position(actuation_1, actuation_1_dir)
@@ -73,20 +75,13 @@ class Robot:
         """
         self.update_orientation()
 
-        h = np.array([self.J1.C[-1].z, self.J2.C[-1].z, self.J3.C[-1].z, self.J4.C[-1].z])
-        self.ground = max(h)
-        _touching_legs = np.where(h == self.ground)
-        # Create self.touching = [True, False, True, False] or similar
-        self.touching_legs = np.isin(np.arange(4), _touching_legs)
-        nb_touching_legs = np.sum(self.touching_legs)
-
         delta_x = 0
         delta_y = 0  # for now we consider that it is symetrical
 
         # X Case
         mov_mx_x = ma.masked_array(mov_array_x, mask=np.invert(self.touching_legs))
 
-        if np.abs(np.sum(np.sign(mov_mx_x))) == nb_touching_legs:
+        if np.abs(np.sum(np.sign(mov_mx_x))) == self.nb_touching_legs:
             # Means that all legs touching the floor moved in same x direction
             # First move in X by the smallest common movement
             min_mov = mov_mx_x[np.argmin(np.abs(mov_mx_x))]
@@ -113,10 +108,10 @@ class Robot:
 
     def update_orientation(self):
         legs_c = np.array([
-            self.J1.C[-1].to_list(),
-            self.J2.C[-1].to_list(),
-            self.J3.C[-1].to_list(),
-            self.J4.C[-1].to_list()
+            self.J1.C[-1].to_list('xyz'),
+            self.J2.C[-1].to_list('xyz'),
+            self.J3.C[-1].to_list('xyz'),
+            self.J4.C[-1].to_list('xyz')
         ])
 
         # get max distance to frame
@@ -129,16 +124,26 @@ class Robot:
         touching_legs = np.isin(np.arange(4), touching_legs)
         nb_touching_legs = np.sum(touching_legs)
 
-        if nb_touching_legs == 4:  # TODO 4 legs update
+        if nb_touching_legs == 4:
             print('[FIRST PASS 4 legs]')
-        if nb_touching_legs == 3:  # TODO 3 legs update
+            # Means the robot is flat and no update for the legs
+            self.angle.append(Coordinate(x=0, y=0, z=0))
+            self.touching_legs = touching_legs
+            self.nb_touching_legs = nb_touching_legs
+            self.ground = h
+            return
+        elif nb_touching_legs == 3:  # TODO 3 legs update
             print('[FIRST PASS 3 legs]')
-        if nb_touching_legs == 2:  # TODO 2 legs update
-            if (touching_legs[0] == touching_legs[2]) or (touching_legs[1] == touching_legs[3]):  # TODO 2 legs diag update
+        elif nb_touching_legs == 2:  # TODO 2 legs update
+            if (touching_legs[0] == touching_legs[3]) or (touching_legs[1] == touching_legs[2]):  # TODO 2 legs diag update
                 print('[FIRST PASS 2 legs diag]')
+                self.angle.append(Coordinate(x=0, y=0, z=0))
+                self.touching_legs = touching_legs
+                self.nb_touching_legs = nb_touching_legs
+                self.ground = h
             else:  # TODO 2 legs no dial update
                 print('[FIRST PASS 2 legs no diag]')
-        if nb_touching_legs == 1:  # TODO one legs update
+        elif nb_touching_legs == 1:  # TODO one legs update
             print('[FIRST PASS 1 legs]')
 
     def draw(self, frame):
@@ -182,7 +187,7 @@ class Robot:
             thickness=10
         )
 
-    def draw_legs(self, frame):
+    def draw_legs(self, frame):  # TODO Need to  show ground with angle of the robot.
         self.J1.draw_legs(
             frame,
             location_x='right',
