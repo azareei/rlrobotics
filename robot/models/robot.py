@@ -127,10 +127,17 @@ class Robot:
         angle_theta = 0
         angle_phi = 0
 
-        if self.nb_touching_legs == 4:
-            print('[FIRST PASS 4 legs]')
-            # Means the robot is flat and no update for the legs
-            return angle_theta, angle_phi
+        if self.nb_touching_legs == 1:
+            print('[FIRST PASS 1 legs]')
+
+        elif self.nb_touching_legs == 2:
+            if (self.touching_legs[0] == self.touching_legs[3]) \
+                    or (self.touching_legs[1] == self.touching_legs[2]):
+                print('[FIRST PASS 2 legs diag]')
+                return angle_theta, angle_phi
+            else:
+                print('[FIRST PASS 2 legs no diag]')
+                # In this case we need to find the third point or 4 points.
 
         elif self.nb_touching_legs == 3:
             print('[FIRST PASS 3 legs]')
@@ -149,15 +156,10 @@ class Robot:
             angle_phi = np.arctan2(n_plane[1] - n_plane[0])
             return angle_theta, angle_phi
 
-        elif self.nb_touching_legs == 2:  # TODO 2 legs update
-            if (self.touching_legs[0] == self.touching_legs[3]) \
-                    or (self.touching_legs[1] == self.touching_legs[2]):
-                print('[FIRST PASS 2 legs diag]')
-                return angle_theta, angle_phi
-            else:  # TODO 2 legs no dial update
-                print('[FIRST PASS 2 legs no diag]')
-        elif self.nb_touching_legs == 1:  # TODO one legs update
-            print('[FIRST PASS 1 legs]')
+        elif self.nb_touching_legs == 4:
+            print('[FIRST PASS 4 legs]')
+            # Means the robot is flat and no update for the legs
+            return angle_theta, angle_phi
 
     def draw(self, frame):
         self.draw_joints(frame)
