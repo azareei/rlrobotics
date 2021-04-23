@@ -116,34 +116,47 @@ class Robot:
 
         # get max distance to frame
         legs_z = legs_c[:, 2]
-        h = max(legs_z)
+        self.ground = max(legs_z)
 
         # First pass to understand touching legs
-        touching_legs = np.where(legs_z == h)
+        self.touching_legs_index = np.where(legs_z == self.ground)
         # Create self.touching = [True, False, True, False] or similar
-        touching_legs = np.isin(np.arange(4), touching_legs)
-        nb_touching_legs = np.sum(touching_legs)
+        self.touching_legs = np.isin(np.arange(4), self.touching_legs_index)
+        self.nb_touching_legs = np.sum(self.touching_legs)
 
-        if nb_touching_legs == 4:
+        angle_theta = 0
+        angle_phi = 0
+
+        if self.nb_touching_legs == 4:
             print('[FIRST PASS 4 legs]')
             # Means the robot is flat and no update for the legs
-            self.angle.append(Coordinate(x=0, y=0, z=0))
-            self.touching_legs = touching_legs
-            self.nb_touching_legs = nb_touching_legs
-            self.ground = h
-            return
-        elif nb_touching_legs == 3:  # TODO 3 legs update
+            return angle_theta, angle_phi
+
+        elif self.nb_touching_legs == 3:
             print('[FIRST PASS 3 legs]')
-        elif nb_touching_legs == 2:  # TODO 2 legs update
-            if (touching_legs[0] == touching_legs[3]) or (touching_legs[1] == touching_legs[2]):  # TODO 2 legs diag update
+            # Compute plane vector
+            sub_legs = legs_z[self.touching_legs_index]
+
+            # Compute cross vector to get plane vector
+            v1 = sub_legs[1] - sub_legs[0]
+            v2 = sub_legs[2] - sub_legs[0]
+            plane = np.cross(v1, v2)
+            n_plane = plane / np.linalg.norm(plane)
+
+            # Dot product each axis.
+            angle_theta = np.arccos(abs(n_plane[2]))
+            # Maybe need angle_z = np.pi - angle_z
+            angle_phi = np.arctan2(n_plane[1] - n_plane[0])
+            return angle_theta, angle_phi
+
+        elif self.nb_touching_legs == 2:  # TODO 2 legs update
+            if (self.touching_legs[0] == self.touching_legs[3]) \
+                    or (self.touching_legs[1] == self.touching_legs[2]):
                 print('[FIRST PASS 2 legs diag]')
-                self.angle.append(Coordinate(x=0, y=0, z=0))
-                self.touching_legs = touching_legs
-                self.nb_touching_legs = nb_touching_legs
-                self.ground = h
+                return angle_theta, angle_phi
             else:  # TODO 2 legs no dial update
                 print('[FIRST PASS 2 legs no diag]')
-        elif nb_touching_legs == 1:  # TODO one legs update
+        elif self.nb_touching_legs == 1:  # TODO one legs update
             print('[FIRST PASS 1 legs]')
 
     def draw(self, frame):
