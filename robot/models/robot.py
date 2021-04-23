@@ -68,24 +68,35 @@ class Robot:
         mov_array_y = np.array([mov1.y, mov2.y, mov3.y, mov4.y])
         self.update_attitude(mov_array_x, mov_array_y)
 
-    def update_attitude(self, mov_array_x, mov_array_y):
+    def update_attitude(self, mov_x, mov_y):
         """
         Compute the ground height relative to the robot and compute the displacement of the robot with the legs
         that is touching the floor
         """
-        self.update_orientation()
+        angle_theta, angle_phi = self.update_orientation()
 
-        delta_x = 0
-        delta_y = 0  # for now we consider that it is symetrical
+        dx, dy, dz = 0, 0, 0
 
-        delta_x, delta_y, delta_z = 0, 0, 0
-        delta = Coordinate(x=delta_x, y=delta_y, z=delta_z)
+        # First compute displalcement for X and Y
+        # Only compute with touching legs
+        mx = ma.masked_array(mov_x, mask=np.invert(self.touching_legs))
+        my = ma.masked_array(mov_y, mask=np.invert(self.touching_legs))
+        dx = np.sum(mx)
+        dy = np.sum(my)
+
+        delta = Coordinate(x=dx, y=dy, z=dz)
         if len(self.position) == 0:
             self.position.append(-delta)
         else:
             self.position.append(self.position[-1] - delta)
 
     def update_orientation(self):
+        """
+        This function willl compute the orientation of the robot relative to the ground.
+
+        It will also compute in <=3 passes what legs are touching the floor and from which
+        height.
+        """
         ground1, ground2, ground3 = 0, 0, 0
         touching_legs_index = None
         touching_legs_index_P1 = None
