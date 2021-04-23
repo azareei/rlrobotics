@@ -16,7 +16,7 @@ class Robot:
         # Actuation 1
         self.J1 = Joint(
             _seq1,
-            _structure_offset=Coordinate(x=20/100, y=4/100),
+            _structure_offset=Coordinate(x=20/100, y=4/100, z=0),
             _invert_y=_invert_y1,
             _invert_init_angle=_invert_init_angle1,
             _bot_color=Utils.yellow,
@@ -25,7 +25,7 @@ class Robot:
         )
         self.J4 = Joint(
             _seq4,
-            _structure_offset=Coordinate(x=-20/100, y=-4/100),
+            _structure_offset=Coordinate(x=-20/100, y=-4/100, z=0),
             _invert_y=_invert_y4,
             _invert_init_angle=_invert_init_angle4,
             _bot_color=Utils.yellow,
@@ -36,7 +36,7 @@ class Robot:
         # Actuation 2
         self.J2 = Joint(
             _seq2,
-            _structure_offset=Coordinate(x=-20/100, y=4/100),
+            _structure_offset=Coordinate(x=-20/100, y=4/100, z=0),
             _invert_y=_invert_y2,
             _invert_init_angle=_invert_init_angle2,
             _bot_color=Utils.yellow,
@@ -45,7 +45,7 @@ class Robot:
         )
         self.J3 = Joint(
             _seq3,
-            _structure_offset=Coordinate(x=20/100, y=-4/100),
+            _structure_offset=Coordinate(x=20/100, y=-4/100, z=0),
             _invert_y=_invert_y3,
             _invert_init_angle=_invert_init_angle3,
             _bot_color=Utils.yellow,
@@ -76,6 +76,7 @@ class Robot:
         angle_theta, angle_phi = self.update_orientation()
 
         dx, dy, dz = 0, 0, 0
+        angle_z = 0
 
         # First compute displalcement for X and Y
         # Only compute with touching legs
@@ -89,6 +90,7 @@ class Robot:
             self.position.append(-delta)
         else:
             self.position.append(self.position[-1] - delta)
+        self.angle.append(np.array([angle_theta, angle_phi, angle_z]))
 
     def update_orientation(self):
         """
@@ -98,13 +100,13 @@ class Robot:
         height.
         """
         ground1, ground2, ground3 = 0, 0, 0
-        touching_legs_index = None
-        touching_legs_index_P1 = None
-        touching_legs_index_P2 = None
-        touching_legs_index_P3 = None
-        touching_legs_P1 = None
-        touching_legs_P2 = None
-        touching_legs_P3 = None
+        touching_legs_index = np.array([])
+        touching_legs_index_P1 = np.array([])
+        touching_legs_index_P2 = np.array([])
+        touching_legs_index_P3 = np.array([])
+        touching_legs_P1 = np.array([])
+        touching_legs_P2 = np.array([])
+        touching_legs_P3 = np.array([])
 
         legs_c = np.array([
             self.J1.C[-1].to_list('xyz'),
@@ -140,8 +142,8 @@ class Robot:
             # Create self.touching = [True, False, True, False] or similar
             touching_legs_P2 = np.isin(np.arange(4), touching_legs_index_P2)
             nb_touching_legs += np.sum(touching_legs_P2)
-            touching_legs = np.unique(np.concatenate(touching_legs_P1, touching_legs_P2))
             touching_legs_index = np.unique(np.concatenate(touching_legs_index_P1, touching_legs_index_P2))
+            touching_legs = np.isin(np.arange(4), touching_legs_index)
 
         if nb_touching_legs == 2:
             if (touching_legs[0] == touching_legs[3]) \
@@ -162,17 +164,31 @@ class Robot:
                 # Create self.touching = [True, False, True, False] or similar
                 touching_legs_P3 = np.isin(np.arange(4), touching_legs_index_P3)
                 nb_touching_legs += np.sum(touching_legs_P3)
-                touching_legs = np.unique(np.concatenate(touching_legs_P1, touching_legs_P2, touching_legs_P3))
-                touching_legs_index = np.unique(np.concatenate(touching_legs_index_P1, touching_legs_index_P2, touching_legs_index_P3))
+                if len(touching_legs_index_P2) == 0:
+                    touching_legs_index = np.unique(np.concatenate(
+                        (
+                            touching_legs_index_P1,
+                            touching_legs_index_P3
+                        )
+                    ))
+                else:
+                    touching_legs_index = np.unique(np.concatenate(
+                        (
+                            touching_legs_index_P1,
+                            touching_legs_index_P2,
+                            touching_legs_index_P3
+                        )
+                    ))
+                touching_legs = np.isin(np.arange(4), touching_legs_index)
 
         if nb_touching_legs == 3:
             print('[FIRST PASS 3 legs]')
             # Compute plane vector
-            sub_legs = legs_z[touching_legs_index]
+            sub_legs = legs_c[touching_legs_index]
 
             # Compute cross vector to get plane vector
-            v1 = sub_legs[1] - sub_legs[0]
-            v2 = sub_legs[2] - sub_legs[0]
+            v1 = sub_legs[1, :] - sub_legs[0, :]
+            v2 = sub_legs[2, :] - sub_legs[0, :]
             plane = np.cross(v1, v2)
             n_plane = plane / np.linalg.norm(plane)
 
