@@ -78,27 +78,6 @@ class Robot:
         delta_x = 0
         delta_y = 0  # for now we consider that it is symetrical
 
-        # X Case
-        mov_mx_x = ma.masked_array(mov_array_x, mask=np.invert(self.touching_legs))
-
-        if np.abs(np.sum(np.sign(mov_mx_x))) == self.nb_touching_legs:
-            # Means that all legs touching the floor moved in same x direction
-            # First move in X by the smallest common movement
-            min_mov = mov_mx_x[np.argmin(np.abs(mov_mx_x))]
-            delta_x += min_mov
-            mov_mx_x -= min_mov
-
-            # Need to do somth with the rest of the movement
-            if np.sum(mov_mx_x) != 0:
-                frameinfo = getframeinfo(currentframe())
-                print('[ATT] FILE {0}, LINE {1} : Some movement not added'.format(
-                        frameinfo.filename, frameinfo.lineno))
-        else:
-            # Means that all legs touching the floor didn't moved in same x direction
-            min_mov = mov_mx_x[np.argmin(np.abs(mov_mx_x))]
-            mov_mx_x -= min_mov
-            delta_x += np.sum(mov_mx_x)
-
         delta_x, delta_y, delta_z = 0, 0, 0
         delta = Coordinate(x=delta_x, y=delta_y, z=delta_z)
         if len(self.position) == 0:
@@ -107,6 +86,15 @@ class Robot:
             self.position.append(self.position[-1] - delta)
 
     def update_orientation(self):
+        ground1, ground2, ground3 = 0, 0, 0
+        touching_legs_index = None
+        touching_legs_index_P1 = None
+        touching_legs_index_P2 = None
+        touching_legs_index_P3 = None
+        touching_legs_P1 = None
+        touching_legs_P2 = None
+        touching_legs_P3 = None
+
         legs_c = np.array([
             self.J1.C[-1].to_list('xyz'),
             self.J2.C[-1].to_list('xyz'),
@@ -116,33 +104,60 @@ class Robot:
 
         # get max distance to frame
         legs_z = legs_c[:, 2]
-        self.ground = max(legs_z)
+        ground1 = max(legs_z)
 
         # First pass to understand touching legs
-        self.touching_legs_index = np.where(legs_z == self.ground)
+        touching_legs_index = touching_legs_index_P1 = np.where(legs_z == ground1)
         # Create self.touching = [True, False, True, False] or similar
-        self.touching_legs = np.isin(np.arange(4), self.touching_legs_index)
-        self.nb_touching_legs = np.sum(self.touching_legs)
+        touching_legs = touching_legs_P1 = np.isin(np.arange(4), touching_legs_index)
+        nb_touching_legs = np.sum(touching_legs)
 
         angle_theta = 0
         angle_phi = 0
 
-        if self.nb_touching_legs == 1:
+        if nb_touching_legs == 1:
             print('[FIRST PASS 1 legs]')
+            # We need to find the next touching legs
+            m = np.ones(legs_z.size, dtype=bool)
+            m[touching_legs_index] = False
+            sub_legs = legs_z[m]
 
-        elif self.nb_touching_legs == 2:
-            if (self.touching_legs[0] == self.touching_legs[3]) \
-                    or (self.touching_legs[1] == self.touching_legs[2]):
+            # now find second highest point
+            ground2 = np.max(sub_legs)
+            # First pass to understand touching legs
+            touching_legs_index_P2 = np.where(legs_z == ground2)
+            # Create self.touching = [True, False, True, False] or similar
+            touching_legs_P2 = np.isin(np.arange(4), touching_legs_index_P2)
+            nb_touching_legs += np.sum(touching_legs_P2)
+            touching_legs = np.unique(np.concatenate(touching_legs_P1, touching_legs_P2))
+            touching_legs_index = np.unique(np.concatenate(touching_legs_index_P1, touching_legs_index_P2))
+
+        if nb_touching_legs == 2:
+            if (touching_legs[0] == touching_legs[3]) \
+                    or (touching_legs[1] == touching_legs[2]):
                 print('[FIRST PASS 2 legs diag]')
-                return angle_theta, angle_phi
+                angle_theta, angle_phi = 0, 0
             else:
                 print('[FIRST PASS 2 legs no diag]')
-                # In this case we need to find the third point or 4 points.
+                # We need to find the next touching legs
+                m = np.ones(legs_z.size, dtype=bool)
+                m[touching_legs_index] = False
+                sub_legs = legs_z[m]
 
-        elif self.nb_touching_legs == 3:
+                # now find second highest point
+                ground3 = np.max(sub_legs)
+                # First pass to understand touching legs
+                touching_legs_index_P3 = np.where(legs_z == ground3)
+                # Create self.touching = [True, False, True, False] or similar
+                touching_legs_P3 = np.isin(np.arange(4), touching_legs_index_P3)
+                nb_touching_legs += np.sum(touching_legs_P3)
+                touching_legs = np.unique(np.concatenate(touching_legs_P1, touching_legs_P2, touching_legs_P3))
+                touching_legs_index = np.unique(np.concatenate(touching_legs_index_P1, touching_legs_index_P2, touching_legs_index_P3))
+
+        if nb_touching_legs == 3:
             print('[FIRST PASS 3 legs]')
             # Compute plane vector
-            sub_legs = legs_z[self.touching_legs_index]
+            sub_legs = legs_z[touching_legs_index]
 
             # Compute cross vector to get plane vector
             v1 = sub_legs[1] - sub_legs[0]
@@ -154,12 +169,18 @@ class Robot:
             angle_theta = np.arccos(abs(n_plane[2]))
             # Maybe need angle_z = np.pi - angle_z
             angle_phi = np.arctan2(n_plane[1] - n_plane[0])
-            return angle_theta, angle_phi
 
-        elif self.nb_touching_legs == 4:
+        if nb_touching_legs == 4:
             print('[FIRST PASS 4 legs]')
             # Means the robot is flat and no update for the legs
-            return angle_theta, angle_phi
+            angle_theta, angle_phi = 0, 0
+
+        self.touching_legs = touching_legs
+        self.touching_legs_P1 = touching_legs_P1
+        self.touching_legs_P2 = touching_legs_P2
+        self.touching_legs_P3 = touching_legs_P3
+        self.ground = np.array([ground1, ground2, ground3])
+        return angle_theta, angle_phi
 
     def draw(self, frame):
         self.draw_joints(frame)
@@ -208,28 +229,28 @@ class Robot:
             location_x='right',
             location_y='bottom',
             touching=self.touching_legs[0],
-            ground=self.ground
+            ground=self.ground[0]
         )
         self.J2.draw_legs(
             frame,
             location_x='left',
             location_y='bottom',
             touching=self.touching_legs[1],
-            ground=self.ground
+            ground=self.ground[0]
         )
         self.J3.draw_legs(
             frame,
             location_x='right',
             location_y='top',
             touching=self.touching_legs[2],
-            ground=self.ground
+            ground=self.ground[0]
         )
         self.J4.draw_legs(
             frame,
             location_x='left',
             location_y='top',
             touching=self.touching_legs[3],
-            ground=self.ground
+            ground=self.ground[0]
         )
 
     def max_actuation(self):
