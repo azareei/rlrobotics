@@ -142,7 +142,7 @@ class Robot:
             # Create self.touching = [True, False, True, False] or similar
             touching_legs_P2 = np.isin(np.arange(4), touching_legs_index_P2)
             nb_touching_legs += np.sum(touching_legs_P2)
-            touching_legs_index = np.unique(np.concatenate(touching_legs_index_P1, touching_legs_index_P2))
+            touching_legs_index = np.unique(np.concatenate((touching_legs_index_P1[0], touching_legs_index_P2[0])))
             touching_legs = np.isin(np.arange(4), touching_legs_index)
 
         if nb_touching_legs == 2:
@@ -185,17 +185,31 @@ class Robot:
             print('[FIRST PASS 3 legs]')
             # Compute plane vector
             sub_legs = legs_c[touching_legs_index]
+            offsets = np.array([
+                self.J1.structure_offset.to_list('xyz'),
+                self.J2.structure_offset.to_list('xyz'),
+                self.J3.structure_offset.to_list('xyz'),
+                self.J4.structure_offset.to_list('xyz')
+            ])
+            sub_offset = offsets[touching_legs_index]
 
             # Compute cross vector to get plane vector
-            v1 = sub_legs[1, :] - sub_legs[0, :]
-            v2 = sub_legs[2, :] - sub_legs[0, :]
+            v1 = np.subtract(
+                np.add(sub_legs[1, :], sub_offset[1, :]),
+                np.add(sub_legs[0, :], sub_offset[0, :])
+            )
+            v2 = np.subtract(
+                np.add(sub_legs[2, :], sub_offset[2, :]),
+                np.add(sub_legs[0, :], sub_offset[0, :])
+            )
+
             plane = np.cross(v1, v2)
             n_plane = plane / np.linalg.norm(plane)
 
             # Dot product each axis.
             angle_theta = np.arccos(abs(n_plane[2]))
             # Maybe need angle_z = np.pi - angle_z
-            angle_phi = np.arctan2(n_plane[1] - n_plane[0])
+            angle_phi = np.arctan2(n_plane[1], n_plane[0])
 
         if nb_touching_legs == 4:
             print('[FIRST PASS 4 legs]')
