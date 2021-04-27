@@ -150,9 +150,15 @@ class Robot:
                     or (touching_legs[1] == touching_legs[2]):
                 print('[FIRST PASS 2 legs diag]')
                 if touching_legs[0]:
-                    v = np.subtract(legs_c[0, :], legs_c[3, :])
+                    v = np.subtract(
+                        np.add(legs_c[0, :], self.J1.structure_offset.to_list('xyz')),
+                        np.add(legs_c[3, :], self.J4.structure_offset.to_list('xyz'))
+                    )
                 else:
-                    v = np.subtract(legs_c[1, :], legs_c[2, :])
+                    v = np.subtract(
+                        np.add(legs_c[1, :], self.J2.structure_offset.to_list('xyz')),
+                        np.add(legs_c[2, :], self.J3.structure_offset.to_list('xyz'))
+                    )
                 a_pitch, a_roll = Utils.angle2ground(v)
 
             else:
