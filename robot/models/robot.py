@@ -115,6 +115,9 @@ class Robot:
             self.J4.C[-1].to_list('xyz')
         ])
 
+        a_pitch = 0.0
+        a_roll = 0.0
+
         # get max distance to frame
         legs_z = legs_c[:, 2]
         ground1 = max(legs_z)
@@ -124,9 +127,6 @@ class Robot:
         # Create self.touching = [True, False, True, False] or similar
         touching_legs = touching_legs_P1 = np.isin(np.arange(4), touching_legs_index)
         nb_touching_legs = np.sum(touching_legs)
-
-        a_pitch = 0.0
-        a_roll = 0.0
 
         if nb_touching_legs == 1:  # TODO need to handle the case where 3 others legs are same height.
             print('[FIRST PASS 1 legs]')
@@ -148,7 +148,13 @@ class Robot:
         if nb_touching_legs == 2:
             if (touching_legs[0] == touching_legs[3]) \
                     or (touching_legs[1] == touching_legs[2]):
-                print('[FIRST PASS 2 legs diag]')  # TODO 2 legs are not always at the same height in diagonal
+                print('[FIRST PASS 2 legs diag]')
+                if touching_legs[0]:
+                    v = np.subtract(legs_c[0, :], legs_c[3, :])
+                else:
+                    v = np.subtract(legs_c[1, :], legs_c[2, :])
+                a_pitch, a_roll = Utils.angle2ground(v)
+
             else:
                 print('[FIRST PASS 2 legs no diag]')
                 # We need to find the next touching legs

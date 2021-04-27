@@ -82,4 +82,8 @@ class Utils:
 
         roll = np.arccos(v_roll.dot(w_roll) / (norm(v_roll) * norm(w_roll)))
         pitch = np.arccos(v_pitch.dot(w_pitch) / (norm(v_pitch) * norm(w_pitch)))
+        if np.isnan(roll):
+            roll = 0.0
+        if np.isnan(pitch):
+            pitch = 0.0
         return pitch * np.sign(np.cross(v_pitch, w_pitch)), roll * np.sign(np.cross(v_roll, w_roll))
