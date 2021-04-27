@@ -1,5 +1,7 @@
 import cv2
 from coordinates import Coordinate
+import numpy as np
+from numpy.linalg import norm
 
 
 class Utils:
@@ -66,3 +68,18 @@ class Utils:
         z = [c.z for c in list_coordinates]
 
         return x, y, z
+
+    def angle2ground(v):
+        """
+        Compute pitch and roll angle to a ground plane
+        """
+
+        w_roll = np.array([0, 1])
+        w_pitch = np.array([0, 1])
+
+        v_roll = np.array([v[1], v[2]])
+        v_pitch = np.array([v[0], v[2]])
+
+        roll = np.arccos(v_roll.dot(w_roll) / (norm(v_roll) * norm(w_roll)))
+        pitch = np.arccos(v_pitch.dot(w_pitch) / (norm(v_pitch) * norm(w_pitch)))
+        return pitch * np.sign(np.cross(v_pitch, w_pitch)), roll * np.sign(np.cross(v_roll, w_roll))

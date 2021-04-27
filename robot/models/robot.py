@@ -85,6 +85,10 @@ class Robot:
         dx = np.sum(mx)
         dy = np.sum(my)
 
+        # Compute rotation -> we consider that the motion is done
+        # tangent to the COG->leg vector
+        
+
         delta = Coordinate(x=dx, y=dy, z=dz)
         if len(self.position) == 0:
             self.position.append(-delta)
@@ -125,10 +129,10 @@ class Robot:
         touching_legs = touching_legs_P1 = np.isin(np.arange(4), touching_legs_index)
         nb_touching_legs = np.sum(touching_legs)
 
-        angle_theta = 0
-        angle_phi = 0
+        a_pitch = 0.0
+        a_roll = 0.0
 
-        if nb_touching_legs == 1:
+        if nb_touching_legs == 1:  # TODO need to handle the case where 3 others legs are same height.
             print('[FIRST PASS 1 legs]')
             # We need to find the next touching legs
             m = np.ones(legs_z.size, dtype=bool)
@@ -148,8 +152,7 @@ class Robot:
         if nb_touching_legs == 2:
             if (touching_legs[0] == touching_legs[3]) \
                     or (touching_legs[1] == touching_legs[2]):
-                print('[FIRST PASS 2 legs diag]')
-                angle_theta, angle_phi = 0, 0
+                print('[FIRST PASS 2 legs diag]')  # TODO 2 legs are not always at the same height in diagonal
             else:
                 print('[FIRST PASS 2 legs no diag]')
                 # We need to find the next touching legs
@@ -204,24 +207,19 @@ class Robot:
             )
 
             plane = np.cross(v1, v2)
-            n_plane = plane / np.linalg.norm(plane)
 
-            # Dot product each axis.
-            angle_theta = np.arccos(abs(n_plane[2]))
-            # Maybe need angle_z = np.pi - angle_z
-            angle_phi = np.arctan2(n_plane[1], n_plane[0])
+            a_pitch, a_roll = Utils.angle2ground(plane)
 
         if nb_touching_legs == 4:
             print('[FIRST PASS 4 legs]')
             # Means the robot is flat and no update for the legs
-            angle_theta, angle_phi = 0, 0
-
+            pass
         self.touching_legs = touching_legs
         self.touching_legs_P1 = touching_legs_P1
         self.touching_legs_P2 = touching_legs_P2
         self.touching_legs_P3 = touching_legs_P3
         self.ground = np.array([ground1, ground2, ground3])
-        return angle_theta, angle_phi
+        return a_pitch, a_roll
 
     def draw(self, frame):
         self.draw_joints(frame)
