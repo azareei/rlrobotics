@@ -73,10 +73,10 @@ class Robot:
         Compute the ground height relative to the robot and compute the displacement of the robot with the legs
         that is touching the floor
         """
-        angle_theta, angle_phi = self.update_orientation()
+        pitch, roll = self.update_orientation()
 
         dx, dy, dz = 0, 0, 0
-        angle_z = 0
+        yaw = 0.0
 
         # First compute displalcement for X and Y
         # Only compute with touching legs
@@ -85,20 +85,16 @@ class Robot:
         dx = np.sum(mx)
         dy = np.sum(my)
 
-        # Compute rotation -> we consider that the motion is done
-        # tangent to the COG->leg vector
-        
-
         delta = Coordinate(x=dx, y=dy, z=dz)
         if len(self.position) == 0:
             self.position.append(-delta)
         else:
             self.position.append(self.position[-1] - delta)
-        self.angle.append(np.array([angle_theta, angle_phi, angle_z]))
+        self.angle.append(np.array([pitch, roll, yaw]))
 
     def update_orientation(self):
         """
-        This function willl compute the orientation of the robot relative to the ground.
+        This function will compute the orientation of the robot relative to the ground.
 
         It will also compute in <=3 passes what legs are touching the floor and from which
         height.
