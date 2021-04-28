@@ -113,6 +113,8 @@ class Joint:
         self.B = []
         self.C = []
 
+        self.ground_distance = 0.0
+
         self.init_position()
 
     def compute_leg_height(self, _A, _B):
@@ -529,7 +531,7 @@ class Joint:
         self.spring_bot.draw(frame, self.structure_offset, self.invert_y)
         self.spring_top.draw(frame, self.structure_offset, self.invert_y)
 
-    def draw_legs(self, frame, location_x, location_y, touching, ground):
+    def draw_legs(self, frame, location_x, location_y, touching):
         legs_thickness = 3
 
         frame = cv2.line(
@@ -586,11 +588,11 @@ class Joint:
             frame,
             (
                 Utils.ConvertX_location(-0.1, location_x),
-                Utils.ConvertY_location(ground, location_y)
+                Utils.ConvertY_location(self.ground_distance, location_y)
             ),
             (
                 Utils.ConvertX_location(0.1, location_x),
-                Utils.ConvertY_location(ground, location_y)
+                Utils.ConvertY_location(self.ground_distance, location_y)
             ),
             color=ground_color,
             thickness=legs_thickness

@@ -102,21 +102,6 @@ class Simulation:
         max_x = max_coordinates.x
         max_y = max_coordinates.y
 
-        # Draw middle cross lines
-        cv2.line(
-            frame,
-            (
-                Utils.ConvertX(-max_x),
-                Utils.ConvertY(0 - displacement.y)
-            ),
-            (
-                Utils.ConvertX(max_x),
-                Utils.ConvertY(0 - displacement.y)
-            ),
-            color=Utils.red,
-            thickness=1
-        )
-
         c_x = 0
         while c_x < (max_x + abs(displacement.x)):
             cv2.line(
@@ -147,6 +132,37 @@ class Simulation:
                 thickness=1
             )
             c_x += 5 / 100
+
+        c_y = 0
+        while c_y < (max_y + abs(displacement.y)):
+            cv2.line(
+                frame,
+                (
+                    Utils.ConvertX(-max_x),
+                    Utils.ConvertY(c_y - displacement.y)
+                ),
+                (
+                    Utils.ConvertX(max_x),
+                    Utils.ConvertY(c_y - displacement.y)
+                ),
+                color=Utils.red if c_y == 0 else Utils.light_gray,
+                thickness=1
+            )
+
+            cv2.line(
+                frame,
+                (
+                    Utils.ConvertX(-max_x),
+                    Utils.ConvertY(-c_y - displacement.y)
+                ),
+                (
+                    Utils.ConvertX(max_x),
+                    Utils.ConvertY(-c_y - displacement.y)
+                ),
+                color=Utils.red if c_y == 0 else Utils.light_gray,
+                thickness=1
+            )
+            c_y += 5 / 100
         self.frame = frame
 
     def save_video(self, video):

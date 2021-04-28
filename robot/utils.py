@@ -22,9 +22,10 @@ class Utils:
     yellow = (5, 226, 252)
     red = (0, 0, 255)
     light_gray = (200, 200, 200)
+    gray = (100, 100, 100)
 
     # Text settings
-    font = cv2.FONT_HERSHEY_SIMPLEX
+    font = cv2.FONT_HERSHEY_PLAIN
     fontScale = 1
     text_thickness = 2
 
@@ -32,6 +33,9 @@ class Utils:
 
     draw_offset_x = 0
     draw_offset_y = 0
+
+    def ConvertCM2PX(d):
+        return int(d * Utils.ZOOM)
 
     def ConvertX(p):
         return int((p + Utils.draw_offset_x) * Utils.ZOOM + Utils.HALF_WIDTH)
@@ -44,12 +48,16 @@ class Utils:
             return int(Utils.ConvertX(p) + (Utils.WIDTH / 3))
         elif location == 'left':
             return int(Utils.ConvertX(p) - (Utils.WIDTH / 3))
+        elif location == 'middle':
+            return Utils.ConvertX(p)
 
     def ConvertY_location(p, location):
         if location == 'bottom':
             return int(Utils.ConvertY(p) + (Utils.WIDTH / 4))
         elif location == 'top':
             return int(Utils.ConvertY(p) - (Utils.WIDTH / 4))
+        elif location == 'middle':
+            return Utils.ConvertY(p)
 
     def Pixel2Coordinate(_x, _y):
         return Coordinate(
@@ -84,6 +92,8 @@ class Utils:
         pitch = np.arccos(v_pitch.dot(w_pitch) / (norm(v_pitch) * norm(w_pitch)))
         if np.isnan(roll):
             roll = 0.0
+            print("roll nan")
         if np.isnan(pitch):
             pitch = 0.0
+            print("pitch nan")
         return pitch * np.sign(np.cross(v_pitch, w_pitch)), roll * np.sign(np.cross(v_roll, w_roll))
