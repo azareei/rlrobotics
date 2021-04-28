@@ -305,7 +305,7 @@ class Simulation:
         cmap = ListedColormap(sns.color_palette("husl", 256).as_hex())
 
         # J1
-        u = self.data['J1']['u']
+        u = abs(self.data['J1']['u'])
         x = self.data['J1']['c_x']
         z = self.data['J1']['c_z']
 
@@ -317,7 +317,7 @@ class Simulation:
         axs[0, 0].title.set_text('J1')
 
         # J2
-        u = self.data['J2']['u']
+        u = abs(self.data['J2']['u'])
         x = self.data['J2']['c_x']
         z = self.data['J2']['c_z']
 
@@ -329,7 +329,7 @@ class Simulation:
         axs[0, 1].title.set_text('J2')
 
         # J3
-        u = self.data['J3']['u']
+        u = abs(self.data['J3']['u'])
         x = self.data['J3']['c_x']
         z = self.data['J3']['c_z']
 
@@ -341,7 +341,7 @@ class Simulation:
         axs[1, 0].title.set_text('J3')
 
         # J4
-        u = self.data['J4']['u']
+        u = abs(self.data['J4']['u'])
         x = self.data['J4']['c_x']
         z = self.data['J4']['c_z']
 

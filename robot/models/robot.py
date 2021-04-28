@@ -179,7 +179,7 @@ class Robot:
                 v_rnorm = np.linalg.norm(v_roll)
 
                 a_pitch = np.arccos(v_pitch.dot(w) / v_pnorm) * np.sign(np.cross(v_pitch, w))
-                a_roll = np.arccos(v_roll.dot(w) / v_rnorm) * np.sign(np.croos(v_roll, w))
+                a_roll = np.arccos(v_roll.dot(w) / v_rnorm) * np.sign(np.cross(v_roll, w))
 
             else:
                 print('[FIRST PASS 2 legs no diag]')
