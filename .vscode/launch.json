@@ -91,6 +91,17 @@
                 "--config", "2_legs_contact.json"
             ],
             "console": "integratedTerminal"
+        }, 
+        {
+            "name": "Bottom vs top diff sequ",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "cwd": "${workspaceFolder}/robot/",
+            "args": [
+                "--config", "TURN_TRY.json"
+            ],
+            "console": "integratedTerminal"
         },   
         {
             "name": "One Leg launch",

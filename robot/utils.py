@@ -11,6 +11,8 @@ class Utils:
     FPS = 30
     HALF_HEIGHT = int(HEIGHT / 2)
     HALF_WIDTH = int(WIDTH / 2)
+    PI = np.pi
+    HALF_PI = np.pi / 2
 
     # LEGS Settings
     LEG_OFFSET = 4 / 100
@@ -97,3 +99,13 @@ class Utils:
             pitch = 0.0
             print("pitch nan")
         return pitch * np.sign(np.cross(v_pitch, w_pitch)), roll * np.sign(np.cross(v_roll, w_roll))
+
+    def angle_correction(angle):
+        """
+        Correct a input angle to an angle between
+        -pi/2 and pi/2
+        """
+        if abs(angle) > Utils.HALF_PI:
+            return np.sign(angle) * ((abs(angle) % Utils.PI) - Utils.PI)
+        else:
+            return angle

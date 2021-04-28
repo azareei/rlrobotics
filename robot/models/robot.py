@@ -169,8 +169,8 @@ class Robot:
                 else:
                     print('[FIRST PASS 2 legs diag 2-3]')
                     v = np.subtract(
-                        np.add(legs_c[2, :], self.J3.structure_offset.to_list('xyz')),
-                        np.add(legs_c[1, :], self.J2.structure_offset.to_list('xyz'))
+                        np.add(legs_c[1, :], self.J2.structure_offset.to_list('xyz')),
+                        np.add(legs_c[2, :], self.J3.structure_offset.to_list('xyz'))
                     )
                 v_pitch = np.array([v[0], v[2]])
                 v_roll = np.array([v[1], v[2]])
@@ -268,6 +268,12 @@ class Robot:
         self.touching_legs_P2 = touching_legs_P2
         self.touching_legs_P3 = touching_legs_P3
         self.update_ground(a_pitch, a_roll)
+
+        # Need to place the angles inside -pi/2 -> pi/2
+        a_pitch = Utils.angle_correction(a_pitch)
+        a_roll = Utils.angle_correction(a_roll)
+
+        print("{} {}".format(a_pitch, a_roll))
         return a_pitch, a_roll
 
     def update_ground(self, pitch, roll):
