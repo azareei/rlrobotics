@@ -149,9 +149,17 @@ class Joint:
             self.update_seq_A(u_i, forward)
         elif self.sequence == 'B':
             self.update_seq_B(u_i, forward)
+        elif self.sequence == 'C':
+            self.update_seq_C(u_i, forward)
+        elif self.sequence == 'D':
+            self.update_seq_D(u_i, forward)
         return self.update_legs()
 
     def update_seq_A(self, u_i, forward):
+        """
+        Cyclic sequence where mid block always move first
+        00 -> 01 -> 11 -> 10 -> 00
+        """
         position = u_i + self.x_offset
 
         max_left = - (self.d_bot / 2) - (self.d_top / 2)
@@ -174,7 +182,8 @@ class Joint:
 
     def update_seq_B(self, u_i, forward):
         """
-        Top block is moving before bottom block
+        Cyclic sequence where top block always move first
+        00 -> 10 -> 11 -> 01 -> 00
         """
         position = u_i + self.x_offset
 
@@ -183,18 +192,54 @@ class Joint:
 
         if forward:
             if (position >= max_left) and (position < (max_left + self.d_top)):
-                self.move_top_block(position)
+                self.move_mid_block(theta=-self.theta_s_bot)
+                self.move_top_block(position=position)
 
             if (position >= (max_left + self.d_top)) and (position <= max_right):
                 self.move_mid_block(position=position)
                 self.move_top_block(theta=self.theta_s_top)
         else:
             if (position <= max_right) and (position > (max_right - self.d_top)):
-                self.move_top_block(position)
+                self.move_mid_block(theta=self.theta_s_bot)
+                self.move_top_block(position=position)
 
             if (position <= (max_right - self.d_bot)) and (position >= max_left):
                 self.move_mid_block(position=position)
                 self.move_top_block(theta=-self.theta_s_top)
+
+    def update_seq_C(self, u_i, forward):
+        """
+        Cycle where first mid block move in forward pass, but top block move first
+        in backward pass.
+        00 -> 01 -> 11 -> 01 -> 00
+        """
+        position = u_i + self.x_offset
+
+        max_left = - (self.d_bot / 2) - (self.d_top / 2)
+        max_right = (self.d_bot / 2) + (self.d_top / 2)
+
+        if forward:
+            if (position >= max_left) and (position < (max_left + self.d_bot)):
+                self.move_mid_block(position=position)
+                self.move_top_block(theta=-self.theta_s_top)
+            if (position >= (max_left + self.d_bot) and (position <= max_right)):
+                self.move_mid_block(theta=self.theta_s_bot)
+                self.move_top_block(position=position)
+        else:
+            if (position <= max_right) and (position > (max_right - self.d_top)):
+                self.move_mid_block(theta=self.theta_s_bot)
+                self.move_top_block(position=position)
+            if (position <= (max_right - self.d_top)) and (position >= max_left):
+                self.move_mid_block(position=position)
+                self.move_top_block(theta=-self.theta_s_top)
+
+    def update_seq_D(self, u_i, forward):
+        """
+        Cycle where first top block move in forward pass, but mid block move first
+        in backward pass.
+        00 -> 10 -> 11 -> 10 -> 00
+        """
+        pass
 
     def move_mid_block(self, position=None, theta=None):
         """
