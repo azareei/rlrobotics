@@ -129,34 +129,8 @@ class Joint:
             self.theta_i_top = self.theta_s_top
             self.theta_i_bot = self.theta_s_bot
 
-        # First move mid block
-        dh = np.sin(self.theta_i_bot) * self.bars_bot.length
-        dv = np.cos(self.theta_i_bot) * self.bars_bot.length
-
-        self.block_mid.set_position(
-            _x=dh,
-            _y=dv + (self.block_mid.height/2) - self.block_mid.anchor_d
-        )
-
-        self.bars_bot.low_anchor = self.block_bot.get_anchor(type='t')
-        self.bars_bot.high_anchor = self.block_mid.get_anchor(type='b')
-        self.spring_bot.Q.x = self.block_mid.center.x
-        self.spring_bot.Q.y = self.bars_bot.high_anchor.y
-
-        # Move top block
-        dh = np.sin(self.theta_i_top) * self.bars_top.length
-        dv = np.cos(self.theta_i_top) * self.bars_top.length
-
-        self.block_top.set_position(
-            _x=self.block_mid.center.x + dh,
-            _y=self.block_mid.get_anchor(type='t').y + (self.block_top.height/2) - self.block_top.anchor_d + dv
-        )
-        self.bars_top.low_anchor = self.block_mid.get_anchor(type='t')
-        self.bars_top.high_anchor = self.block_top.get_anchor(type='b')
-        self.spring_top.Q.x = self.block_top.center.x
-        self.spring_top.Q.y = self.bars_top.high_anchor.y
-        self.spring_top.P.x = self.block_mid.center.x
-        self.spring_top.P.y = self.block_mid.get_anchor(type='t').y
+        self.move_mid_block(theta=self.theta_i_bot)
+        self.move_top_block(theta=self.theta_i_top)
 
         # Variables used to motion
         self.x_offset = self.block_top.center.x
@@ -179,151 +153,24 @@ class Joint:
 
     def update_seq_A(self, u_i, forward):
         position = u_i + self.x_offset
-        length = self.bars_bot.length
 
         max_left = - (self.d_bot / 2) - (self.d_top / 2)
         max_right = (self.d_bot / 2) + (self.d_top / 2)
 
         if forward:
-            if (position >= max_left) and \
-                    (position < (max_left + self.d_bot)):
-                dh = position
-
-                _dh = dh - self.block_top.center.x
-                new_anchor_x_pos = self.bars_bot.high_anchor.x + _dh
-                dist = new_anchor_x_pos - self.bars_bot.low_anchor.x
-
-                internal = dist / length
-                if internal > 1.0:
-                    frameinfo = getframeinfo(currentframe())
-                    raise ValueError('FILE {0}, LINE {1} : internal = {2}'.format(
-                        frameinfo.filename, frameinfo.lineno, internal))
-
-                self.theta_i_bot = np.arcsin(internal)
-
-                dv = np.cos(self.theta_i_bot) * length
-                self.block_mid.set_position(
-                    _x=self.block_mid.center.x + _dh,
-                    _y=dv + (self.block_mid.height/2) - self.block_mid.anchor_d
-                )
-                self.bars_bot.low_anchor = self.block_bot.get_anchor(type='t')
-                self.bars_bot.high_anchor = self.block_mid.get_anchor(type='b')
-                self.spring_bot.Q.x = self.block_mid.center.x
-                self.spring_bot.Q.y = self.bars_bot.high_anchor.y
-
-                # Move top block
-                # Ensure theta_i is min
-                self.theta_i_top = -self.theta_s_top
-                dh = np.sin(self.theta_i_top) * self.bars_top.length
-                dv = np.cos(self.theta_i_top) * self.bars_top.length
-
-                self.block_top.set_position(
-                    _x=self.block_mid.center.x + dh,
-                    _y=self.block_mid.get_anchor(type='t').y + (self.block_top.height/2) - self.block_top.anchor_d + dv
-                )
-                self.bars_top.low_anchor = self.block_mid.get_anchor(type='t')
-                self.bars_top.high_anchor = self.block_top.get_anchor(type='b')
-                self.spring_top.Q.x = self.block_top.center.x
-                self.spring_top.Q.y = self.bars_top.high_anchor.y
-                self.spring_top.P.x = self.block_mid.center.x
-                self.spring_top.P.y = self.block_mid.get_anchor(type='t').y
-
+            if (position >= max_left) and (position < (max_left + self.d_bot)):
+                self.move_mid_block(position=position)
+                self.move_top_block(theta=-self.theta_s_top)
             if (position >= (max_left + self.d_bot)) and (position <= max_right):
-                # Still need to ensure the bottom block is theta_s
-                dh = position
-
-                _dh = dh - self.block_top.center.x
-                new_anchor_x_pos = self.bars_top.high_anchor.x + _dh
-                dist = new_anchor_x_pos - self.bars_top.low_anchor.x
-
-                internal = dist / length
-                if internal > 1.0:
-                    frameinfo = getframeinfo(currentframe())
-                    raise ValueError('FILE {0}, LINE {1} : internal = {2}'.format(
-                        frameinfo.filename, frameinfo.lineno, internal))
-
-                self.theta_i_top = np.arcsin(internal)
-
-                dv = np.cos(self.theta_i_top) * length
-                self.block_top.set_position(
-                    _x=dh,
-                    _y=self.block_mid.get_anchor(type='t').y + (self.block_top.height/2) - self.block_top.anchor_d + dv
-                )
-                self.bars_top.low_anchor = self.block_mid.get_anchor(type='t')
-                self.bars_top.high_anchor = self.block_top.get_anchor(type='b')
-                self.spring_top.Q.x = self.block_top.center.x
-                self.spring_top.Q.y = self.bars_top.high_anchor.y
-                self.spring_top.P.x = self.block_mid.center.x
-                self.spring_top.P.y = self.block_mid.get_anchor(type='t').y
+                self.move_mid_block(theta=self.theta_s_top)
+                self.move_top_block(position=position)
         else:
             if (position <= max_right) and (position > (max_right - self.d_bot)):
-                dh = position
-
-                _dh = dh - self.block_top.center.x
-                new_anchor_x_pos = self.bars_bot.high_anchor.x + _dh
-                dist = new_anchor_x_pos - self.bars_bot.low_anchor.x
-
-                internal = dist / length
-                if internal > 1.0:
-                    frameinfo = getframeinfo(currentframe())
-                    raise ValueError('FILE {0}, LINE {1} : internal = {2}'.format(
-                        frameinfo.filename, frameinfo.lineno, internal))
-
-                self.theta_i_bot = np.arcsin(internal)
-
-                dv = np.cos(self.theta_i_bot) * length
-                self.block_mid.set_position(
-                    _x=self.block_mid.center.x + _dh,
-                    _y=dv + (self.block_mid.height/2) - self.block_mid.anchor_d
-                )
-                self.bars_bot.low_anchor = self.block_bot.get_anchor(type='t')
-                self.bars_bot.high_anchor = self.block_mid.get_anchor(type='b')
-                self.spring_bot.Q.x = self.block_mid.center.x
-                self.spring_bot.Q.y = self.bars_bot.high_anchor.y
-
-                # Move top block
-                # Ensure theta_i is max
-                self.theta_i_top = self.theta_s_top
-                dh = np.sin(self.theta_i_top) * self.bars_top.length
-                dv = np.cos(self.theta_i_top) * self.bars_top.length
-
-                self.block_top.set_position(
-                    _x=self.block_mid.center.x + dh,
-                    _y=self.block_mid.get_anchor(type='t').y + (self.block_top.height/2) - self.block_top.anchor_d + dv
-                )
-                self.bars_top.low_anchor = self.block_mid.get_anchor(type='t')
-                self.bars_top.high_anchor = self.block_top.get_anchor(type='b')
-                self.spring_top.Q.x = self.block_top.center.x
-                self.spring_top.Q.y = self.bars_top.high_anchor.y
-                self.spring_top.P.x = self.block_mid.center.x
-                self.spring_top.P.y = self.block_mid.get_anchor(type='t').y
+                self.move_mid_block(position=position)
+                self.move_top_block(theta=self.theta_s_top)
             if (position >= max_left) and (position <= (max_right - self.d_bot)):
-                # Still need to ensure the bottom block is -theta_s
-                dh = position
-
-                _dh = dh - self.block_top.center.x
-                new_anchor_x_pos = self.bars_top.high_anchor.x + _dh
-                dist = new_anchor_x_pos - self.bars_top.low_anchor.x
-
-                internal = dist / length
-                if internal > 1.0:
-                    frameinfo = getframeinfo(currentframe())
-                    raise ValueError('FILE {0}, LINE {1} : internal = {2}'.format(
-                        frameinfo.filename, frameinfo.lineno, internal))
-
-                self.theta_i_top = np.arcsin(internal)
-
-                dv = np.cos(self.theta_i_top) * length
-                self.block_top.set_position(
-                    _x=dh,
-                    _y=self.block_mid.get_anchor(type='t').y + (self.block_top.height/2) - self.block_top.anchor_d + dv
-                )
-                self.bars_top.low_anchor = self.block_mid.get_anchor(type='t')
-                self.bars_top.high_anchor = self.block_top.get_anchor(type='b')
-                self.spring_top.Q.x = self.block_top.center.x
-                self.spring_top.Q.y = self.bars_top.high_anchor.y
-                self.spring_top.P.x = self.block_mid.center.x
-                self.spring_top.P.y = self.block_mid.get_anchor(type='t').y
+                self.move_mid_block(theta=-self.theta_s_top)
+                self.move_top_block(position=position)
 
     def update_seq_B(self, u_i, forward):
         """
@@ -339,17 +186,24 @@ class Joint:
                 self.move_top_block(position)
 
             if (position >= (max_left + self.d_top)) and (position <= max_right):
-                self.move_bot_block(position=position)
+                self.move_mid_block(position=position)
                 self.move_top_block(theta=self.theta_s_top)
         else:
             if (position <= max_right) and (position > (max_right - self.d_top)):
                 self.move_top_block(position)
 
             if (position <= (max_right - self.d_bot)) and (position >= max_left):
-                self.move_bot_block(position=position)
+                self.move_mid_block(position=position)
                 self.move_top_block(theta=-self.theta_s_top)
 
-    def move_bot_block(self, position=None, theta=None):
+    def move_mid_block(self, position=None, theta=None):
+        """
+        Function to displace the middle block, two possibilities:
+        1: by setting a position in the reference frame of the joint
+        2: by setting an angle
+
+        This will return the displacement that was done.
+        """
         if position is not None:
             length = self.bars_bot.length
             dh = position
@@ -370,6 +224,16 @@ class Joint:
             self.block_mid.set_position(
                 _x=self.block_mid.center.x + _dh,
                 _y=dv + (self.block_mid.height/2) - self.block_mid.anchor_d
+            )
+        
+        if theta is not None:
+            self.theta_i_bot = theta
+            dh = np.sin(self.theta_i_bot) * self.bars_bot.length
+            dv = np.cos(self.theta_i_bot) * self.bars_bot.length
+
+            self.block_mid.set_position(
+                _x=self.block_bot.center.x + dh,
+                _y=self.block_bot.get_anchor(type='t').y + (self.block_mid.height/2) - self.block_mid.anchor_d + dv
             )
 
         self.bars_bot.low_anchor = self.block_bot.get_anchor(type='t')
