@@ -10,22 +10,22 @@
     },
     "robot": {
         "J1": {
-            "sequence": "B",
+            "sequence": "D",
             "invert_y": false,
             "invert_init_angle": false                
         },
         "J2": {
-            "sequence": "B",
+            "sequence": "D",
             "invert_y": false,
             "invert_init_angle": false             
         },
         "J3": {
-            "sequence": "B",
+            "sequence": "D",
             "invert_y": true,
             "invert_init_angle": false
         },
         "J4": {
-            "sequence": "B",
+            "sequence": "D",
             "invert_y": true,
             "invert_init_angle": false  
         }

@@ -16,17 +16,6 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "AAAA 1C No Draw",
-            "type": "python",
-            "request": "launch",
-            "program": "main.py",
-            "cwd": "${workspaceFolder}/robot/",
-            "args": [
-                "--config", "AAAA_S50_C1.json"
-            ],
-            "console": "integratedTerminal"
-        },
-        {
             "name": "BBBB 1C Draw",
             "type": "python",
             "request": "launch",
@@ -34,6 +23,39 @@
             "cwd": "${workspaceFolder}/robot/",
             "args": [
                 "--config", "BBBB_S50_C1_D.json"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "CCCC 1C Draw",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "cwd": "${workspaceFolder}/robot/",
+            "args": [
+                "--config", "CCCC_S50_C1_D.json"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "DDDD 1C Draw",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "cwd": "${workspaceFolder}/robot/",
+            "args": [
+                "--config", "DDDD_S50_C1_D.json"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "AAAA 1C No Draw",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "cwd": "${workspaceFolder}/robot/",
+            "args": [
+                "--config", "AAAA_S50_C1.json"
             ],
             "console": "integratedTerminal"
         },
@@ -47,7 +69,29 @@
                 "--config", "BBBB_S50_C1.json"
             ],
             "console": "integratedTerminal"
-        },     
+        },  
+        {
+            "name": "CCCC 1C No Draw",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "cwd": "${workspaceFolder}/robot/",
+            "args": [
+                "--config", "CCCC_S50_C1.json"
+            ],
+            "console": "integratedTerminal"
+        },  
+        {
+            "name": "DDDD 1C No Draw",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "cwd": "${workspaceFolder}/robot/",
+            "args": [
+                "--config", "DDDD_S50_C1.json"
+            ],
+            "console": "integratedTerminal"
+        },  
         {
             "name": "4 legs contact",
             "type": "python",

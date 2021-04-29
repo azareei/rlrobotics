@@ -239,7 +239,25 @@ class Joint:
         in backward pass.
         00 -> 10 -> 11 -> 10 -> 00
         """
-        pass
+        position = u_i + self.x_offset
+
+        max_left = - (self.d_bot / 2) - (self.d_top / 2)
+        max_right = (self.d_bot / 2) + (self.d_top / 2)
+
+        if forward:
+            if (position >= max_left) and (position < (max_left + self.d_top)):
+                self.move_mid_block(theta=-self.theta_s_bot)
+                self.move_top_block(position=position)
+            if (position >= (max_left + self.d_top)) and (position <= max_right):
+                self.move_mid_block(position=position)
+                self.move_top_block(theta=self.theta_s_top)
+        else:
+            if (position <= max_right) and (position > (max_right - self.d_bot)):
+                self.move_mid_block(position=position)
+                self.move_top_block(theta=self.theta_s_top)
+            if (position <= (max_right - self.d_bot)) and (position >= max_left):
+                self.move_mid_block(theta=-self.theta_s_bot)
+                self.move_top_block(position=position)
 
     def move_mid_block(self, position=None, theta=None):
         """
