@@ -39,7 +39,7 @@ class Robot:
             _invert_y=_invert_y2,
             _invert_init_angle=_invert_init_angle2,
             _bot_color=Utils.yellow,
-            _top_color=Utils.green,
+            _top_color=Utils.black,
             _name='J2'
         )
         self.J3 = Joint(
