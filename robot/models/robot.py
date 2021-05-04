@@ -356,6 +356,7 @@ class Robot:
         )
 
     def draw_angle(self, frame):
+        DISTANCE = 5 / 100
         angle = self.angle[-1]
         pitch = np.rad2deg(angle[0])
         pitch = min(abs(pitch), 10) * np.sign(pitch)
@@ -368,17 +369,17 @@ class Robot:
             frame,
             (
                 Utils.ConvertX_location(0, 'middle'),
-                Utils.ConvertY_location(-5 / 100, 'top')
+                Utils.ConvertY_location(-DISTANCE, 'top')
             ),
             (
                 Utils.ConvertX_location(0, 'middle'),
-                Utils.ConvertY_location(5 / 100, 'top')
+                Utils.ConvertY_location(DISTANCE, 'top')
             ),
             color=Utils.gray,
             thickness=2
         )
         p = (
-            int(Utils.ConvertX_location(5 / 100, 'middle')),
+            int(Utils.ConvertX_location(DISTANCE, 'middle')),
             int(Utils.ConvertY_location(-1 / 100, 'top'))
         )
         cv2.putText(
@@ -394,11 +395,11 @@ class Robot:
         cv2.line(
             frame,
             (
-                Utils.ConvertX_location(-5 / 100, 'middle'),
+                Utils.ConvertX_location(-DISTANCE, 'middle'),
                 Utils.ConvertY_location(0, 'top')
             ),
             (
-                Utils.ConvertX_location(5 / 100, 'middle'),
+                Utils.ConvertX_location(DISTANCE, 'middle'),
                 Utils.ConvertY_location(0, 'top')
             ),
             color=Utils.gray,
@@ -406,7 +407,7 @@ class Robot:
         )
         r = (
             int(Utils.ConvertX_location(1 / 100, 'middle')),
-            int(Utils.ConvertY_location(-5 / 100, 'top'))
+            int(Utils.ConvertY_location(-DISTANCE, 'top'))
         )
         cv2.putText(
             frame,
@@ -439,6 +440,43 @@ class Robot:
             Utils.ConvertCM2PX(2.5 / 100),
             color=Utils.gray,
             thickness=1
+        )
+
+        # SECOND REPRESENTATION PITCH
+        start = (
+            Utils.ConvertX_location(2*DISTANCE * np.cos(angle[0]), 'middle'),
+            Utils.ConvertY_location(2*DISTANCE * np.sin(angle[0]), 'bottom')
+        )
+
+        end = (
+            Utils.ConvertX_location(-2*DISTANCE * np.cos(angle[0]), 'middle'),
+            Utils.ConvertY_location(-2*DISTANCE * np.sin(angle[0]), 'bottom')
+        )
+
+        cv2.line(
+            frame,
+            start,
+            end,
+            color=Utils.gray,
+            thickness=4
+        )
+
+        # SECOND REPRESENTATION ROLL
+        start = (
+            Utils.ConvertX_location(2*DISTANCE * np.sin(angle[1]), 'right'),
+            Utils.ConvertY_location(2*DISTANCE * np.cos(angle[1]), 'middle')
+        )
+
+        end = (
+            Utils.ConvertX_location(-2*DISTANCE * np.sin(angle[1]), 'right'),
+            Utils.ConvertY_location(-2*DISTANCE * np.cos(angle[1]), 'middle')
+        )
+        cv2.line(
+            frame,
+            start,
+            end,
+            color=Utils.gray,
+            thickness=4
         )
 
     def max_actuation(self):
