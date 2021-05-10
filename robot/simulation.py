@@ -309,11 +309,11 @@ class Simulation:
         x = self.data['J1']['c_x']
         z = self.data['J1']['c_z']
 
-        j1_plot = axs[0, 0].scatter(x, z, c=u, cmap=cmap)
+        j1_plot = axs[0, 0].scatter(x-x[0], z-z[0], c=u, cmap=cmap)
         axs[0, 0].set_xlabel('X [m]')
         axs[0, 0].set_ylabel('Z [m]')
         dx, dz = x[int(len(x)/30)] - x[0], z[int(len(z)/30)] - z[0]
-        axs[0, 0].arrow(x[0], z[0], dx, dz, width=1e-4, head_width=1e-3, color=(1, 0, 0, 0.4))
+        axs[0, 0].arrow(0, 0, dx, dz, width=1e-4, head_width=1e-3, color=(0, 0, 0, 0.4))
         axs[0, 0].title.set_text('J1')
 
         # J2
@@ -321,11 +321,11 @@ class Simulation:
         x = self.data['J2']['c_x']
         z = self.data['J2']['c_z']
 
-        j2_plot = axs[0, 1].scatter(x, z, c=u, cmap=cmap)
+        j2_plot = axs[0, 1].scatter(x-x[0], z-z[0], c=u, cmap=cmap)
         axs[0, 1].set_xlabel('X [m]')
         axs[0, 1].set_ylabel('Z [m]')
         dx, dz = x[int(len(x)/25)] - x[0], z[int(len(z)/25)] - z[0]
-        axs[0, 1].arrow(x[0], z[0], dx, dz, width=1e-4, head_width=1e-3, color=(1, 0, 0, 0.4))
+        axs[0, 1].arrow(0, 0, dx, dz, width=1e-4, head_width=1e-3, color=(0, 0, 0, 0.4))
         axs[0, 1].title.set_text('J2')
 
         # J3
@@ -333,11 +333,11 @@ class Simulation:
         x = self.data['J3']['c_x']
         z = self.data['J3']['c_z']
 
-        j3_plot = axs[1, 0].scatter(x, z, c=u, cmap=cmap)
+        j3_plot = axs[1, 0].scatter(x-x[0], z-z[0], c=u, cmap=cmap)
         axs[1, 0].set_xlabel('X [m]')
         axs[1, 0].set_ylabel('Z [m]')
         dx, dz = x[int(len(x)/25)] - x[0], z[int(len(z)/25)] - z[0]
-        axs[1, 0].arrow(x[0], z[0], dx, dz, width=1e-4, head_width=1e-3, color=(1, 0, 0, 0.4))
+        axs[1, 0].arrow(0, 0, dx, dz, width=1e-4, head_width=1e-3, color=(0, 0, 0, 0.4))
         axs[1, 0].title.set_text('J3')
 
         # J4
@@ -345,11 +345,11 @@ class Simulation:
         x = self.data['J4']['c_x']
         z = self.data['J4']['c_z']
 
-        j4_plot = axs[1, 1].scatter(x, z, c=u, cmap=cmap)
+        j4_plot = axs[1, 1].scatter(x-x[0], z-z[0], c=u, cmap=cmap)
         axs[1, 1].set_xlabel('X [m]')
         axs[1, 1].set_ylabel('Z [m]')
         dx, dz = x[int(len(x)/25)] - x[0], z[int(len(z)/25)] - z[0]
-        axs[1, 1].arrow(x[0], z[0], dx, dz, width=1e-4, head_width=1e-3, color=(1, 0, 0, 0.4))
+        axs[1, 1].arrow(0, 0, dx, dz, width=1e-4, head_width=1e-3, color=(0, 0, 0, 0.4))
         axs[1, 1].title.set_text('J4')
 
         plt.colorbar(j1_plot, label='u [m]', ax=axs[0, 0])
