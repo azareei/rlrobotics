@@ -2,7 +2,7 @@
     "simulation":{
         "camera_robot_ref": true,
         "actuation":{
-            "steps": 500,
+            "steps": 50,
             "cycles": 1,
             "phase": 0
         },

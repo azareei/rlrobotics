@@ -89,7 +89,7 @@ class Robot:
             self.position.append(-delta)
         else:
             self.position.append(self.position[-1] - delta)
-        self.angle.append(np.array([pitch, roll, yaw]))
+        self.angle.append([pitch, roll, yaw])
 
     def update_orientation(self):
         """
