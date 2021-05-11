@@ -8,10 +8,10 @@ from inspect import currentframe, getframeinfo
 
 
 class Robot:
-    def __init__(self):
+    def __init__(self, _seq1, _seq2, _seq3, _seq4):
         # Actuation 1
         self.J1 = Joint(
-            'B',
+            _seq1,
             _structure_offset=Coordinate(x=20/100, y=4/100),
             _invert_y=False,
             _invert_init_angle=False,
@@ -20,7 +20,7 @@ class Robot:
             _name='J1'
         )
         self.J4 = Joint(
-            'B',
+            _seq2,
             _structure_offset=Coordinate(x=-20/100, y=-4/100),
             _invert_y=True,
             _invert_init_angle=False,
@@ -31,7 +31,7 @@ class Robot:
 
         # Actuation 2
         self.J2 = Joint(
-            'B',
+            _seq3,
             _structure_offset=Coordinate(x=-20/100, y=4/100),
             _invert_y=False,
             _invert_init_angle=True,
@@ -40,7 +40,7 @@ class Robot:
             _name='J2'
         )
         self.J3 = Joint(
-            'B',
+            _seq4,
             _structure_offset=Coordinate(x=20/100, y=-4/100),
             _invert_y=True,
             _invert_init_angle=True,
@@ -49,7 +49,7 @@ class Robot:
             _name='J3'
         )
 
-        self.position = Coordinate(x=0, y=0, z=0)
+        self.position = []
 
     def update_position(self, actuation_1, actuation_2, actuation_1_dir, actuation_2_dir):
         mov1 = self.J1.update_position(actuation_1, actuation_1_dir)
@@ -68,7 +68,7 @@ class Robot:
         Compute the ground height relative to the robot and compute the displacement of the robot with the legs
         that is touching the floor
         """
-        h = np.array([self.J1.C.z, self.J2.C.z, self.J3.C.z, self.J4.C.z])
+        h = np.array([self.J1.C[-1].z, self.J2.C[-1].z, self.J3.C[-1].z, self.J4.C[-1].z])
         self.ground = max(h)
         _touching_legs = np.where(h == self.ground)
         # Create self.touching = [True, False, True, False] or similar
@@ -99,8 +99,11 @@ class Robot:
             mov_mx_x -= min_mov
             delta_x += np.sum(mov_mx_x)
 
-        self.position.x -= delta_x
-        self.position.y -= delta_y
+        delta = Coordinate(x=delta_x, y=delta_y, z=0)
+        if len(self.position) == 0:
+            self.position.append(-delta)
+        else:
+            self.position.append(self.position[-1] - delta)
 
     def draw(self, frame):
         self.draw_joints(frame)
