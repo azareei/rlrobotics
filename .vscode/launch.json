@@ -11,6 +11,14 @@
             "program": "main.py",
             "cwd": "${workspaceFolder}/one-leg/",
             "console": "integratedTerminal"
+        },
+        {
+            "name": "Multi legs launch",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "cwd": "${workspaceFolder}/robot/",
+            "console": "integratedTerminal"
         }
     ]
 }
