@@ -70,7 +70,8 @@ class Simulation:
             self.save_video(self.blocks_video)
 
         self.save_data()
-        self.plot_legs_movement()
+        self.plot_legs_motion()
+        self.plot_robot_motion()
 
     def draw_blocks(self):
         # Draw blocks
@@ -262,18 +263,23 @@ class Simulation:
         J4 = self.get_joints_data(self.actuation1, self.actuation1_direction, self.robot.J4)
 
         x, y, z = Utils.list_coord2list(self.robot.position)
+
         robot = pd.DataFrame(
             np.array([
                 self.actuation1,
                 self.actuation1_direction,
                 self.actuation2,
                 self.actuation2_direction,
-                x, y, z
+                x, y, z,
+                np.array(self.robot.angle)[:, 0],
+                np.array(self.robot.angle)[:, 1],
+                np.array(self.robot.angle)[:, 2]
             ]).T,
             columns=[
                 'u1', 'u1_dir',
                 'u2', 'u2_dir',
-                'x', 'y', 'z'
+                'x', 'y', 'z',
+                'pitch', 'roll', 'yaw'
             ]
         )
 
@@ -300,7 +306,7 @@ class Simulation:
             self.robot.J4.sequence
         ))
 
-    def plot_legs_movement(self):
+    def plot_legs_motion(self):
         fig, axs = plt.subplots(2, 2, figsize=(20, 15))
         cmap = ListedColormap(sns.color_palette("husl", 256).as_hex())
 
@@ -309,48 +315,48 @@ class Simulation:
         x = self.data['J1']['c_x']
         z = self.data['J1']['c_z']
 
-        j1_plot = axs[0, 0].scatter(x, z, c=u, cmap=cmap)
-        axs[0, 0].set_xlabel('X [m]')
-        axs[0, 0].set_ylabel('Z [m]')
+        j1_plot = axs[0, 0].scatter(x-x[0], z-z[0], c=u, cmap=cmap)
+        axs[1, 1].set_xlabel('X [m]')
+        axs[1, 1].set_ylabel('Z [m]')
         dx, dz = x[int(len(x)/30)] - x[0], z[int(len(z)/30)] - z[0]
-        axs[0, 0].arrow(x[0], z[0], dx, dz, width=1e-4, head_width=1e-3, color=(1, 0, 0, 0.4))
-        axs[0, 0].title.set_text('J1')
+        axs[1, 1].arrow(0, 0, dx, dz, width=1e-4, head_width=1e-3, color=(0, 0, 0, 0.4))
+        axs[1, 1].title.set_text('J1')
 
         # J2
         u = abs(self.data['J2']['u'])
         x = self.data['J2']['c_x']
         z = self.data['J2']['c_z']
 
-        j2_plot = axs[0, 1].scatter(x, z, c=u, cmap=cmap)
-        axs[0, 1].set_xlabel('X [m]')
-        axs[0, 1].set_ylabel('Z [m]')
+        j2_plot = axs[0, 1].scatter(x-x[0], z-z[0], c=u, cmap=cmap)
+        axs[1, 0].set_xlabel('X [m]')
+        axs[1, 0].set_ylabel('Z [m]')
         dx, dz = x[int(len(x)/25)] - x[0], z[int(len(z)/25)] - z[0]
-        axs[0, 1].arrow(x[0], z[0], dx, dz, width=1e-4, head_width=1e-3, color=(1, 0, 0, 0.4))
-        axs[0, 1].title.set_text('J2')
+        axs[1, 0].arrow(0, 0, dx, dz, width=1e-4, head_width=1e-3, color=(0, 0, 0, 0.4))
+        axs[1, 0].title.set_text('J2')
 
         # J3
         u = abs(self.data['J3']['u'])
         x = self.data['J3']['c_x']
         z = self.data['J3']['c_z']
 
-        j3_plot = axs[1, 0].scatter(x, z, c=u, cmap=cmap)
-        axs[1, 0].set_xlabel('X [m]')
-        axs[1, 0].set_ylabel('Z [m]')
+        j3_plot = axs[1, 0].scatter(x-x[0], z-z[0], c=u, cmap=cmap)
+        axs[0, 1].set_xlabel('X [m]')
+        axs[0, 1].set_ylabel('Z [m]')
         dx, dz = x[int(len(x)/25)] - x[0], z[int(len(z)/25)] - z[0]
-        axs[1, 0].arrow(x[0], z[0], dx, dz, width=1e-4, head_width=1e-3, color=(1, 0, 0, 0.4))
-        axs[1, 0].title.set_text('J3')
+        axs[0, 1].arrow(0, 0, dx, dz, width=1e-4, head_width=1e-3, color=(0, 0, 0, 0.4))
+        axs[0, 1].title.set_text('J3')
 
         # J4
         u = abs(self.data['J4']['u'])
         x = self.data['J4']['c_x']
         z = self.data['J4']['c_z']
 
-        j4_plot = axs[1, 1].scatter(x, z, c=u, cmap=cmap)
-        axs[1, 1].set_xlabel('X [m]')
-        axs[1, 1].set_ylabel('Z [m]')
+        j4_plot = axs[1, 1].scatter(x-x[0], z-z[0], c=u, cmap=cmap)
+        axs[0, 0].set_xlabel('X [m]')
+        axs[0, 0].set_ylabel('Z [m]')
         dx, dz = x[int(len(x)/25)] - x[0], z[int(len(z)/25)] - z[0]
-        axs[1, 1].arrow(x[0], z[0], dx, dz, width=1e-4, head_width=1e-3, color=(1, 0, 0, 0.4))
-        axs[1, 1].title.set_text('J4')
+        axs[0, 0].arrow(0, 0, dx, dz, width=1e-4, head_width=1e-3, color=(0, 0, 0, 0.4))
+        axs[0, 0].title.set_text('J4')
 
         plt.colorbar(j1_plot, label='u [m]', ax=axs[0, 0])
         plt.colorbar(j2_plot, label='u [m]', ax=axs[0, 1])
@@ -358,6 +364,38 @@ class Simulation:
         plt.colorbar(j4_plot, label='u [m]', ax=axs[1, 1])
 
         plt.savefig('{0}/blocks/{1}{2}{3}{4}.png'.format(
+            Path(__file__).resolve().parent,
+            self.robot.J1.sequence,
+            self.robot.J2.sequence,
+            self.robot.J3.sequence,
+            self.robot.J4.sequence
+        ))
+
+    def plot_robot_motion(self):
+        fig, axs = plt.subplots(3, 1, figsize=(10, 15))
+
+        # X Axis is shared among subplots
+        t = range(len(self.actuation1))
+
+        # X Position
+        x = self.data['robot']['x']
+        y = self.data['robot']['y']
+        yaw = self.data['robot']['yaw']
+
+        axs[0].plot(t, x - x[0], linewidth=3)
+        axs[0].set_ylabel('x [m]')
+
+        axs[1].plot(t, y - y[0], linewidth=3)
+        axs[1].set_ylabel('y [m]')
+
+        axs[2].plot(t, yaw - yaw[0], linewidth=3)
+        axs[2].set_ylabel('yaw [rad]')
+        axs[2].set_xlabel('Step')
+
+        plt.setp(axs[0].get_xticklabels(), visible=False)
+        plt.setp(axs[1].get_xticklabels(), visible=False)
+
+        plt.savefig('{0}/blocks/{1}{2}{3}{4}_motion.png'.format(
             Path(__file__).resolve().parent,
             self.robot.J1.sequence,
             self.robot.J2.sequence,
