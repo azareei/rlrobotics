@@ -271,28 +271,23 @@ class Joint:
 
     def update_seq_E(self, u_i, forward):
         """
-        Cycle where first top block move in forward pass, but mid block move first
-        in backward pass.
-        00 -> 10 -> 11 -> 10 -> 00
+        Cycle where both blocks are moving at the same time
+        00 -> 11 -> 00
         """
         position = u_i + self.x_offset
+        delta_position = position - self.block_top.center.x
+        half_position = position - (delta_position / 2)
 
         max_left = - (self.d_bot / 2) - (self.d_top / 2)
         max_right = (self.d_bot / 2) + (self.d_top / 2)
 
         if forward:
-            if (position >= max_left) and (position < (max_left + self.d_top)):
-                self.move_mid_block(theta=-self.theta_s_bot)
+            if (position >= max_left) and (position <= max_right):
+                self.move_mid_block(position=half_position)
                 self.move_top_block(position=position)
-            if (position >= (max_left + self.d_top)) and (position <= max_right):
-                self.move_mid_block(position=position)
-                self.move_top_block(theta=self.theta_s_top)
         else:
-            if (position <= max_right) and (position > (max_right - self.d_bot)):
-                self.move_mid_block(position=position)
-                self.move_top_block(theta=self.theta_s_top)
-            if (position <= (max_right - self.d_bot)) and (position >= max_left):
-                self.move_mid_block(theta=-self.theta_s_bot)
+            if (position <= max_right) and (position >= max_left):
+                self.move_mid_block(position=half_position)
                 self.move_top_block(position=position)
 
     def update_seq_F(self, u_i, forward):
