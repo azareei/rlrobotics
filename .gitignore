@@ -3,6 +3,7 @@
 *.mp4
 *.pkl
 *.csv
+!/robot/Results/Sequences/*.png
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
