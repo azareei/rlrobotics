@@ -371,6 +371,24 @@ class Simulation:
             self.robot.J4.sequence
         ))
 
+        # J1
+        u = abs(self.data['J1']['u'])
+        x = self.data['J1']['c_x']
+        z = self.data['J1']['c_z']
+
+        # Uncomment to plot only leg 1
+        # plt.figure(figsize=(10, 7))
+        # plt.scatter(x-x[0], z-z[0], c=u, cmap=cmap)
+        # plt.xlabel('X [m]')
+        # plt.ylabel('Z [m]')
+        # dx, dz = x[int(len(x)/30)] - x[0], z[int(len(z)/30)] - z[0]
+        # plt.arrow(0, 0, dx, dz, width=1e-4, head_width=1e-3, color=(0, 0, 0, 0.4))
+        # plt.title('Sequence {}'.format(self.robot.J1.sequence))
+        # plt.savefig('{0}/blocks/{1}.png'.format(
+        #     Path(__file__).resolve().parent,
+        #     self.robot.J1.sequence,
+        # ))
+
     def plot_robot_motion(self):
         fig, axs = plt.subplots(3, 1, figsize=(10, 15))
 
