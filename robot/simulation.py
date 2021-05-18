@@ -10,6 +10,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from matplotlib.colors import ListedColormap
 import seaborn as sns
+import matplotlib.patches as mpatches
 
 
 class Simulation:
@@ -371,19 +372,30 @@ class Simulation:
             self.robot.J4.sequence
         ))
 
-        # J1
-        u = abs(self.data['J1']['u'])
-        x = self.data['J1']['c_x']
-        z = self.data['J1']['c_z']
+        # # J1
+        # u = abs(self.data['J1']['u'])
+        # x = self.data['J1']['c_x']
+        # z = self.data['J1']['c_z']
 
-        # Uncomment to plot only leg 1
-        # plt.figure(figsize=(10, 7))
-        # plt.scatter(x-x[0], z-z[0], c=u, cmap=cmap)
+        # # Uncomment to plot only leg 1
+        # _, axs = plt.subplots(1, 1, figsize=(10, 7))
+        # p = plt.scatter(x-x[0], z-z[0], c=u, cmap=cmap)
         # plt.xlabel('X [m]')
         # plt.ylabel('Z [m]')
         # dx, dz = x[int(len(x)/30)] - x[0], z[int(len(z)/30)] - z[0]
-        # plt.arrow(0, 0, dx, dz, width=1e-4, head_width=1e-3, color=(0, 0, 0, 0.4))
+        # arrow = mpatches.FancyArrowPatch(
+        #     (0, 0),
+        #     (dx, dz),
+        #     arrowstyle='simple',
+        #     mutation_scale=10,
+        #     fc=(0, 0, 0, 0.4),
+        #     ec=(0, 0, 0, 0.4)
+        # )
+        # axs.add_patch(arrow)
+        # axs.set_xlim(left=-1e-3, right=None)
+        # axs.set_ylim(bottom=-1e-4, top=None)
         # plt.title('Sequence {}'.format(self.robot.J1.sequence))
+        # plt.colorbar(p, label='u [m]', ax=axs)
         # plt.savefig('{0}/blocks/{1}.png'.format(
         #     Path(__file__).resolve().parent,
         #     self.robot.J1.sequence,
