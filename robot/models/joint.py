@@ -225,7 +225,6 @@ class Joint:
             if (position <= max_right) and (position > (max_right - self.d_top)):
                 self.move_mid_block(theta=self.theta_s_bot)
                 self.move_top_block(position=position)
-
             if (position <= (max_right - self.d_bot)) and (position >= max_left):
                 self.move_mid_block(position=position)
                 self.move_top_block(theta=-self.theta_s_top)
@@ -362,6 +361,27 @@ class Joint:
         """
         00 -> 01 -> 11 -> 10 -> 01 -> 00
         """
+        position = u_i + self.x_offset
+
+        max_left = - (self.d_bot / 2) - (self.d_top / 2)
+        max_right = (self.d_bot / 2) + (self.d_top / 2)
+
+        if forward:
+            if (position >= max_left) and (position < (max_left + self.d_top)):
+                self.move_mid_block(theta=-self.theta_s_bot)
+                self.move_top_block(position=position)
+
+            if (position >= (max_left + self.d_top)) and (position <= max_right):
+                self.move_mid_block(position=position)
+                self.move_top_block(theta=self.theta_s_top)
+        else:
+            if (position <= max_right) and (position > (max_right - self.d_top)):
+                self.move_mid_block(theta=self.theta_s_bot)
+                self.move_top_block(position=position)
+                # Would need a transition between this jump
+            if (position >= max_left) and (position <= (max_right - self.d_bot)):
+                self.move_mid_block(theta=-self.theta_s_top)
+                self.move_top_block(position=position)
         pass
 
     def update_seq_I(self, u_i, forward):
