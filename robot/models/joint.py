@@ -163,6 +163,19 @@ class Joint:
             self.update_seq_H(u_i, forward)
         elif self.sequence == 'I':
             self.update_seq_I(u_i, forward)
+        elif self.sequence == 'J':
+            self.update_seq_J(u_i, forward)
+        elif self.sequence == 'K':
+            self.update_seq_K(u_i, forward)
+        elif self.sequence == 'L':
+            self.update_seq_L(u_i, forward)
+        elif self.sequence == 'M':
+            self.update_seq_M(u_i, forward)
+        elif self.sequence == 'N':
+            self.update_seq_N(u_i, forward)
+        elif self.sequence == 'O':
+            self.update_seq_O(u_i, forward)
+
         return self.update_legs()
 
     def update_seq_A(self, u_i, forward):
@@ -271,6 +284,42 @@ class Joint:
 
     def update_seq_E(self, u_i, forward):
         """
+        00 -> 10 -> 01 -> 11 -> 01 -> 00
+        """
+        pass
+
+    def update_seq_F(self, u_i, forward):
+        """
+        00 -> 01 -> 10 -> 11 -> 10 -> 00
+        """
+        pass
+
+    def update_seq_G(self, u_i, forward):
+        """
+        00 -> 10 -> 11 -> 01 -> 10 -> 00
+        """
+        pass
+
+    def update_seq_H(self, u_i, forward):
+        """
+        00 -> 01 -> 11 -> 10 -> 01 -> 00
+        """
+        pass
+
+    def update_seq_I(self, u_i, forward):
+        """
+        00 -> 10 -> 01 -> 11 -> 01 -> 10 -> 00
+        """
+        pass
+
+    def update_seq_J(self, u_i, forward):
+        """
+        00 -> 01 -> 10 -> 11 -> 10 -> 01 -> 00
+        """
+        pass
+
+    def update_seq_K(self, u_i, forward):
+        """
         Cycle where both blocks are moving at the same time
         00 -> 11 -> 00
         """
@@ -290,7 +339,7 @@ class Joint:
                 self.move_mid_block(position=half_position)
                 self.move_top_block(position=position)
 
-    def update_seq_F(self, u_i, forward):
+    def update_seq_L(self, u_i, forward):
         """
         Cycle where in forward motion both block move at the same time
         but in backward motion top block is moving first
@@ -316,7 +365,7 @@ class Joint:
                 self.move_mid_block(position=position)
                 self.move_top_block(theta=-self.theta_s_top)
 
-    def update_seq_G(self, u_i, forward):
+    def update_seq_M(self, u_i, forward):
         """
         Cycle where in forward motion both block move at the same time
         but in backward motion middle block is moving first
@@ -341,7 +390,7 @@ class Joint:
                 self.move_mid_block(theta=-self.theta_s_top)
                 self.move_top_block(position=position)
 
-    def update_seq_H(self, u_i, forward):
+    def update_seq_N(self, u_i, forward):
         """
         Cycle where in backward motion both block move at the same time
         but in forward motion middle block is moving first
@@ -366,7 +415,7 @@ class Joint:
                 self.move_mid_block(position=half_position)
                 self.move_top_block(position=position)
 
-    def update_seq_I(self, u_i, forward):
+    def update_seq_O(self, u_i, forward):
         """
         Cycle where first top block move in forward pass, but mid block move first
         in backward pass.
