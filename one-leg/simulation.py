@@ -19,7 +19,7 @@ class Simulation:
 
     def simulate(self):
         steps = 100
-        self.init_video('{0}/blocks/out.mp4'.format(Path(__file__).resolve().parent))
+        self.init_video(f'{Path(__file__).resolve().parent}/blocks/out.mp4')
         self.x = np.linspace(0, 3.46 / 100 * 4, num=steps)
         offset = 4 / 100
         for x_i, s in zip(self.x, range(steps)):
@@ -63,7 +63,7 @@ class Simulation:
         self.video.write(self.frame)
 
     def gen_leg_animation(self):
-        self.init_video('{0}/legs/leg.mp4'.format(Path(__file__).resolve().parent))
+        self.init_video(f'{Path(__file__).resolve().parent}/legs/leg.mp4')
         for A, B, C in zip(self.A, self.B, self.C):
             self.new_frame()
             self.frame = cv2.line(

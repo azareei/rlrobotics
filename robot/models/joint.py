@@ -102,7 +102,6 @@ class Joint:
         # Compute Theta_s - limits of the angle for the bar.
         self.theta_s_bot = np.arccos(2 * self.block_bot.anchor_d / self.bars_bot.length)
         self.theta_s_top = np.arccos(2 * self.block_mid.anchor_d / self.bars_top.length)
-        # print("Theta S : {}".format(self.theta_s_top))
 
         self.theta_i_bot = 0
         self.theta_i_top = 0
@@ -145,37 +144,8 @@ class Joint:
             Coordinate vector corresponding to the translation before and
             after the displacement of the legs.
         """
-        if self.sequence == 'A':
-            self.update_seq_A(u_i, forward)
-        elif self.sequence == 'B':
-            self.update_seq_B(u_i, forward)
-        elif self.sequence == 'C':
-            self.update_seq_C(u_i, forward)
-        elif self.sequence == 'D':
-            self.update_seq_D(u_i, forward)
-        elif self.sequence == 'E':
-            self.update_seq_E(u_i, forward)
-        elif self.sequence == 'F':
-            self.update_seq_F(u_i, forward)
-        elif self.sequence == 'G':
-            self.update_seq_G(u_i, forward)
-        elif self.sequence == 'H':
-            self.update_seq_H(u_i, forward)
-        elif self.sequence == 'I':
-            self.update_seq_I(u_i, forward)
-        elif self.sequence == 'J':
-            self.update_seq_J(u_i, forward)
-        elif self.sequence == 'K':
-            self.update_seq_K(u_i, forward)
-        elif self.sequence == 'L':
-            self.update_seq_L(u_i, forward)
-        elif self.sequence == 'M':
-            self.update_seq_M(u_i, forward)
-        elif self.sequence == 'N':
-            self.update_seq_N(u_i, forward)
-        elif self.sequence == 'O':
-            self.update_seq_O(u_i, forward)
-
+        # Call the right funcion for the joint sequence update_seq_G for example
+        getattr(self, f'update_seq_{self.sequence}')(u_i, forward)
         return self.update_legs()
 
     def update_seq_A(self, u_i, forward):
@@ -761,3 +731,4 @@ class Joint:
             thickness=legs_thickness
         )
         return frame
+

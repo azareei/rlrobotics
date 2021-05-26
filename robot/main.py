@@ -14,7 +14,7 @@ args = parser.parse_args()
 
 
 def initialize_env():
-    with open('{0}/config/{1}'.format(Path(__file__).resolve().parent, args.config)) as param_file:
+    with open(f'{Path(__file__).resolve().parent}/config/{args.config}') as param_file:
         params = json.load(param_file)
 
     global sim

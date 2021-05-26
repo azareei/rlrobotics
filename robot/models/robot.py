@@ -273,7 +273,7 @@ class Robot:
         a_pitch = Utils.angle_correction(a_pitch)
         a_roll = Utils.angle_correction(a_roll)
 
-        print("{} {}".format(a_pitch, a_roll))
+        print(f"{a_pitch} {a_roll}")
         return a_pitch, a_roll
 
     def update_ground(self, pitch, roll):
@@ -384,7 +384,7 @@ class Robot:
         )
         cv2.putText(
             frame,
-            'Pitch {0:0.1f}'.format(pitch),
+            f'Pitch {pitch:.1f}',
             p,
             Utils.font,
             Utils.fontScale,
@@ -411,7 +411,7 @@ class Robot:
         )
         cv2.putText(
             frame,
-            'Roll {:0.1f}'.format(roll),
+            f'Roll {roll:.1f}',
             r,
             Utils.font,
             Utils.fontScale,

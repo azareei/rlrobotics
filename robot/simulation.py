@@ -57,14 +57,14 @@ class Simulation:
                                          range(len(self.actuation1))):
 
             if s % 20 == 0:
-                print('step : {}'.format(s))
+                print(f'step : {s}')
             self.robot.update_position(a_1, a_2, d_1, d_2)
             if self.draw:
                 self.draw_blocks()
 
         end_time = time.time()
 
-        print("Simulation time : {0:.2f}s".format(end_time - start_time))
+        print(f'Simulation time : {(end_time - start_time):.2f}s')
 
         if self.draw:
             self.save_video(self.blocks_video)
