@@ -102,7 +102,6 @@ class Joint:
         # Compute Theta_s - limits of the angle for the bar.
         self.theta_s_bot = np.arccos(2 * self.block_bot.anchor_d / self.bars_bot.length)
         self.theta_s_top = np.arccos(2 * self.block_mid.anchor_d / self.bars_top.length)
-        # print("Theta S : {}".format(self.theta_s_top))
 
         self.theta_i_bot = 0
         self.theta_i_top = 0
@@ -145,30 +144,14 @@ class Joint:
             Coordinate vector corresponding to the translation before and
             after the displacement of the legs.
         """
-        if self.sequence == 'A':
-            self.update_seq_A(u_i, forward)
-        elif self.sequence == 'B':
-            self.update_seq_B(u_i, forward)
-        elif self.sequence == 'C':
-            self.update_seq_C(u_i, forward)
-        elif self.sequence == 'D':
-            self.update_seq_D(u_i, forward)
-        elif self.sequence == 'E':
-            self.update_seq_E(u_i, forward)
-        elif self.sequence == 'F':
-            self.update_seq_F(u_i, forward)
-        elif self.sequence == 'G':
-            self.update_seq_G(u_i, forward)
-        elif self.sequence == 'H':
-            self.update_seq_H(u_i, forward)
-        elif self.sequence == 'I':
-            self.update_seq_I(u_i, forward)
+        # Call the right funcion for the joint sequence update_seq_G for example
+        getattr(self, f'update_seq_{self.sequence}')(u_i, forward)
         return self.update_legs()
 
     def update_seq_A(self, u_i, forward):
         """
         Cyclic sequence where mid block always move first
-        00 -> 01 -> 11 -> 10 -> 00
+        00 -> 10 -> 11 -> 01 -> 00
         """
         position = u_i + self.x_offset
 
@@ -193,7 +176,7 @@ class Joint:
     def update_seq_B(self, u_i, forward):
         """
         Cyclic sequence where top block always move first
-        00 -> 10 -> 11 -> 01 -> 00
+        00 -> 01 -> 11 -> 10 -> 00
         """
         position = u_i + self.x_offset
 
@@ -204,7 +187,6 @@ class Joint:
             if (position >= max_left) and (position < (max_left + self.d_top)):
                 self.move_mid_block(theta=-self.theta_s_bot)
                 self.move_top_block(position=position)
-
             if (position >= (max_left + self.d_top)) and (position <= max_right):
                 self.move_mid_block(position=position)
                 self.move_top_block(theta=self.theta_s_top)
@@ -212,7 +194,6 @@ class Joint:
             if (position <= max_right) and (position > (max_right - self.d_top)):
                 self.move_mid_block(theta=self.theta_s_bot)
                 self.move_top_block(position=position)
-
             if (position <= (max_right - self.d_bot)) and (position >= max_left):
                 self.move_mid_block(position=position)
                 self.move_top_block(theta=-self.theta_s_top)
@@ -221,7 +202,7 @@ class Joint:
         """
         Cycle where first mid block move in forward pass, but top block move first
         in backward pass.
-        00 -> 01 -> 11 -> 01 -> 00
+        00 -> 10 -> 11 -> 10 -> 00
         """
         position = u_i + self.x_offset
 
@@ -247,7 +228,7 @@ class Joint:
         """
         Cycle where first top block move in forward pass, but mid block move first
         in backward pass.
-        00 -> 10 -> 11 -> 10 -> 00
+        00 -> 01 -> 11 -> 01 -> 00
         """
         position = u_i + self.x_offset
 
@@ -271,6 +252,161 @@ class Joint:
 
     def update_seq_E(self, u_i, forward):
         """
+        00 -> 10 -> 01 -> 11 -> 01 -> 00
+        """
+        position = u_i + self.x_offset
+
+        max_left = - (self.d_bot / 2) - (self.d_top / 2)
+        max_right = (self.d_bot / 2) + (self.d_top / 2)
+
+        if forward:
+            if (position >= max_left) and (position < (max_left + self.d_bot)):
+                self.move_mid_block(position=position)
+                self.move_top_block(theta=-self.theta_s_top)
+                # Would need a transition between this jump (10 -> 01)
+            if (position >= (max_left + self.d_top)) and (position <= max_right):
+                self.move_mid_block(position=position)
+                self.move_top_block(theta=self.theta_s_top)
+        else:
+            if (position <= max_right) and (position > (max_right - self.d_bot)):
+                self.move_mid_block(position=position)
+                self.move_top_block(theta=self.theta_s_top)
+            if (position >= max_left) and (position <= (max_right - self.d_bot)):
+                self.move_mid_block(theta=-self.theta_s_top)
+                self.move_top_block(position=position)
+
+    def update_seq_F(self, u_i, forward):
+        """
+        00 -> 01 -> 10 -> 11 -> 10 -> 00
+        """
+        position = u_i + self.x_offset
+
+        max_left = - (self.d_bot / 2) - (self.d_top / 2)
+        max_right = (self.d_bot / 2) + (self.d_top / 2)
+
+        if forward:
+            if (position >= max_left) and (position < (max_left + self.d_top)):
+                self.move_mid_block(theta=-self.theta_s_bot)
+                self.move_top_block(position=position)
+                # Would need a transition between this jump
+            if (position >= (max_left + self.d_bot)) and (position <= max_right):
+                self.move_mid_block(theta=self.theta_s_top)
+                self.move_top_block(position=position)
+        else:
+            if (position <= max_right) and (position > (max_right - self.d_top)):
+                self.move_mid_block(theta=self.theta_s_bot)
+                self.move_top_block(position=position)
+
+            if (position <= (max_right - self.d_bot)) and (position >= max_left):
+                self.move_mid_block(position=position)
+                self.move_top_block(theta=-self.theta_s_top)            
+
+    def update_seq_G(self, u_i, forward):
+        """
+        00 -> 10 -> 11 -> 01 -> 10 -> 00
+        """
+        position = u_i + self.x_offset
+
+        max_left = - (self.d_bot / 2) - (self.d_top / 2)
+        max_right = (self.d_bot / 2) + (self.d_top / 2)
+
+        if forward:
+            if (position >= max_left) and (position < (max_left + self.d_bot)):
+                self.move_mid_block(position=position)
+                self.move_top_block(theta=-self.theta_s_top)
+            if (position >= (max_left + self.d_bot)) and (position <= max_right):
+                self.move_mid_block(theta=self.theta_s_top)
+                self.move_top_block(position=position)
+        else:
+            if (position <= max_right) and (position > (max_right - self.d_bot)):
+                self.move_mid_block(position=position)
+                self.move_top_block(theta=self.theta_s_top)
+                # Would need a transition between this jump
+            if (position <= (max_right - self.d_bot)) and (position >= max_left):
+                self.move_mid_block(position=position)
+                self.move_top_block(theta=-self.theta_s_top)
+
+    def update_seq_H(self, u_i, forward):
+        """
+        00 -> 01 -> 11 -> 10 -> 01 -> 00
+        """
+        position = u_i + self.x_offset
+
+        max_left = - (self.d_bot / 2) - (self.d_top / 2)
+        max_right = (self.d_bot / 2) + (self.d_top / 2)
+
+        if forward:
+            if (position >= max_left) and (position < (max_left + self.d_top)):
+                self.move_mid_block(theta=-self.theta_s_bot)
+                self.move_top_block(position=position)
+
+            if (position >= (max_left + self.d_top)) and (position <= max_right):
+                self.move_mid_block(position=position)
+                self.move_top_block(theta=self.theta_s_top)
+        else:
+            if (position <= max_right) and (position > (max_right - self.d_top)):
+                self.move_mid_block(theta=self.theta_s_bot)
+                self.move_top_block(position=position)
+                # Would need a transition between this jump
+            if (position >= max_left) and (position <= (max_right - self.d_bot)):
+                self.move_mid_block(theta=-self.theta_s_top)
+                self.move_top_block(position=position)
+        pass
+
+    def update_seq_I(self, u_i, forward):
+        """
+        00 -> 10 -> 01 -> 11 -> 01 -> 10 -> 00
+        """
+        position = u_i + self.x_offset
+
+        max_left = - (self.d_bot / 2) - (self.d_top / 2)
+        max_right = (self.d_bot / 2) + (self.d_top / 2)
+
+        if forward:
+            if (position >= max_left) and (position < (max_left + self.d_bot)):
+                self.move_mid_block(position=position)
+                self.move_top_block(theta=-self.theta_s_top)
+                # Would need a transition between this jump
+            if (position >= (max_left + self.d_top)) and (position <= max_right):
+                self.move_mid_block(position=position)
+                self.move_top_block(theta=self.theta_s_top)
+        else:
+            if (position <= max_right) and (position > (max_right - self.d_bot)):
+                self.move_mid_block(position=position)
+                self.move_top_block(theta=self.theta_s_top)
+                # Would need a transition between this jump
+            if (position <= (max_right - self.d_bot)) and (position >= max_left):
+                self.move_mid_block(position=position)
+                self.move_top_block(theta=-self.theta_s_top)
+
+    def update_seq_J(self, u_i, forward):
+        """
+        00 -> 01 -> 10 -> 11 -> 10 -> 01 -> 00
+        """
+        position = u_i + self.x_offset
+
+        max_left = - (self.d_bot / 2) - (self.d_top / 2)
+        max_right = (self.d_bot / 2) + (self.d_top / 2)
+
+        if forward:
+            if (position >= max_left) and (position < (max_left + self.d_top)):
+                self.move_mid_block(theta=-self.theta_s_bot)
+                self.move_top_block(position=position)
+                # Would need a transition between this jump
+            if (position >= (max_left + self.d_bot)) and (position <= max_right):
+                self.move_mid_block(theta=self.theta_s_top)
+                self.move_top_block(position=position)
+        else:
+            if (position <= max_right) and (position > (max_right - self.d_bot)):
+                self.move_mid_block(position=position)
+                self.move_top_block(theta=self.theta_s_top)
+                # Would need a transition between this jump
+            if (position <= (max_right - self.d_bot)) and (position >= max_left):
+                self.move_mid_block(position=position)
+                self.move_top_block(theta=-self.theta_s_top)
+
+    def update_seq_K(self, u_i, forward):
+        """
         Cycle where both blocks are moving at the same time
         00 -> 11 -> 00
         """
@@ -290,7 +426,7 @@ class Joint:
                 self.move_mid_block(position=half_position)
                 self.move_top_block(position=position)
 
-    def update_seq_F(self, u_i, forward):
+    def update_seq_L(self, u_i, forward):
         """
         Cycle where in forward motion both block move at the same time
         but in backward motion top block is moving first
@@ -316,7 +452,7 @@ class Joint:
                 self.move_mid_block(position=position)
                 self.move_top_block(theta=-self.theta_s_top)
 
-    def update_seq_G(self, u_i, forward):
+    def update_seq_M(self, u_i, forward):
         """
         Cycle where in forward motion both block move at the same time
         but in backward motion middle block is moving first
@@ -341,7 +477,7 @@ class Joint:
                 self.move_mid_block(theta=-self.theta_s_top)
                 self.move_top_block(position=position)
 
-    def update_seq_H(self, u_i, forward):
+    def update_seq_N(self, u_i, forward):
         """
         Cycle where in backward motion both block move at the same time
         but in forward motion middle block is moving first
@@ -366,7 +502,7 @@ class Joint:
                 self.move_mid_block(position=half_position)
                 self.move_top_block(position=position)
 
-    def update_seq_I(self, u_i, forward):
+    def update_seq_O(self, u_i, forward):
         """
         Cycle where first top block move in forward pass, but mid block move first
         in backward pass.
@@ -595,3 +731,4 @@ class Joint:
             thickness=legs_thickness
         )
         return frame
+

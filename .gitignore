@@ -4,6 +4,7 @@
 *.pkl
 *.csv
 !/robot/Results/Sequences/*.png
+.VSCodeCounter/*
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
