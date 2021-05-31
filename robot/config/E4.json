@@ -4,7 +4,7 @@
         "actuation":{
             "steps": 50,
             "cycles": 1,
-            "phase": 180
+            "phase": 0
         },
         "draw": true
     },

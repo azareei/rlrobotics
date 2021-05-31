@@ -177,7 +177,7 @@ class Simulation:
         # Get maximum actuation movement
         steps = self.actuation_steps
         max_1, max_2 = self.robot.max_actuation()
-        if phase == 180:
+        if phase == 0:
             self.actuation1_direction = np.concatenate(
                 (np.zeros(steps), np.ones(steps)), axis=0
             ) < 1
@@ -201,7 +201,7 @@ class Simulation:
                 ),
                 axis=0
             )
-        elif phase == 0:
+        elif phase == 180:
             self.actuation1_direction = np.concatenate(
                 (np.zeros(steps), np.ones(steps)), axis=0
             ) < 1
