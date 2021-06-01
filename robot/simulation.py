@@ -10,7 +10,6 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from matplotlib.colors import ListedColormap
 import seaborn as sns
-import matplotlib.patches as mpatches
 
 
 class Simulation:
