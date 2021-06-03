@@ -1,0 +1,33 @@
+{
+    "simulation":{
+        "camera_robot_ref": true,
+        "actuation":{
+            "steps": 50,
+            "cycles": 1,
+            "phase": 0
+        },
+        "draw": false
+    },
+    "robot": {
+        "J1": {
+            "sequence": "H",
+            "invert_y": false,
+            "invert_init_angle": false                
+        },
+        "J2": {
+            "sequence": "H",
+            "invert_y": false,
+            "invert_init_angle": false             
+        },
+        "J3": {
+            "sequence": "H",
+            "invert_y": true,
+            "invert_init_angle": false
+        },
+        "J4": {
+            "sequence": "H",
+            "invert_y": true,
+            "invert_init_angle": false  
+        }
+    }
+}

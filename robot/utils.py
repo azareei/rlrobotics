@@ -1,5 +1,7 @@
 import cv2
 from coordinates import Coordinate
+import numpy as np
+from numpy.linalg import norm
 
 
 class Utils:
@@ -9,6 +11,8 @@ class Utils:
     FPS = 30
     HALF_HEIGHT = int(HEIGHT / 2)
     HALF_WIDTH = int(WIDTH / 2)
+    PI = np.pi
+    HALF_PI = np.pi / 2
 
     # LEGS Settings
     LEG_OFFSET = 4 / 100
@@ -20,9 +24,10 @@ class Utils:
     yellow = (5, 226, 252)
     red = (0, 0, 255)
     light_gray = (200, 200, 200)
+    gray = (100, 100, 100)
 
     # Text settings
-    font = cv2.FONT_HERSHEY_SIMPLEX
+    font = cv2.FONT_HERSHEY_PLAIN
     fontScale = 1
     text_thickness = 2
 
@@ -30,6 +35,9 @@ class Utils:
 
     draw_offset_x = 0
     draw_offset_y = 0
+
+    def ConvertCM2PX(d):
+        return int(d * Utils.ZOOM)
 
     def ConvertX(p):
         return int((p + Utils.draw_offset_x) * Utils.ZOOM + Utils.HALF_WIDTH)
@@ -42,12 +50,16 @@ class Utils:
             return int(Utils.ConvertX(p) + (Utils.WIDTH / 3))
         elif location == 'left':
             return int(Utils.ConvertX(p) - (Utils.WIDTH / 3))
+        elif location == 'middle':
+            return Utils.ConvertX(p)
 
     def ConvertY_location(p, location):
         if location == 'bottom':
             return int(Utils.ConvertY(p) + (Utils.WIDTH / 4))
         elif location == 'top':
             return int(Utils.ConvertY(p) - (Utils.WIDTH / 4))
+        elif location == 'middle':
+            return Utils.ConvertY(p)
 
     def Pixel2Coordinate(_x, _y):
         return Coordinate(
@@ -66,3 +78,34 @@ class Utils:
         z = [c.z for c in list_coordinates]
 
         return x, y, z
+
+    def angle2ground(v):
+        """
+        Compute pitch and roll angle to a ground plane
+        """
+
+        w_roll = np.array([0, 1])
+        w_pitch = np.array([0, 1])
+
+        v_roll = np.array([v[1], v[2]])
+        v_pitch = np.array([v[0], v[2]])
+
+        roll = np.arccos(v_roll.dot(w_roll) / (norm(v_roll) * norm(w_roll)))
+        pitch = np.arccos(v_pitch.dot(w_pitch) / (norm(v_pitch) * norm(w_pitch)))
+        if np.isnan(roll):
+            roll = 0.0
+            print("roll nan")
+        if np.isnan(pitch):
+            pitch = 0.0
+            print("pitch nan")
+        return pitch * np.sign(np.cross(v_pitch, w_pitch)), roll * np.sign(np.cross(v_roll, w_roll))
+
+    def angle_correction(angle):
+        """
+        Correct a input angle to an angle between
+        -pi/2 and pi/2
+        """
+        if abs(angle) > Utils.HALF_PI:
+            return np.sign(angle) * ((abs(angle) % Utils.PI) - Utils.PI)
+        else:
+            return angle

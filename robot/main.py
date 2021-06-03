@@ -1,11 +1,24 @@
 from simulation import Simulation
+import argparse
+import json
+from pathlib import Path
 
 sim = None
 
+parser = argparse.ArgumentParser(description='')
+parser.add_argument('--config',
+                    type=str,
+                    default='config1.json',
+                    help='Choose which file from config folder to load')
+args = parser.parse_args()
+
 
 def initialize_env():
+    with open(f'{Path(__file__).resolve().parent}/config/{args.config}') as param_file:
+        params = json.load(param_file)
+
     global sim
-    sim = Simulation()
+    sim = Simulation(params)
 
 
 def simulate():

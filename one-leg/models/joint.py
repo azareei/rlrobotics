@@ -66,7 +66,7 @@ class Joint:
         # Compute Theta_s - limits of the angle for the bar.
         self.theta_s_bot = np.arccos(2 * self.block_bot.anchor_d / self.bars_bot.length)
         self.theta_s_top = np.arccos(2 * self.block_mid.anchor_d / self.bars_top.length)
-        print("Theta S : {}".format(self.theta_s_top))
+        print(f'Theta S : {self.theta_s_top}')
 
         self.theta_i_bot = 0
         self.theta_i_top = 0
