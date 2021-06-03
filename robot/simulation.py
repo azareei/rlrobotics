@@ -17,18 +17,8 @@ class Simulation:
         s = params[0]['simulation']
         r = params[0]['robot']
         self.robot = Robot(
-            _seq1=r['J1']['sequence'],
-            _invert_y1=r['J1']['invert_y'],
-            _invert_init_angle1=r['J1']['invert_init_angle'],
-            _seq2=r['J2']['sequence'],
-            _invert_y2=r['J2']['invert_y'],
-            _invert_init_angle2=r['J2']['invert_init_angle'],
-            _seq3=r['J3']['sequence'],
-            _invert_y3=r['J3']['invert_y'],
-            _invert_init_angle3=r['J3']['invert_init_angle'],
-            _seq4=r['J4']['sequence'],
-            _invert_y4=r['J4']['invert_y'],
-            _invert_init_angle4=r['J4']['invert_init_angle']
+            _J1=r['J1'], _J2=r['J2'],
+            _J3=r['J3'], _J4=r['J4']
         )
 
         self.camera_in_robot_ref = s['camera_robot_ref']

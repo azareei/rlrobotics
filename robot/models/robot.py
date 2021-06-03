@@ -7,26 +7,30 @@ import numpy.ma as ma
 
 
 class Robot:
-    def __init__(self,
-                 _seq1, _invert_y1, _invert_init_angle1,
-                 _seq2, _invert_y2, _invert_init_angle2,
-                 _seq3, _invert_y3, _invert_init_angle3,
-                 _seq4, _invert_y4, _invert_init_angle4):
+    def __init__(self, _J1, _J2, _J3, _J4):
         # Actuation 1
         self.J1 = Joint(
-            _seq1,
-            _structure_offset=Coordinate(x=20/100, y=4/100, z=0),
-            _invert_y=_invert_y1,
-            _invert_init_angle=_invert_init_angle1,
+            _J1['sequence'],
+            _structure_offset=Coordinate(
+                x=_J1['coordinates']['x'],
+                y=_J1['coordinates']['y'],
+                z=_J1['coordinates']['z']
+            ),
+            _invert_y=_J1['invert_y'],
+            _invert_init_angle=_J1['invert_init_angle'],
             _bot_color=Utils.yellow,
             _top_color=Utils.magenta,
             _name='J1'
         )
         self.J4 = Joint(
-            _seq4,
-            _structure_offset=Coordinate(x=-20/100, y=-4/100, z=0),
-            _invert_y=_invert_y4,
-            _invert_init_angle=_invert_init_angle4,
+            _J4['sequence'],
+            _structure_offset=Coordinate(
+                x=_J4['coordinates']['x'],
+                y=_J4['coordinates']['y'],
+                z=_J4['coordinates']['z']
+            ),
+            _invert_y=_J4['invert_y'],
+            _invert_init_angle=_J4['invert_init_angle'],
             _bot_color=Utils.yellow,
             _top_color=Utils.magenta,
             _name='J4'
@@ -34,19 +38,27 @@ class Robot:
 
         # Actuation 2
         self.J2 = Joint(
-            _seq2,
-            _structure_offset=Coordinate(x=-20/100, y=4/100, z=0),
-            _invert_y=_invert_y2,
-            _invert_init_angle=_invert_init_angle2,
+            _J2['sequence'],
+            _structure_offset=Coordinate(
+                x=_J2['coordinates']['x'],
+                y=_J2['coordinates']['y'],
+                z=_J2['coordinates']['z']
+            ),
+            _invert_y=_J2['invert_y'],
+            _invert_init_angle=_J2['invert_init_angle'],
             _bot_color=Utils.yellow,
             _top_color=Utils.green,
             _name='J2'
         )
         self.J3 = Joint(
-            _seq3,
-            _structure_offset=Coordinate(x=20/100, y=-4/100, z=0),
-            _invert_y=_invert_y3,
-            _invert_init_angle=_invert_init_angle3,
+            _J3['sequence'],
+            _structure_offset=Coordinate(
+                x=_J3['coordinates']['x'],
+                y=_J3['coordinates']['y'],
+                z=_J3['coordinates']['z']
+            ),
+            _invert_y=_J3['invert_y'],
+            _invert_init_angle=_J3['invert_init_angle'],
             _bot_color=Utils.yellow,
             _top_color=Utils.green,
             _name='J3'
@@ -58,10 +70,10 @@ class Robot:
 
     def update_position(self, actuation_1, actuation_2, actuation_1_dir, actuation_2_dir):
         mov1 = self.J1.update_position(actuation_1, actuation_1_dir)
-        mov2 = self.J2.update_position(actuation_2, actuation_2_dir)
-
-        mov3 = self.J3.update_position(actuation_2, actuation_2_dir)
         mov4 = self.J4.update_position(actuation_1, actuation_1_dir)
+
+        mov2 = self.J2.update_position(actuation_2, actuation_2_dir)
+        mov3 = self.J3.update_position(actuation_2, actuation_2_dir)
 
         mov_array_x = np.array([mov1.x, mov2.x, mov3.x, mov4.x])
         mov_array_y = np.array([mov1.y, mov2.y, mov3.y, mov4.y])

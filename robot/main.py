@@ -3,6 +3,8 @@ import argparse
 import json
 from pathlib import Path
 
+from utils import Utils
+
 sim = None
 
 parser = argparse.ArgumentParser(description='')
@@ -16,6 +18,12 @@ args = parser.parse_args()
 def initialize_env():
     with open(f'{Path(__file__).resolve().parent}/config/{args.config}') as param_file:
         params = json.load(param_file)
+    
+    # Load defaults params
+    with open(f'{Path(__file__).resolve().parent}/config/default.json') as param_file:
+        default = json.load(param_file)
+
+    Utils.dict_merge(params, default)
 
     global sim
     sim = Simulation(params)

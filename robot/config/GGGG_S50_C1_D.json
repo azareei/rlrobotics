@@ -12,7 +12,7 @@
         "J1": {
             "sequence": "G",
             "invert_y": false,
-            "invert_init_angle": false                
+            "invert_init_angle": false            
         },
         "J2": {
             "sequence": "G",
