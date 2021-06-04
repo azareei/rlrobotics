@@ -20,7 +20,9 @@ class Robot:
             _invert_init_angle=_J1['invert_init_angle'],
             _bot_color=Utils.yellow,
             _top_color=Utils.magenta,
-            _name='J1'
+            _name='J1',
+            _r1=_J1['r1'], _r2=_J1['r2'],
+            _theta1=_J1['theta1'], _theta2=_J1['theta2']
         )
         self.J4 = Joint(
             _J4['sequence'],
@@ -33,7 +35,9 @@ class Robot:
             _invert_init_angle=_J4['invert_init_angle'],
             _bot_color=Utils.yellow,
             _top_color=Utils.magenta,
-            _name='J4'
+            _name='J4',
+            _r1=_J4['r1'], _r2=_J4['r2'],
+            _theta1=_J4['theta1'], _theta2=_J4['theta2']
         )
 
         # Actuation 2
@@ -48,7 +52,9 @@ class Robot:
             _invert_init_angle=_J2['invert_init_angle'],
             _bot_color=Utils.yellow,
             _top_color=Utils.green,
-            _name='J2'
+            _name='J2',
+            _r1=_J2['r1'], _r2=_J2['r2'],
+            _theta1=_J2['theta1'], _theta2=_J2['theta2']
         )
         self.J3 = Joint(
             _J3['sequence'],
@@ -61,7 +67,9 @@ class Robot:
             _invert_init_angle=_J3['invert_init_angle'],
             _bot_color=Utils.yellow,
             _top_color=Utils.green,
-            _name='J3'
+            _name='J3',
+            _r1=_J3['r1'], _r2=_J3['r2'],
+            _theta1=_J3['theta1'], _theta2=_J3['theta2']
         )
 
         self.position = []
