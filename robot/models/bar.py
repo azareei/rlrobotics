@@ -30,7 +30,7 @@ class Bar:
                 Utils.ConvertX(self.high_anchor.x + offset.x),
                 Utils.ConvertY(inv * (self.high_anchor.y) + offset.y)
             ),
-            (100, 100, 100),
+            Utils.red,
             thickness=5
         )
 
@@ -44,6 +44,6 @@ class Bar:
                 Utils.ConvertX(self.high_anchor.x + self.offset + offset.x),
                 Utils.ConvertY(inv * (self.high_anchor.y) + offset.y)
             ),
-            (100, 100, 100),
+            Utils.red,
             thickness=5
         )

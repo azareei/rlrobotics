@@ -297,7 +297,7 @@ class Simulation:
         ))
 
     def plot_legs_motion(self):
-        fig, axs = plt.subplots(2, 2, figsize=(20, 15))
+        fig, axs = plt.subplots(2, 2, figsize=(13, 10))
         cmap = ListedColormap(sns.color_palette("husl", 256).as_hex())
 
         # J1
@@ -353,6 +353,13 @@ class Simulation:
         plt.colorbar(j3_plot, label='u [m]', ax=axs[1, 0])
         plt.colorbar(j4_plot, label='u [m]', ax=axs[1, 1])
 
+        fig.suptitle('Robot legs pattern | sequence: {}{}{}{}'.format(
+            self.robot.J1.sequence,
+            self.robot.J2.sequence,
+            self.robot.J3.sequence,
+            self.robot.J4.sequence
+        ), fontsize=20)
+
         plt.savefig('{0}/blocks/{1}{2}{3}{4}.png'.format(
             Path(__file__).resolve().parent,
             self.robot.J1.sequence,
@@ -368,7 +375,7 @@ class Simulation:
 
         # Uncomment to plot only leg 1
         import matplotlib.patches as mpatches
-        _, axs = plt.subplots(1, 1, figsize=(10, 7))
+        _, axs = plt.subplots(1, 1, figsize=(8, 4))
         p = plt.scatter(x-x[0], z-z[0], c=u, cmap=cmap)
         plt.xlabel('X [m]')
         plt.ylabel('Z [m]')
@@ -383,8 +390,8 @@ class Simulation:
         )
         axs.add_patch(arrow)
         axs.set_xlim(left=-1e-3, right=None)
-        axs.set_ylim(bottom=-1e-4, top=None)
-        plt.title('Sequence {}'.format(self.robot.J1.sequence))
+        axs.set_ylim(bottom=-1e-4, top=0.012)
+        plt.title('Pattern sequence {}'.format(self.robot.J1.sequence))
         plt.colorbar(p, label='u [m]', ax=axs)
         plt.savefig('{0}/blocks/{1}.png'.format(
             Path(__file__).resolve().parent,
@@ -392,28 +399,39 @@ class Simulation:
         ))
 
     def plot_robot_motion(self):
-        fig, axs = plt.subplots(3, 1, figsize=(10, 15))
+        fig, axs = plt.subplots(2, 1, figsize=(10, 8))
 
         # X Axis is shared among subplots
-        t = range(len(self.actuation1))
+        t = np.arange(len(self.actuation1)) / (self.actuation_steps * 2)
 
         # X Position
         x = self.data['robot']['x']
         y = self.data['robot']['y']
         yaw = self.data['robot']['yaw']
 
-        axs[0].plot(t, x - x[0], linewidth=3)
-        axs[0].set_ylabel('x [m]')
+        axs[0].plot(t, x - x[0], 'g-')
+        axs[0].grid()
+        axs[0].set_ylabel('x [m]', color='g')
+        ax2 = axs[0].twinx()
 
-        axs[1].plot(t, y - y[0], linewidth=3)
-        axs[1].set_ylabel('y [m]')
+        ax2.plot(t, y - y[0], 'b-')
+        ax2.set_ylabel('y [m]', color='b')
 
-        axs[2].plot(t, yaw - yaw[0], linewidth=3)
-        axs[2].set_ylabel('yaw [rad]')
-        axs[2].set_xlabel('Step')
-
+        axs[1].plot(t, yaw - yaw[0], 'r-')
+        axs[1].set_ylabel('yaw [rad]', color='r')
+        if self.nb_cycles > 1:
+            axs[1].set_xlabel('Cycles')
+        else:
+            axs[1].set_xlabel('Cycle')
+        axs[1].grid()
+        plt.title('Robot position and orientation sequence: {}{}{}{}'.format(
+            self.robot.J1.sequence,
+            self.robot.J2.sequence,
+            self.robot.J3.sequence,
+            self.robot.J4.sequence
+        ))
         plt.setp(axs[0].get_xticklabels(), visible=False)
-        plt.setp(axs[1].get_xticklabels(), visible=False)
+        plt.setp(axs[1].get_xticklabels(), visible=True)
 
         plt.savefig('{0}/blocks/{1}{2}{3}{4}_motion.png'.format(
             Path(__file__).resolve().parent,
