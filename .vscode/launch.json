@@ -13,7 +13,7 @@
             "args": [
                 "--config", "AAAA_S50_C1_D.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole", // integratedTerminal if need debug
         },
         {
             "name": "BBBB 1C Draw",
@@ -24,7 +24,7 @@
             "args": [
                 "--config", "BBBB_S50_C1_D.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "CCCC 1C Draw",
@@ -35,7 +35,7 @@
             "args": [
                 "--config", "CCCC_S50_C1_D.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "DDDD 1C Draw",
@@ -46,7 +46,7 @@
             "args": [
                 "--config", "DDDD_S50_C1_D.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "EEEE 1C Draw",
@@ -57,7 +57,7 @@
             "args": [
                 "--config", "EEEE_S50_C1_D.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "FFFF 1C Draw",
@@ -68,7 +68,7 @@
             "args": [
                 "--config", "FFFF_S50_C1_D.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "GGGG 1C Draw",
@@ -79,7 +79,7 @@
             "args": [
                 "--config", "GGGG_S50_C1_D.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "HHHH 1C Draw",
@@ -90,7 +90,7 @@
             "args": [
                 "--config", "HHHH_S50_C1_D.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "IIII 1C Draw",
@@ -101,7 +101,7 @@
             "args": [
                 "--config", "IIII_S50_C1_D.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "JJJJ 1C Draw",
@@ -112,7 +112,7 @@
             "args": [
                 "--config", "JJJJ_S50_C1_D.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "KKKK 1C Draw",
@@ -123,7 +123,7 @@
             "args": [
                 "--config", "KKKK_S50_C1_D.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "LLLL 1C Draw",
@@ -134,7 +134,7 @@
             "args": [
                 "--config", "LLLL_S50_C1_D.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "MMMM 1C Draw",
@@ -145,7 +145,7 @@
             "args": [
                 "--config", "MMMM_S50_C1_D.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "NNNN 1C Draw",
@@ -156,7 +156,7 @@
             "args": [
                 "--config", "NNNN_S50_C1_D.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "OOOO 1C Draw",
@@ -167,7 +167,7 @@
             "args": [
                 "--config", "OOOO_S50_C1_D.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "4 legs contact",
@@ -178,7 +178,7 @@
             "args": [
                 "--config", "4_legs_contact.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },   
         {
             "name": "3 legs contact",
@@ -189,7 +189,7 @@
             "args": [
                 "--config", "3_legs_contact.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "2 legs diagonal contact",
@@ -200,7 +200,7 @@
             "args": [
                 "--config", "2_legs_diag_contact.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "2 legs no diagonal contact",
@@ -211,7 +211,7 @@
             "args": [
                 "--config", "2_legs_contact.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         }, 
         {
             "name": "Bottom vs top diff sequ",
@@ -222,7 +222,7 @@
             "args": [
                 "--config", "TURN_TRY.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },   
         {
             "name": "Experience 1",
@@ -233,7 +233,7 @@
             "args": [
                 "--config", "E1.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "Experience 2",
@@ -244,7 +244,7 @@
             "args": [
                 "--config", "E2.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "Experience 3",
@@ -255,7 +255,7 @@
             "args": [
                 "--config", "E3.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "Experience 4",
@@ -266,7 +266,7 @@
             "args": [
                 "--config", "E4.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "Experience 5",
@@ -277,7 +277,7 @@
             "args": [
                 "--config", "E5.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "Experience 6",
@@ -288,7 +288,7 @@
             "args": [
                 "--config", "E6.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "One Leg launch",
@@ -296,7 +296,7 @@
             "request": "launch",
             "program": "main.py",
             "cwd": "${workspaceFolder}/one-leg/",
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "AAAA 1C No Draw",
@@ -307,7 +307,7 @@
             "args": [
                 "--config", "AAAA_S50_C1.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "BBBB 1C No Draw",
@@ -318,7 +318,7 @@
             "args": [
                 "--config", "BBBB_S50_C1.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },  
         {
             "name": "CCCC 1C No Draw",
@@ -329,7 +329,7 @@
             "args": [
                 "--config", "CCCC_S50_C1.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },  
         {
             "name": "DDDD 1C No Draw",
@@ -340,7 +340,7 @@
             "args": [
                 "--config", "DDDD_S50_C1.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "EEEE 1C No Draw",
@@ -351,7 +351,7 @@
             "args": [
                 "--config", "EEEE_S50_C1.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "FFFF 1C No Draw",
@@ -362,7 +362,7 @@
             "args": [
                 "--config", "FFFF_S50_C1.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "GGGG 1C No Draw",
@@ -373,7 +373,7 @@
             "args": [
                 "--config", "GGGG_S50_C1.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "HHHH 1C No Draw",
@@ -384,7 +384,7 @@
             "args": [
                 "--config", "HHHH_S50_C1.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "IIII 1C No Draw",
@@ -395,7 +395,7 @@
             "args": [
                 "--config", "IIII_S50_C1.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "JJJJ 1C No Draw",
@@ -406,7 +406,7 @@
             "args": [
                 "--config", "JJJJ_S50_C1.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },  
         {
             "name": "KKKK 1C No Draw",
@@ -417,7 +417,7 @@
             "args": [
                 "--config", "KKKK_S50_C1.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "LLLL 1C No Draw",
@@ -428,7 +428,7 @@
             "args": [
                 "--config", "LLLL_S50_C1.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "MMMM 1C No Draw",
@@ -439,7 +439,7 @@
             "args": [
                 "--config", "MMMM_S50_C1.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "NNNN 1C No Draw",
@@ -450,7 +450,7 @@
             "args": [
                 "--config", "NNNN_S50_C1.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "OOOO 1C No Draw",
@@ -461,7 +461,27 @@
             "args": [
                 "--config", "OOOO_S50_C1.json"
             ],
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
+    ],
+    "compounds": [
+        {
+            "name": "COMPOUNT - Draw All",
+            "configurations": ["AAAA 1C Draw", "BBBB 1C Draw", "CCCC 1C Draw", "DDDD 1C Draw", "EEEE 1C Draw", "FFFF 1C Draw", "GGGG 1C Draw", "HHHH 1C Draw", "IIII 1C Draw", "JJJJ 1C Draw", "KKKK 1C Draw", "LLLL 1C Draw", "MMMM 1C Draw", "NNNN 1C Draw", "OOOO 1C Draw"],
+            "presentation": {
+                "hidden": false,
+                "group": "Batch",
+                "order": 1
+            }
+        },
+        {
+            "name": "COMPOUNT - No Draw All",
+            "configurations": ["AAAA 1C No Draw", "BBBB 1C No Draw", "CCCC 1C No Draw", "DDDD 1C No Draw", "EEEE 1C No Draw", "FFFF 1C No Draw", "GGGG 1C No Draw", "HHHH 1C No Draw", "IIII 1C No Draw", "JJJJ 1C No Draw", "KKKK 1C No Draw", "LLLL 1C No Draw", "MMMM 1C No Draw", "NNNN 1C No Draw", "OOOO 1C No Draw"],
+            "presentation": {
+                "hidden": false,
+                "group": "Batch",
+                "order": 2
+            }
+        }
     ]
 }
