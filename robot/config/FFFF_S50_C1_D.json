@@ -10,24 +10,16 @@
     },
     "robot": {
         "J1": {
-            "sequence": "F",
-            "invert_y": false,
-            "invert_init_angle": false
+            "sequence": "F"
         },
         "J2": {
-            "sequence": "F",
-            "invert_y": false,
-            "invert_init_angle": false
+            "sequence": "F"
         },
         "J3": {
-            "sequence": "F",
-            "invert_y": true,
-            "invert_init_angle": false
+            "sequence": "F"
         },
         "J4": {
-            "sequence": "F",
-            "invert_y": true,
-            "invert_init_angle": false
+            "sequence": "F"
         }
     }
 }

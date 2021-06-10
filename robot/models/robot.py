@@ -7,7 +7,7 @@ import numpy.ma as ma
 
 
 class Robot:
-    def __init__(self, _J1, _J2, _J3, _J4):
+    def __init__(self, _J1, _J2, _J3, _J4, phase):
         # Actuation 1
         self.J1 = Joint(
             _J1['sequence'],
@@ -16,8 +16,8 @@ class Robot:
                 y=_J1['coordinates']['y'],
                 z=_J1['coordinates']['z']
             ),
-            _invert_y=_J1['invert_y'],
-            _invert_init_angle=_J1['invert_init_angle'],
+            _invert_y=False,
+            _invert_init_angle=False,
             _bot_color=Utils.yellow,
             _top_color=Utils.magenta,
             _name='J1',
@@ -31,8 +31,8 @@ class Robot:
                 y=_J4['coordinates']['y'],
                 z=_J4['coordinates']['z']
             ),
-            _invert_y=_J4['invert_y'],
-            _invert_init_angle=_J4['invert_init_angle'],
+            _invert_y=True,
+            _invert_init_angle=False,
             _bot_color=Utils.yellow,
             _top_color=Utils.magenta,
             _name='J4',
@@ -48,8 +48,8 @@ class Robot:
                 y=_J2['coordinates']['y'],
                 z=_J2['coordinates']['z']
             ),
-            _invert_y=_J2['invert_y'],
-            _invert_init_angle=_J2['invert_init_angle'],
+            _invert_y=False,
+            _invert_init_angle=True if phase == 0 else False,
             _bot_color=Utils.yellow,
             _top_color=Utils.green,
             _name='J2',
@@ -63,8 +63,8 @@ class Robot:
                 y=_J3['coordinates']['y'],
                 z=_J3['coordinates']['z']
             ),
-            _invert_y=_J3['invert_y'],
-            _invert_init_angle=_J3['invert_init_angle'],
+            _invert_y=True,
+            _invert_init_angle=True if phase == 0 else False,
             _bot_color=Utils.yellow,
             _top_color=Utils.green,
             _name='J3',
@@ -148,7 +148,7 @@ class Robot:
         nb_touching_legs = np.sum(touching_legs)
 
         if nb_touching_legs == 1:  # TODO need to handle the case where 3 others legs are same height.
-            print('[FIRST PASS 1 legs]')
+            # print('[FIRST PASS 1 legs]')
             # We need to find the next touching legs
             m = np.ones(legs_z.size, dtype=bool)
             m[touching_legs_index] = False
@@ -180,14 +180,14 @@ class Robot:
             if (touching_legs[0] == touching_legs[3]) \
                     or (touching_legs[1] == touching_legs[2]):
                 if touching_legs[0] or touching_legs[3]:
-                    print('[FIRST PASS 2 legs diag 1-4]')
+                    # print('[FIRST PASS 2 legs diag 1-4]')
                     v = np.subtract(
                         np.add(legs_c[0, :], self.J1.structure_offset.to_list('xyz')),
                         np.add(legs_c[3, :], self.J4.structure_offset.to_list('xyz'))
                     )
 
                 else:
-                    print('[FIRST PASS 2 legs diag 2-3]')
+                    # print('[FIRST PASS 2 legs diag 2-3]')
                     v = np.subtract(
                         np.add(legs_c[1, :], self.J2.structure_offset.to_list('xyz')),
                         np.add(legs_c[2, :], self.J3.structure_offset.to_list('xyz'))
@@ -202,7 +202,7 @@ class Robot:
                 a_roll = np.arccos(v_roll.dot(w) / v_rnorm) * np.sign(np.cross(v_roll, w))
 
             else:
-                print('[FIRST PASS 2 legs no diag]')
+                # print('[FIRST PASS 2 legs no diag]')
                 # We need to find the next touching legs
                 m = np.ones(legs_z.size, dtype=bool)
                 m[touching_legs_index] = False
@@ -234,7 +234,7 @@ class Robot:
                 touching_legs = np.isin(np.arange(4), touching_legs_index)
 
         if nb_touching_legs == 3:
-            print('[FIRST PASS 3 legs]')
+            # print('[FIRST PASS 3 legs]')
             # Compute plane vector
             sub_legs = legs_c[touching_legs_index]
             offsets = np.array([
@@ -260,7 +260,7 @@ class Robot:
             a_pitch, a_roll = Utils.angle2ground(plane)
 
         if nb_touching_legs == 4:
-            print('[FIRST PASS 4 legs]')
+            # print('[FIRST PASS 4 legs]')
             # Compute plane vector
             offset = np.array([
                 self.J1.structure_offset.to_list('xyz'),
@@ -293,7 +293,7 @@ class Robot:
         a_pitch = Utils.angle_correction(a_pitch)
         a_roll = Utils.angle_correction(a_roll)
 
-        print(f"{a_pitch} {a_roll}")
+        # print(f"{a_pitch} {a_roll}")
         return a_pitch, a_roll
 
     def update_ground(self, pitch, roll):
