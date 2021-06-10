@@ -7,7 +7,7 @@ import numpy.ma as ma
 
 
 class Robot:
-    def __init__(self, _J1, _J2, _J3, _J4):
+    def __init__(self, _J1, _J2, _J3, _J4, phase):
         # Actuation 1
         self.J1 = Joint(
             _J1['sequence'],
@@ -16,8 +16,8 @@ class Robot:
                 y=_J1['coordinates']['y'],
                 z=_J1['coordinates']['z']
             ),
-            _invert_y=_J1['invert_y'],
-            _invert_init_angle=_J1['invert_init_angle'],
+            _invert_y=False,
+            _invert_init_angle=False,
             _bot_color=Utils.yellow,
             _top_color=Utils.magenta,
             _name='J1',
@@ -31,8 +31,8 @@ class Robot:
                 y=_J4['coordinates']['y'],
                 z=_J4['coordinates']['z']
             ),
-            _invert_y=_J4['invert_y'],
-            _invert_init_angle=_J4['invert_init_angle'],
+            _invert_y=True,
+            _invert_init_angle=False,
             _bot_color=Utils.yellow,
             _top_color=Utils.magenta,
             _name='J4',
@@ -48,8 +48,8 @@ class Robot:
                 y=_J2['coordinates']['y'],
                 z=_J2['coordinates']['z']
             ),
-            _invert_y=_J2['invert_y'],
-            _invert_init_angle=_J2['invert_init_angle'],
+            _invert_y=False,
+            _invert_init_angle=True if phase == 0 else False,
             _bot_color=Utils.yellow,
             _top_color=Utils.green,
             _name='J2',
@@ -63,8 +63,8 @@ class Robot:
                 y=_J3['coordinates']['y'],
                 z=_J3['coordinates']['z']
             ),
-            _invert_y=_J3['invert_y'],
-            _invert_init_angle=_J3['invert_init_angle'],
+            _invert_y=True,
+            _invert_init_angle=True if phase == 0 else False,
             _bot_color=Utils.yellow,
             _top_color=Utils.green,
             _name='J3',

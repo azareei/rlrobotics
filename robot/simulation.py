@@ -16,15 +16,18 @@ class Simulation:
     def __init__(self, *params):
         s = params[0]['simulation']
         r = params[0]['robot']
-        self.robot = Robot(
-            _J1=r['J1'], _J2=r['J2'],
-            _J3=r['J3'], _J4=r['J4']
-        )
 
         self.camera_in_robot_ref = s['camera_robot_ref']
         self.actuation_steps = s['actuation']['steps']
         self.nb_cycles = s['actuation']['cycles']
         self.draw = s['draw']
+        self.phase_diff = s['actuation']['phase']
+
+        self.robot = Robot(
+            _J1=r['J1'], _J2=r['J2'],
+            _J3=r['J3'], _J4=r['J4'],
+            phase=self.phase_diff
+        )
 
         if self.draw:
             # Initialize the videos
@@ -36,7 +39,7 @@ class Simulation:
                 self.robot.J4.sequence
             ))
 
-        self.generate_actuation(s['actuation']['phase'])
+        self.generate_actuation(self.phase_diff)
 
     def simulate(self):
         start_time = time.time()
