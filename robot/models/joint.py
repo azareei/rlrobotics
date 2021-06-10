@@ -120,6 +120,12 @@ class Joint:
         tmp = self.legs_length**2 - ((_B.x - _A.x) / 2)**2
         return Coordinate(x=(_A.x + _B.x)/2, y=(_A.y + _B.y)/2, z=np.sqrt(tmp))
 
+    def get_real_leg(self):
+        """
+            Return the real coordinate of C 
+        """
+        return self.C[-1] + self.structure_offset
+
     def init_position(self):
         if self.invert_init_angle is False:
             self.theta_i_top = -self.theta_s_top
@@ -731,4 +737,3 @@ class Joint:
             thickness=legs_thickness
         )
         return frame
-

@@ -95,20 +95,51 @@ class Robot:
         pitch, roll = self.update_orientation()
 
         dx, dy, dz = 0, 0, 0
-        yaw = 0.0
 
-        # First compute displalcement for X and Y
-        # Only compute with touching legs
+        # Select only the touching legs
         mx = ma.masked_array(mov_x, mask=np.invert(self.touching_legs))
         my = ma.masked_array(mov_y, mask=np.invert(self.touching_legs))
-        dx = np.sum(mx)
-        dy = np.sum(my)
+
+        # create array of proportionnal reaction force
+        # We determine this with the distance (momentum)
+        c1 = self.J1.get_real_leg().to_list('xyz')[0:2]
+        c2 = self.J2.get_real_leg().to_list('xyz')[0:2]
+        c3 = self.J3.get_real_leg().to_list('xyz')[0:2]
+        c4 = self.J4.get_real_leg().to_list('xyz')[0:2]
+
+        legs_distance = np.array([
+            np.sum(np.array(c1[0], c1[1]) ** 2),
+            np.sum(np.array(c2[0], c2[1]) ** 2),
+            np.sum(np.array(c3[0], c3[1]) ** 2),
+            np.sum(np.array(c4[0], c4[1]) ** 2)
+        ])
+        legs_distance = np.divide(legs_distance, np.sum(legs_distance))  # proportional (sum to 1)
+        # Keep only touching legs
+        ld = ma.masked_array(legs_distance, mask=np.invert(self.touching_legs))
+
+        # Displacement proportionnal to weight repartition
+        dx = np.sum(np.multiply(mx, ld))
+        dy = np.sum(np.multiply(my, ld))
+
+        _angles = []
+        # Compute yaw change
+        for c, m_x, m_y in zip([c1, c2, c3, c4], mov_x, mov_y):
+            c_ = np.array([c[0], c[1]])
+            m = np.array([c[0] + m_x, c[1] + m_y])
+            cosang = np.dot(c_, m)
+            sinang = np.linalg.norm(np.cross(c_, m))
+            _angles.append(np.arctan2(sinang, cosang))
+
+        masked_angles = ma.masked_array(_angles, mask=np.invert(self.touching_legs))
 
         delta = Coordinate(x=dx, y=dy, z=dz)
         if len(self.position) == 0:
             self.position.append(-delta)
+            yaw = np.sum(masked_angles)
         else:
             self.position.append(self.position[-1] - delta)
+            yaw = np.sum(masked_angles) - self.angle[-1][2]
+
         self.angle.append([pitch, roll, yaw])
 
     def update_orientation(self):

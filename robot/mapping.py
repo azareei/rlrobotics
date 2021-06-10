@@ -9,7 +9,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 
 
-SIMULATE = False
+SIMULATE = True
 
 if SIMULATE:
     sequences = ['A', 'B', 'C', 'D', 'E']  # 'F', 'G', 'H', 'I', 'J']
