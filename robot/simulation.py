@@ -22,6 +22,7 @@ class Simulation:
         self.nb_cycles = s['actuation']['cycles']
         self.draw = s['draw']
         self.phase_diff = s['actuation']['phase']
+        self.mapping = False
 
         self.robot = Robot(
             _J1=r['J1'], _J2=r['J2'],
@@ -31,7 +32,7 @@ class Simulation:
 
         if self.draw:
             # Initialize the videos
-            self.blocks_video = self.init_video('{0}/blocks/{1}{2}{3}{4}.mp4'.format(
+            self.blocks_video = self.init_video('{0}/results/{1}{2}{3}{4}.mp4'.format(
                 Path(__file__).resolve().parent,
                 self.robot.J1.sequence,
                 self.robot.J2.sequence,
@@ -42,6 +43,9 @@ class Simulation:
         self.generate_actuation(self.phase_diff)
 
     def simulate(self):
+        """
+            Returns Displacement X, displacement Y, Orientation yaw
+        """
         start_time = time.time()
         for a_1, a_2, d_1, d_2, s in zip(self.actuation1,
                                          self.actuation2,
@@ -49,7 +53,7 @@ class Simulation:
                                          self.actuation2_direction,
                                          range(len(self.actuation1))):
 
-            if s % 20 == 0:
+            if (s % 20 ==  0) and (not self.mapping):
                 print(f'step : {s}')
             self.robot.update_position(a_1, a_2, d_1, d_2)
             if self.draw:
@@ -57,14 +61,17 @@ class Simulation:
 
         end_time = time.time()
 
-        print(f'Simulation time : {(end_time - start_time):.2f}s')
+        print(f'Simulation time [{self.robot.J1.sequence}{self.robot.J2.sequence}{self.robot.J3.sequence}{self.robot.J4.sequence}] : {(end_time - start_time):.2f}s')
 
         if self.draw:
             self.save_video(self.blocks_video)
 
-        self.save_data()
-        self.plot_legs_motion()
-        self.plot_robot_motion()
+        if not self.mapping:
+            self.save_data()
+            self.plot_legs_motion()
+            self.plot_robot_motion()
+
+        return self.robot.position[-1].x, self.robot.position[-1].y, self.robot.angle[-1][2]
 
     def draw_blocks(self):
         # Draw blocks
@@ -284,14 +291,14 @@ class Simulation:
         self.data['robot'] = robot
         self.data = pd.concat(self.data, axis=1)
 
-        self.data.to_csv('{0}/blocks/{1}{2}{3}{4}.csv'.format(
+        self.data.to_csv('{0}/results/{1}{2}{3}{4}.csv'.format(
             Path(__file__).resolve().parent,
             self.robot.J1.sequence,
             self.robot.J2.sequence,
             self.robot.J3.sequence,
             self.robot.J4.sequence
         ))
-        self.data.to_pickle('{0}/blocks/{1}{2}{3}{4}.pkl'.format(
+        self.data.to_pickle('{0}/results/{1}{2}{3}{4}.pkl'.format(
             Path(__file__).resolve().parent,
             self.robot.J1.sequence,
             self.robot.J2.sequence,
@@ -363,7 +370,7 @@ class Simulation:
             self.robot.J4.sequence
         ), fontsize=20)
 
-        plt.savefig('{0}/blocks/{1}{2}{3}{4}.png'.format(
+        plt.savefig('{0}/results/{1}{2}{3}{4}.png'.format(
             Path(__file__).resolve().parent,
             self.robot.J1.sequence,
             self.robot.J2.sequence,
@@ -396,7 +403,7 @@ class Simulation:
         axs.set_ylim(bottom=-1e-4, top=0.012)
         plt.title('Pattern sequence {}'.format(self.robot.J1.sequence))
         plt.colorbar(p, label='u [m]', ax=axs)
-        plt.savefig('{0}/blocks/{1}.png'.format(
+        plt.savefig('{0}/results/{1}.png'.format(
             Path(__file__).resolve().parent,
             self.robot.J1.sequence,
         ))
@@ -436,7 +443,7 @@ class Simulation:
         plt.setp(axs[0].get_xticklabels(), visible=False)
         plt.setp(axs[1].get_xticklabels(), visible=True)
 
-        plt.savefig('{0}/blocks/{1}{2}{3}{4}_motion.png'.format(
+        plt.savefig('{0}/results/{1}{2}{3}{4}_motion.png'.format(
             Path(__file__).resolve().parent,
             self.robot.J1.sequence,
             self.robot.J2.sequence,

@@ -5,6 +5,14 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Run mapping",
+            "type": "python",
+            "request": "launch",
+            "program": "mapping.py",
+            "cwd": "${workspaceFolder}/robot",
+            "console": "internalConsole"
+        },
+        {
             "name": "AAAA 1C Draw",
             "type": "python",
             "request": "launch",
