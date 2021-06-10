@@ -53,7 +53,7 @@ class Simulation:
                                          self.actuation2_direction,
                                          range(len(self.actuation1))):
 
-            if (s % 20 ==  0) and (not self.mapping):
+            if (s % 20 == 0) and (not self.mapping):
                 print(f'step : {s}')
             self.robot.update_position(a_1, a_2, d_1, d_2)
             if self.draw:
@@ -61,7 +61,8 @@ class Simulation:
 
         end_time = time.time()
 
-        print(f'Simulation time [{self.robot.J1.sequence}{self.robot.J2.sequence}{self.robot.J3.sequence}{self.robot.J4.sequence}] : {(end_time - start_time):.2f}s')
+        seq = f'{self.robot.J1.sequence}{self.robot.J2.sequence}{self.robot.J3.sequence}{self.robot.J4.sequence}'
+        print(f'Simulation time [{seq}] : {(end_time - start_time):.2f}s')
 
         if self.draw:
             self.save_video(self.blocks_video)
