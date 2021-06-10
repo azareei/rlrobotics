@@ -466,7 +466,7 @@
     ],
     "compounds": [
         {
-            "name": "COMPOUNT - Draw All",
+            "name": "COMPOUND - Draw All",
             "configurations": ["AAAA 1C Draw", "BBBB 1C Draw", "CCCC 1C Draw", "DDDD 1C Draw", "EEEE 1C Draw", "FFFF 1C Draw", "GGGG 1C Draw", "HHHH 1C Draw", "IIII 1C Draw", "JJJJ 1C Draw", "KKKK 1C Draw", "LLLL 1C Draw", "MMMM 1C Draw", "NNNN 1C Draw", "OOOO 1C Draw"],
             "presentation": {
                 "hidden": false,
@@ -475,12 +475,21 @@
             }
         },
         {
-            "name": "COMPOUNT - No Draw All",
+            "name": "COMPOUND - No Draw All",
             "configurations": ["AAAA 1C No Draw", "BBBB 1C No Draw", "CCCC 1C No Draw", "DDDD 1C No Draw", "EEEE 1C No Draw", "FFFF 1C No Draw", "GGGG 1C No Draw", "HHHH 1C No Draw", "IIII 1C No Draw", "JJJJ 1C No Draw", "KKKK 1C No Draw", "LLLL 1C No Draw", "MMMM 1C No Draw", "NNNN 1C No Draw", "OOOO 1C No Draw"],
             "presentation": {
                 "hidden": false,
                 "group": "Batch",
                 "order": 2
+            }
+        },
+        {
+            "name": "COMPOUND - Experiences",
+            "configurations": ["Experience 1", "Experience 2", "Experience 3", "Experience 4", "Experience 5", "Experience 6"],
+            "presentation": {
+                "hidden": false,
+                "group": "Batch",
+                "order": 3
             }
         }
     ]

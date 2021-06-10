@@ -10,24 +10,16 @@
     },
     "robot": {
         "J1": {
-            "sequence": "D",
-            
-            
+            "sequence": "D"
         },
         "J2": {
-            "sequence": "D",
-            
-            
+            "sequence": "D"
         },
         "J3": {
-            "sequence": "D",
-            
-            
+            "sequence": "D"
         },
         "J4": {
-            "sequence": "D",
-            
-            
+            "sequence": "D"
         }
     }
 }
