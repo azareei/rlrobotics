@@ -134,13 +134,17 @@ class Robot:
 
         masked_angles = ma.masked_array(_angles, mask=np.invert(self.touching_legs))
 
+        # Cut off for very low values of yaw
+        yaw = np.sum(np.multiply(ld, masked_angles))
+        if abs(yaw) < 1e-10:
+            yaw = 0.0
+
         delta = Coordinate(x=dx, y=dy, z=dz)
         if len(self.position) == 0:
             self.position.append(-delta)
-            yaw = np.sum(np.multiply(ld, masked_angles))
         else:
             self.position.append(self.position[-1] - delta)
-            yaw = np.sum(np.multiply(ld, masked_angles)) - self.angle[-1][2]
+            yaw -= self.angle[-1][2]
 
         self.angle.append([pitch, roll, yaw])
 

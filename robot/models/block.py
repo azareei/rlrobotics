@@ -60,8 +60,11 @@ class Block:
             inv = 1
 
         if self.type == 'top':
-            start_x = Utils.ConvertX(self.center.x - (self.width / 2) + offset.x - Utils.LEG_OFFSET)
+            start_x = Utils.ConvertX(self.center.x - (self.width / 2) + offset.x - (Utils.LEG_OFFSET / 2))
             end_x = Utils.ConvertX(self.center.x + (self.width / 2) + offset.x)
+        elif self.type == 'middle':
+            start_x = Utils.ConvertX(self.center.x - (self.width / 2) + offset.x)
+            end_x = Utils.ConvertX(self.center.x + (self.width / 2) + offset.x + (Utils.LEG_OFFSET / 2))
         else:
             start_x = Utils.ConvertX(self.center.x - (self.width / 2) + offset.x)
             end_x = Utils.ConvertX(self.center.x + (self.width / 2) + offset.x)

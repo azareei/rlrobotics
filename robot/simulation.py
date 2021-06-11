@@ -421,7 +421,6 @@ class Simulation:
         yaw = self.data['robot']['yaw']
 
         axs[0].plot(t, x - x[0], 'g-')
-        axs[0].grid()
         axs[0].set_ylabel('x [m]', color='g')
 
         # Limit y axis
@@ -445,15 +444,16 @@ class Simulation:
             ymax = mid + 0.1
         ax2.set_ylim(ymin, ymax)
 
-        axs[1].plot(t, yaw - yaw[0], 'r-')
-        axs[1].set_ylabel('yaw [rad]', color='r')
+        axs[1].plot(t, np.degrees(yaw - yaw[0]), 'r-')
+        axs[1].set_ylabel('heading [deg]', color='r')
+        axs[1].grid()
 
         # Limit y axis
-        ymin, ymax = np.min(yaw - yaw[0]), np.max(yaw - yaw[0])
-        if abs(ymax) + abs(ymin) < 1e-2:
+        ymin, ymax = np.min(np.degrees(yaw - yaw[0])), np.max(np.degrees(yaw - yaw[0]))
+        if abs(ymax) + abs(ymin) < 5:
             mid = (ymin + ymax) / 2
-            ymin = mid - 0.1
-            ymax = mid + 0.1
+            ymin = mid - 5
+            ymax = mid + 5
         axs[1].set_ylim(ymin, ymax)
 
         if self.nb_cycles > 1:
@@ -461,7 +461,6 @@ class Simulation:
         else:
             axs[1].set_xlabel('Cycle')
 
-        axs[1].grid()
         plt.title('Robot position and orientation sequence: {}{}{}{}'.format(
             self.robot.J1.sequence,
             self.robot.J2.sequence,

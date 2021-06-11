@@ -649,14 +649,21 @@ class Joint:
         if len(self.C) != 0:
             old_C = self.C[-1]
         else:
-            old_C = Coordinate(
-                x=self.block_top.center.x - Utils.LEG_OFFSET,
+            old_A = Coordinate(
+                x=self.block_top.center.x - (Utils.LEG_OFFSET / 2),
                 y=self.block_top.center.y,
                 z=0
             )
+            old_B = Coordinate(
+                x=self.block_mid.center.x + (Utils.LEG_OFFSET / 2),
+                y=self.block_mid.center.y,
+                z=0
+            )
+            old_C = self.compute_leg_height(old_A, old_B)
+
         self.A.append(
             Coordinate(
-                x=self.block_top.center.x - Utils.LEG_OFFSET,
+                x=self.block_top.center.x - (Utils.LEG_OFFSET / 2),
                 y=self.block_top.center.y,
                 z=0
             )
@@ -664,7 +671,7 @@ class Joint:
 
         self.B.append(
             Coordinate(
-                x=self.block_mid.center.x,
+                x=self.block_mid.center.x + (Utils.LEG_OFFSET / 2),
                 y=self.block_mid.center.y,
                 z=0
             )
@@ -738,22 +745,20 @@ class Joint:
             thickness=legs_thickness
         )
 
-        # Show T if touching
-        if touching:
-            position_bot_left = (
-                int(Utils.ConvertX_location(0, location_x)),
-                int(Utils.ConvertY_location(-0.01, location_y))
-            )
-            frame = cv2.putText(
-                frame,
-                'T',
-                position_bot_left,
-                Utils.font,
-                Utils.fontScale,
-                Utils.red,
-                Utils.text_thickness,
-                cv2.LINE_AA
-            )
+        position_bot_left = (
+            int(Utils.ConvertX_location(0, location_x)),
+            int(Utils.ConvertY_location(-0.01, location_y))
+        )
+        frame = cv2.putText(
+            frame,
+            self.name,
+            position_bot_left,
+            Utils.font,
+            Utils.fontScale,
+            Utils.gray,
+            Utils.text_thickness,
+            cv2.LINE_AA
+        )
 
         # Draw Ground
         if touching:
