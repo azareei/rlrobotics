@@ -124,12 +124,19 @@ class Joint:
         """
             Return the real coordinate of C
         """
-        inv = -1 if self.invert_y else 1
+        if self.invert_y:
+            inv = -1
+        else:
+            inv = 1
 
         c = self.C[-1]
 
-        c.y = c.y * inv
-        return c + self.structure_offset
+        c = Coordinate(
+            x=c.x + self.structure_offset.x,
+            y=c.y * inv + self.structure_offset.y,
+            z=c.z + self.structure_offset.z
+        )
+        return c
 
     def init_position(self):
         if self.invert_init_angle is False:
@@ -695,8 +702,8 @@ class Joint:
                 Utils.ConvertX(c.x),
                 Utils.ConvertY(c.y)
             ),
-            5,
-            color=self.top_color,
+            8,
+            color=Utils.blue,
             thickness=-1
         )
 

@@ -26,6 +26,7 @@ class Utils:
     red = (0, 0, 255)
     light_gray = (200, 200, 200)
     gray = (100, 100, 100)
+    blue = (255, 5, 5)
 
     # Text settings
     font = cv2.FONT_HERSHEY_PLAIN

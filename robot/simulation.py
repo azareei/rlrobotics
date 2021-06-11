@@ -423,17 +423,44 @@ class Simulation:
         axs[0].plot(t, x - x[0], 'g-')
         axs[0].grid()
         axs[0].set_ylabel('x [m]', color='g')
+
+        # Limit y axis
+        ymin, ymax = np.min(x - x[0]), np.max(x - x[0])
+        if abs(ymax) + abs(ymin) < 1e-2:
+            mid = (ymin + ymax) / 2
+            ymin = mid - 0.1
+            ymax = mid + 0.1
+        axs[0].set_ylim(ymin, ymax)
+
         ax2 = axs[0].twinx()
 
         ax2.plot(t, y - y[0], 'b-')
         ax2.set_ylabel('y [m]', color='b')
 
+        # Limit y axis
+        ymin, ymax = np.min(y - y[0]), np.max(y - y[0])
+        if abs(ymax) + abs(ymin) < 1e-2:
+            mid = (ymin + ymax) / 2
+            ymin = mid - 0.1
+            ymax = mid + 0.1
+        ax2.set_ylim(ymin, ymax)
+
         axs[1].plot(t, yaw - yaw[0], 'r-')
         axs[1].set_ylabel('yaw [rad]', color='r')
+
+        # Limit y axis
+        ymin, ymax = np.min(yaw - yaw[0]), np.max(yaw - yaw[0])
+        if abs(ymax) + abs(ymin) < 1e-2:
+            mid = (ymin + ymax) / 2
+            ymin = mid - 0.1
+            ymax = mid + 0.1
+        axs[1].set_ylim(ymin, ymax)
+
         if self.nb_cycles > 1:
             axs[1].set_xlabel('Cycles')
         else:
             axs[1].set_xlabel('Cycle')
+
         axs[1].grid()
         plt.title('Robot position and orientation sequence: {}{}{}{}'.format(
             self.robot.J1.sequence,
