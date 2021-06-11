@@ -102,10 +102,10 @@ class Robot:
 
         # create array of proportionnal reaction force
         # We determine this with the distance (momentum)
-        c1 = self.J1.get_real_leg().to_list('xyz')[0:2]
-        c2 = self.J2.get_real_leg().to_list('xyz')[0:2]
-        c3 = self.J3.get_real_leg().to_list('xyz')[0:2]
-        c4 = self.J4.get_real_leg().to_list('xyz')[0:2]
+        c1 = self.J1.get_real_leg().to_list('xyz')
+        c2 = self.J2.get_real_leg().to_list('xyz')
+        c3 = self.J3.get_real_leg().to_list('xyz')
+        c4 = self.J4.get_real_leg().to_list('xyz')
 
         legs_distance = np.array([
             np.sum(np.array(c1[0], c1[1]) ** 2),
@@ -125,10 +125,10 @@ class Robot:
 
         # Compute yaw change
         for c, m_x, m_y in zip([c1, c2, c3, c4], mov_x, mov_y):
-            c_ = np.array([c[0], c[1]])
-            m = np.array([c[0] - m_x, c[1] - m_y])
-            cosang = np.dot(c_, m)
-            cross = np.cross(c_, m)
+            v2 = np.array([c[0], c[1]])
+            v1 = np.array([c[0] - m_x, c[1] - m_y])
+            cosang = np.dot(v1, v2)
+            cross = np.cross(v1, v2)
             sinang = np.linalg.norm(cross)
             _angles.append(np.sign(cross) * np.arctan2(sinang, cosang))
 
@@ -137,10 +137,10 @@ class Robot:
         delta = Coordinate(x=dx, y=dy, z=dz)
         if len(self.position) == 0:
             self.position.append(-delta)
-            yaw = np.sum(masked_angles)
+            yaw = np.sum(np.multiply(ld, masked_angles))
         else:
             self.position.append(self.position[-1] - delta)
-            yaw = np.sum(masked_angles) - self.angle[-1][2]
+            yaw = np.sum(np.multiply(ld, masked_angles)) - self.angle[-1][2]
 
         self.angle.append([pitch, roll, yaw])
 
