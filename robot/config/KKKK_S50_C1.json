@@ -3,8 +3,7 @@
         "camera_robot_ref": true,
         "actuation": {
             "steps": 50,
-            "cycles": 1,
-            "phase": 180
+            "cycles": 1
         },
         "draw": false
     },

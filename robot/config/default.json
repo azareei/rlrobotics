@@ -1,4 +1,9 @@
 {
+    "simulation": {
+        "actuation": {
+            "phase": 0
+        }
+    },
     "robot": {
         "J1": {
             "coordinates": {

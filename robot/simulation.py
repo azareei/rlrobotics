@@ -32,12 +32,13 @@ class Simulation:
 
         if self.draw:
             # Initialize the videos
-            self.blocks_video = self.init_video('{0}/results/{1}{2}{3}{4}.mp4'.format(
+            self.blocks_video = self.init_video('{0}/results/{1}{2}{3}{4}-{5}.mp4'.format(
                 Path(__file__).resolve().parent,
                 self.robot.J1.sequence,
                 self.robot.J2.sequence,
                 self.robot.J3.sequence,
-                self.robot.J4.sequence
+                self.robot.J4.sequence,
+                self.phase_diff
             ))
 
         self.generate_actuation(self.phase_diff)
@@ -364,19 +365,21 @@ class Simulation:
         plt.colorbar(j3_plot, label='u [m]', ax=axs[1, 0])
         plt.colorbar(j4_plot, label='u [m]', ax=axs[1, 1])
 
-        fig.suptitle('Robot legs pattern | sequence: {}{}{}{}'.format(
+        fig.suptitle('Robot legs pattern | sequence: {}{}{}{}-{}'.format(
             self.robot.J1.sequence,
             self.robot.J2.sequence,
             self.robot.J3.sequence,
-            self.robot.J4.sequence
+            self.robot.J4.sequence,
+            self.phase_diff
         ), fontsize=20)
 
-        plt.savefig('{0}/results/{1}{2}{3}{4}.png'.format(
+        plt.savefig('{0}/results/{1}{2}{3}{4}-{5}.png'.format(
             Path(__file__).resolve().parent,
             self.robot.J1.sequence,
             self.robot.J2.sequence,
             self.robot.J3.sequence,
-            self.robot.J4.sequence
+            self.robot.J4.sequence,
+            self.phase_diff
         ))
 
         # J1
@@ -461,19 +464,21 @@ class Simulation:
         else:
             axs[1].set_xlabel('Cycle')
 
-        plt.title('Robot position and orientation sequence: {}{}{}{}'.format(
+        plt.title('Robot position and orientation sequence: {}{}{}{}-{}'.format(
             self.robot.J1.sequence,
             self.robot.J2.sequence,
             self.robot.J3.sequence,
-            self.robot.J4.sequence
+            self.robot.J4.sequence,
+            self.phase_diff
         ))
         plt.setp(axs[0].get_xticklabels(), visible=False)
         plt.setp(axs[1].get_xticklabels(), visible=True)
 
-        plt.savefig('{0}/results/{1}{2}{3}{4}_motion.png'.format(
+        plt.savefig('{0}/results/{1}{2}{3}{4}-{5}_motion.png'.format(
             Path(__file__).resolve().parent,
             self.robot.J1.sequence,
             self.robot.J2.sequence,
             self.robot.J3.sequence,
-            self.robot.J4.sequence
+            self.robot.J4.sequence,
+            self.phase_diff
         ))
