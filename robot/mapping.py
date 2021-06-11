@@ -107,8 +107,3 @@ ax.legend(*scatter.legend_elements(),
 ax.title.set_text('Displacement y/yaw')
 plt.savefig('{0}/results/_y_yaw.png'.format(
     Path(__file__).resolve().parent,))
-
-
-
-
-

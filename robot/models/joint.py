@@ -122,9 +122,14 @@ class Joint:
 
     def get_real_leg(self):
         """
-            Return the real coordinate of C 
+            Return the real coordinate of C
         """
-        return self.C[-1] + self.structure_offset
+        inv = -1 if self.invert_y else 1
+
+        c = self.C[-1]
+
+        c.y = c.y * inv
+        return c + self.structure_offset
 
     def init_position(self):
         if self.invert_init_angle is False:
@@ -305,7 +310,7 @@ class Joint:
 
             if (position <= (max_right - self.d_bot)) and (position >= max_left):
                 self.move_mid_block(position=position)
-                self.move_top_block(theta=-self.theta_s_top)            
+                self.move_top_block(theta=-self.theta_s_top)
 
     def update_seq_G(self, u_i, forward):
         """
@@ -563,7 +568,7 @@ class Joint:
                 _x=self.block_mid.center.x + _dh,
                 _y=dv + (self.block_mid.height/2) - self.block_mid.anchor_d
             )
-        
+
         if theta is not None:
             self.theta_i_bot = theta
             dh = np.sin(self.theta_i_bot) * self.bars_bot.length
@@ -634,7 +639,14 @@ class Joint:
         return displacement_done
 
     def update_legs(self):
-        old_C = self.C[-1] if len(self.C) != 0 else Coordinate(x=0, y=0, z=0)
+        if len(self.C) != 0:
+            old_C = self.C[-1]
+        else:
+            old_C = Coordinate(
+                x=self.block_top.center.x - Utils.LEG_OFFSET,
+                y=self.block_top.center.y,
+                z=0
+            )
         self.A.append(
             Coordinate(
                 x=self.block_top.center.x - Utils.LEG_OFFSET,
@@ -669,6 +681,24 @@ class Joint:
         # Draw spring
         self.spring_bot.draw(frame, self.structure_offset, self.invert_y)
         self.spring_top.draw(frame, self.structure_offset, self.invert_y)
+
+        self.draw_C(frame)
+
+    def draw_C(self, frame):
+        """
+            Draw the C point in the 2D top view
+        """
+        c = self.get_real_leg()
+        cv2.circle(
+            frame,
+            (
+                Utils.ConvertX(c.x),
+                Utils.ConvertY(c.y)
+            ),
+            5,
+            color=self.top_color,
+            thickness=-1
+        )
 
     def draw_legs(self, frame, location_x, location_y, touching):
         legs_thickness = 3
