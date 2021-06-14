@@ -7,49 +7,69 @@ import numpy.ma as ma
 
 
 class Robot:
-    def __init__(self,
-                 _seq1, _invert_y1, _invert_init_angle1,
-                 _seq2, _invert_y2, _invert_init_angle2,
-                 _seq3, _invert_y3, _invert_init_angle3,
-                 _seq4, _invert_y4, _invert_init_angle4):
+    def __init__(self, _J1, _J2, _J3, _J4, phase):
         # Actuation 1
         self.J1 = Joint(
-            _seq1,
-            _structure_offset=Coordinate(x=20/100, y=4/100, z=0),
-            _invert_y=_invert_y1,
-            _invert_init_angle=_invert_init_angle1,
+            _J1['sequence'],
+            _structure_offset=Coordinate(
+                x=_J1['coordinates']['x'],
+                y=_J1['coordinates']['y'],
+                z=_J1['coordinates']['z']
+            ),
+            _invert_y=False,
+            _invert_init_angle=False,
             _bot_color=Utils.yellow,
             _top_color=Utils.magenta,
-            _name='J1'
+            _name='J1',
+            _r1=_J1['r1'], _r2=_J1['r2'],
+            _theta1=_J1['theta1'], _theta2=_J1['theta2']
         )
         self.J4 = Joint(
-            _seq4,
-            _structure_offset=Coordinate(x=-20/100, y=-4/100, z=0),
-            _invert_y=_invert_y4,
-            _invert_init_angle=_invert_init_angle4,
+            _J4['sequence'],
+            _structure_offset=Coordinate(
+                x=_J4['coordinates']['x'],
+                y=_J4['coordinates']['y'],
+                z=_J4['coordinates']['z']
+            ),
+            _invert_y=True,
+            _invert_init_angle=False,
             _bot_color=Utils.yellow,
             _top_color=Utils.magenta,
-            _name='J4'
+            _name='J4',
+            _r1=_J4['r1'], _r2=_J4['r2'],
+            _theta1=_J4['theta1'], _theta2=_J4['theta2']
         )
 
         # Actuation 2
         self.J2 = Joint(
-            _seq2,
-            _structure_offset=Coordinate(x=-20/100, y=4/100, z=0),
-            _invert_y=_invert_y2,
-            _invert_init_angle=_invert_init_angle2,
+            _J2['sequence'],
+            _structure_offset=Coordinate(
+                x=_J2['coordinates']['x'],
+                y=_J2['coordinates']['y'],
+                z=_J2['coordinates']['z']
+            ),
+            _invert_y=False,
+            _invert_init_angle=True if phase == 0 else False,
             _bot_color=Utils.yellow,
             _top_color=Utils.green,
-            _name='J2'
+            _name='J2',
+            _r1=_J2['r1'], _r2=_J2['r2'],
+            _theta1=_J2['theta1'], _theta2=_J2['theta2']
         )
         self.J3 = Joint(
-            _seq3,
-            _structure_offset=Coordinate(x=20/100, y=-4/100, z=0),
-            _invert_y=_invert_y3,
-            _invert_init_angle=_invert_init_angle3,
+            _J3['sequence'],
+            _structure_offset=Coordinate(
+                x=_J3['coordinates']['x'],
+                y=_J3['coordinates']['y'],
+                z=_J3['coordinates']['z']
+            ),
+            _invert_y=True,
+            _invert_init_angle=True if phase == 0 else False,
             _bot_color=Utils.yellow,
             _top_color=Utils.green,
-            _name='J3'
+            _name='J3',
+            _r1=_J3['r1'], _r2=_J3['r2'],
+            _theta1=_J3['theta1'], _theta2=_J3['theta2']
         )
 
         self.position = []
@@ -58,10 +78,10 @@ class Robot:
 
     def update_position(self, actuation_1, actuation_2, actuation_1_dir, actuation_2_dir):
         mov1 = self.J1.update_position(actuation_1, actuation_1_dir)
-        mov2 = self.J2.update_position(actuation_2, actuation_2_dir)
-
-        mov3 = self.J3.update_position(actuation_2, actuation_2_dir)
         mov4 = self.J4.update_position(actuation_1, actuation_1_dir)
+
+        mov2 = self.J2.update_position(actuation_2, actuation_2_dir)
+        mov3 = self.J3.update_position(actuation_2, actuation_2_dir)
 
         mov_array_x = np.array([mov1.x, mov2.x, mov3.x, mov4.x])
         mov_array_y = np.array([mov1.y, mov2.y, mov3.y, mov4.y])
@@ -75,20 +95,63 @@ class Robot:
         pitch, roll = self.update_orientation()
 
         dx, dy, dz = 0, 0, 0
-        yaw = 0.0
 
-        # First compute displalcement for X and Y
-        # Only compute with touching legs
+        # Select only the touching legs
         mx = ma.masked_array(mov_x, mask=np.invert(self.touching_legs))
         my = ma.masked_array(mov_y, mask=np.invert(self.touching_legs))
-        dx = np.sum(mx)
-        dy = np.sum(my)
 
-        delta = Coordinate(x=dx, y=dy, z=dz)
+        # create array of proportionnal reaction force
+        # We determine this with the distance (momentum)
+        c1 = self.J1.get_real_leg().to_list('xyz')
+        c2 = self.J2.get_real_leg().to_list('xyz')
+        c3 = self.J3.get_real_leg().to_list('xyz')
+        c4 = self.J4.get_real_leg().to_list('xyz')
+
+        legs_distance = np.array([
+            np.sum(np.array(c1[0], c1[1]) ** 2),
+            np.sum(np.array(c2[0], c2[1]) ** 2),
+            np.sum(np.array(c3[0], c3[1]) ** 2),
+            np.sum(np.array(c4[0], c4[1]) ** 2)
+        ])
+        ld = ma.masked_array(legs_distance, mask=np.invert(self.touching_legs))
+        ld = np.divide(ld, np.sum(ld))  # proportional (sum to 1)
+        # Keep only touching legs
+
+        # Displacement proportionnal to weight repartition
+        dx = np.sum(np.multiply(mx, ld))
+        dy = np.sum(np.multiply(my, ld))
+
+        _angles = []
+
+        # Compute yaw change
+        for c, m_x, m_y in zip([c1, c2, c3, c4], mov_x, mov_y):
+            v2 = np.array([c[0], c[1]])
+            v1 = np.array([c[0] - m_x, c[1] - m_y])
+            cosang = np.dot(v1, v2)
+            cross = np.cross(v1, v2)
+            sinang = np.linalg.norm(cross)
+            _angles.append(np.sign(cross) * np.arctan2(sinang, cosang))
+
+        _angles = np.array(_angles)
+        masked_angles = ma.masked_array(_angles, mask=np.invert(self.touching_legs))
+
+        # Cut off for very low values of yaw
+        yaw = np.sum(np.multiply(masked_angles, ld))
+        if abs(yaw) < 1e-10:
+            yaw = 0.0
+        if len(self.position) > 0:
+            yaw += self.angle[-1][2]
+
+        # Update dx and dy according to the heading of the robot
+        final_dx = dx * np.cos(yaw) + dy * np.sin(yaw)
+        final_dy = dx * np.sin(yaw) + dy * np.cos(yaw)
+
+        delta = Coordinate(x=final_dx, y=final_dy, z=dz)
         if len(self.position) == 0:
             self.position.append(-delta)
         else:
             self.position.append(self.position[-1] - delta)
+
         self.angle.append([pitch, roll, yaw])
 
     def update_orientation(self):
@@ -128,7 +191,7 @@ class Robot:
         nb_touching_legs = np.sum(touching_legs)
 
         if nb_touching_legs == 1:  # TODO need to handle the case where 3 others legs are same height.
-            print('[FIRST PASS 1 legs]')
+            # print('[FIRST PASS 1 legs]')
             # We need to find the next touching legs
             m = np.ones(legs_z.size, dtype=bool)
             m[touching_legs_index] = False
@@ -160,14 +223,14 @@ class Robot:
             if (touching_legs[0] == touching_legs[3]) \
                     or (touching_legs[1] == touching_legs[2]):
                 if touching_legs[0] or touching_legs[3]:
-                    print('[FIRST PASS 2 legs diag 1-4]')
+                    # print('[FIRST PASS 2 legs diag 1-4]')
                     v = np.subtract(
                         np.add(legs_c[0, :], self.J1.structure_offset.to_list('xyz')),
                         np.add(legs_c[3, :], self.J4.structure_offset.to_list('xyz'))
                     )
 
                 else:
-                    print('[FIRST PASS 2 legs diag 2-3]')
+                    # print('[FIRST PASS 2 legs diag 2-3]')
                     v = np.subtract(
                         np.add(legs_c[1, :], self.J2.structure_offset.to_list('xyz')),
                         np.add(legs_c[2, :], self.J3.structure_offset.to_list('xyz'))
@@ -182,7 +245,7 @@ class Robot:
                 a_roll = np.arccos(v_roll.dot(w) / v_rnorm) * np.sign(np.cross(v_roll, w))
 
             else:
-                print('[FIRST PASS 2 legs no diag]')
+                # print('[FIRST PASS 2 legs no diag]')
                 # We need to find the next touching legs
                 m = np.ones(legs_z.size, dtype=bool)
                 m[touching_legs_index] = False
@@ -214,7 +277,7 @@ class Robot:
                 touching_legs = np.isin(np.arange(4), touching_legs_index)
 
         if nb_touching_legs == 3:
-            print('[FIRST PASS 3 legs]')
+            # print('[FIRST PASS 3 legs]')
             # Compute plane vector
             sub_legs = legs_c[touching_legs_index]
             offsets = np.array([
@@ -240,7 +303,7 @@ class Robot:
             a_pitch, a_roll = Utils.angle2ground(plane)
 
         if nb_touching_legs == 4:
-            print('[FIRST PASS 4 legs]')
+            # print('[FIRST PASS 4 legs]')
             # Compute plane vector
             offset = np.array([
                 self.J1.structure_offset.to_list('xyz'),
@@ -273,7 +336,7 @@ class Robot:
         a_pitch = Utils.angle_correction(a_pitch)
         a_roll = Utils.angle_correction(a_roll)
 
-        print(f"{a_pitch} {a_roll}")
+        # print(f"{a_pitch} {a_roll}")
         return a_pitch, a_roll
 
     def update_ground(self, pitch, roll):

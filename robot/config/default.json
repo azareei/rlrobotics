@@ -1,0 +1,56 @@
+{
+    "simulation": {
+        "actuation": {
+            "phase": 0,
+            "cycles": 1
+        },
+        "camera_rotation": true,
+        "grid_size": 0.05
+    },
+    "robot": {
+        "J1": {
+            "coordinates": {
+                "x": 0.2,
+                "y": 0.04,
+                "z": 0
+            },
+            "r1": 0.03,
+            "r2": 0.03,
+            "theta1": 0.785,
+            "theta2": 0.785
+        },
+        "J2": {
+            "coordinates": {
+                "x": -0.2,
+                "y": 0.04,
+                "z": 0
+            },
+            "r1": 0.03,
+            "r2": 0.03,
+            "theta1": 0.785,
+            "theta2": 0.785
+        },
+        "J3": {
+            "coordinates": {
+                "x": 0.2,
+                "y": -0.04,
+                "z": 0
+            },
+            "r1": 0.03,
+            "r2": 0.03,
+            "theta1": 0.785,
+            "theta2": 0.785
+        },
+        "J4": {
+            "coordinates": {
+                "x": -0.2,
+                "y": -0.04,
+                "z": 0
+            },
+            "r1": 0.03,
+            "r2": 0.03,
+            "theta1": 0.785,
+            "theta2": 0.785
+        }
+    }
+}
