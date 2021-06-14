@@ -687,12 +687,20 @@ class Joint:
         max_right = (self.d_bot / 2) + (self.d_top / 2)
 
         if forward:
-            if (position >= max_left) and (position < (max_left + self.d_bot)):
-                self.move_mid_block(position=position)
-                self.move_top_block(theta=-self.theta_s_top)
-            if (position >= (max_left + self.d_bot)) and (position <= max_right):
-                self.move_mid_block(theta=self.theta_s_top)
-                self.move_top_block(position=position)
+            if self.invert_init_angle:
+                if (position >= (max_left + self.d_bot)) and (position <= max_right):
+                    self.move_mid_block(position=position)
+                    self.move_top_block(theta=self.theta_s_top)
+                if (position >= max_left) and (position < (max_left + self.d_bot)):
+                    self.move_mid_block(theta=-self.theta_s_top)
+                    self.move_top_block(position=position)
+            else:
+                if (position >= max_left) and (position < (max_left + self.d_bot)):
+                    self.move_mid_block(position=position)
+                    self.move_top_block(theta=-self.theta_s_top)
+                if (position >= (max_left + self.d_bot)) and (position <= max_right):
+                    self.move_mid_block(theta=self.theta_s_top)
+                    self.move_top_block(position=position)
         else:
             delta_position = position - self.block_top.center.x
             half_position = position - (delta_position / 2)
