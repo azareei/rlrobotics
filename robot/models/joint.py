@@ -627,12 +627,20 @@ class Joint:
                 self.move_mid_block(position=half_position)
                 self.move_top_block(position=position)
         else:
-            if (position <= max_right) and (position > (max_right - self.d_bot)):
-                self.move_mid_block(position=position)
-                self.move_top_block(theta=self.theta_s_top)
-            if (position >= max_left) and (position <= (max_right - self.d_bot)):
-                self.move_mid_block(theta=-self.theta_s_top)
-                self.move_top_block(position=position)
+            if self.invert_init_angle:
+                if (position >= max_left) and (position <= (max_right - self.d_bot)):
+                    self.move_mid_block(position=position)
+                    self.move_top_block(theta=-self.theta_s_top)
+                if (position <= max_right) and (position > (max_right - self.d_bot)):
+                    self.move_mid_block(theta=self.theta_s_top)
+                    self.move_top_block(position=position)
+            else:
+                if (position <= max_right) and (position > (max_right - self.d_bot)):
+                    self.move_mid_block(position=position)
+                    self.move_top_block(theta=self.theta_s_top)
+                if (position >= max_left) and (position <= (max_right - self.d_bot)):
+                    self.move_mid_block(theta=-self.theta_s_top)
+                    self.move_top_block(position=position)
 
     def update_seq_M(self, u_i, forward):
         """
