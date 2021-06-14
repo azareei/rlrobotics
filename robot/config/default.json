@@ -1,7 +1,11 @@
 {
     "simulation": {
         "actuation": {
-            "phase": 0
+            "phase": 180,
+            "actuation": {
+                "steps": 50,
+                "cycles": 10
+            }
         }
     },
     "robot": {
