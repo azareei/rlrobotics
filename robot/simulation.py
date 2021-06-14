@@ -78,7 +78,7 @@ class Simulation:
     def draw_blocks(self):
         # Draw blocks
         if self.camera_in_robot_ref:
-            self.new_frame(self.robot.position[-1])
+            self.new_frame(self.robot.position[-1], self.robot.angle[-1][2])
             self.robot.draw(self.frame)
             self.blocks_video.write(self.frame)
         else:
@@ -94,7 +94,7 @@ class Simulation:
         self.create_main_frame()
         return VideoWriter(name, fourcc, float(Utils.FPS), (Utils.WIDTH, Utils.HEIGHT))
 
-    def new_frame(self, displacement):
+    def new_frame(self, displacement, yaw=0.0):
         frame = self.main_frame.copy()
         if not self.camera_in_robot_ref:
             self.frame = frame
@@ -320,7 +320,7 @@ class Simulation:
         j1_plot = axs[0, 0].scatter(x-x[0], z-z[0], c=u, cmap=cmap)
         axs[1, 1].set_xlabel('X [m]')
         axs[1, 1].set_ylabel('Z [m]')
-        dx, dz = x[int(len(x)/30)] - x[0], z[int(len(z)/30)] - z[0]
+        dx, dz = x[int(len(x) / (30 * self.nb_cycles))] - x[0], z[int(len(z) / (30 * self.nb_cycles))] - z[0]
         axs[1, 1].arrow(0, 0, dx, dz, width=1e-4, head_width=1e-3, color=(0, 0, 0, 0.4))
         axs[1, 1].title.set_text('J1')
 
@@ -332,7 +332,7 @@ class Simulation:
         j2_plot = axs[0, 1].scatter(x-x[0], z-z[0], c=u, cmap=cmap)
         axs[1, 0].set_xlabel('X [m]')
         axs[1, 0].set_ylabel('Z [m]')
-        dx, dz = x[int(len(x)/25)] - x[0], z[int(len(z)/25)] - z[0]
+        dx, dz = x[int(len(x) / (30 * self.nb_cycles))] - x[0], z[int(len(z) / (30 * self.nb_cycles))] - z[0]
         axs[1, 0].arrow(0, 0, dx, dz, width=1e-4, head_width=1e-3, color=(0, 0, 0, 0.4))
         axs[1, 0].title.set_text('J2')
 
@@ -344,7 +344,7 @@ class Simulation:
         j3_plot = axs[1, 0].scatter(x-x[0], z-z[0], c=u, cmap=cmap)
         axs[0, 1].set_xlabel('X [m]')
         axs[0, 1].set_ylabel('Z [m]')
-        dx, dz = x[int(len(x)/25)] - x[0], z[int(len(z)/25)] - z[0]
+        dx, dz = x[int(len(x) / (30 * self.nb_cycles))] - x[0], z[int(len(z) / (30 * self.nb_cycles))] - z[0]
         axs[0, 1].arrow(0, 0, dx, dz, width=1e-4, head_width=1e-3, color=(0, 0, 0, 0.4))
         axs[0, 1].title.set_text('J3')
 
@@ -356,7 +356,7 @@ class Simulation:
         j4_plot = axs[1, 1].scatter(x-x[0], z-z[0], c=u, cmap=cmap)
         axs[0, 0].set_xlabel('X [m]')
         axs[0, 0].set_ylabel('Z [m]')
-        dx, dz = x[int(len(x)/25)] - x[0], z[int(len(z)/25)] - z[0]
+        dx, dz = x[int(len(x) / (30 * self.nb_cycles))] - x[0], z[int(len(z) / (30 * self.nb_cycles))] - z[0]
         axs[0, 0].arrow(0, 0, dx, dz, width=1e-4, head_width=1e-3, color=(0, 0, 0, 0.4))
         axs[0, 0].title.set_text('J4')
 
@@ -393,7 +393,7 @@ class Simulation:
         p = plt.scatter(x-x[0], z-z[0], c=u, cmap=cmap)
         plt.xlabel('X [m]')
         plt.ylabel('Z [m]')
-        dx, dz = x[int(len(x)/30)] - x[0], z[int(len(z)/30)] - z[0]
+        dx, dz = x[int(len(x) / (30 * self.nb_cycles))] - x[0], z[int(len(z) / (30 * self.nb_cycles))] - z[0]
         arrow = mpatches.FancyArrowPatch(
             (0, 0),
             (dx, dz),
