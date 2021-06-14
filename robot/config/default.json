@@ -1,9 +1,11 @@
 {
     "simulation": {
         "actuation": {
-            "phase": 0,
-            "cycles": 10
-        }
+            "phase": 180,
+            "cycles": 1
+        },
+        "camera_rotation": true,
+        "grid_size": 0.05
     },
     "robot": {
         "J1": {

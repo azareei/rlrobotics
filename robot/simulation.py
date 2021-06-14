@@ -23,6 +23,8 @@ class Simulation:
         self.draw = s['draw']
         self.phase_diff = s['actuation']['phase']
         self.mapping = False
+        self.camera_rotation = s['camera_rotation']
+        self.grid_size = s['grid_size']
 
         self.robot = Robot(
             _J1=r['J1'], _J2=r['J2'],
@@ -104,68 +106,98 @@ class Simulation:
         max_coordinates = Utils.Pixel2Coordinate(Utils.WIDTH, Utils.HEIGHT)
         max_x = max_coordinates.x
         max_y = max_coordinates.y
+        mid = Utils.Pixel2Coordinate(Utils.HALF_WIDTH, Utils.HALF_HEIGHT)
 
         c_x = 0
         while c_x < (max_x + abs(displacement.x)):
+            if self.camera_rotation:
+                px1, py1 = Utils.rotate_point(mid.x, mid.y, c_x - displacement.x, -max_y, yaw)
+                px2, py2 = Utils.rotate_point(mid.x, mid.y, c_x - displacement.x, max_y, yaw)
+            else:
+                px1, py1 = c_x - displacement.x, -max_y
+                px2, py2 = c_x - displacement.x, max_y
+
             cv2.line(
                 frame,
                 (
-                    Utils.ConvertX(c_x - displacement.x),
-                    Utils.ConvertY(-max_y)
+                    Utils.ConvertX(px1),
+                    Utils.ConvertY(py1)
                 ),
                 (
-                    Utils.ConvertX(c_x - displacement.x),
-                    Utils.ConvertY(max_y)
+                    Utils.ConvertX(px2),
+                    Utils.ConvertY(py2)
                 ),
                 color=Utils.red if c_x == 0 else Utils.light_gray,
                 thickness=1
             )
 
+            if self.camera_rotation:
+                px1, py1 = Utils.rotate_point(mid.x, mid.y, -c_x - displacement.x, -max_y, yaw)
+                px2, py2 = Utils.rotate_point(mid.x, mid.y, -c_x - displacement.x, max_y, yaw)
+            else:
+                px1, py1 = -c_x - displacement.x, -max_y
+                px2, py2 = -c_x - displacement.x, max_y
+
             cv2.line(
                 frame,
                 (
-                    Utils.ConvertX(-c_x - displacement.x),
-                    Utils.ConvertY(-max_y)
+                    Utils.ConvertX(px1),
+                    Utils.ConvertY(py1)
                 ),
                 (
-                    Utils.ConvertX(-c_x - displacement.x),
-                    Utils.ConvertY(max_y)
+                    Utils.ConvertX(px2),
+                    Utils.ConvertY(py2)
                 ),
                 color=Utils.red if c_x == 0 else Utils.light_gray,
                 thickness=1
             )
-            c_x += 5 / 100
+            c_x += self.grid_size
 
         c_y = 0
         while c_y < (max_y + abs(displacement.y)):
+            if self.camera_rotation:
+                px1, py1 = Utils.rotate_point(mid.x, mid.y, -max_x, c_y - displacement.y, yaw)
+                px2, py2 = Utils.rotate_point(mid.x, mid.y, max_x, c_y - displacement.y, yaw)
+            else:
+                px1, py1 = -max_x, c_y - displacement.y
+                px2, py2 = max_x, c_y - displacement.y
+
             cv2.line(
                 frame,
                 (
-                    Utils.ConvertX(-max_x),
-                    Utils.ConvertY(c_y - displacement.y)
+                    Utils.ConvertX(px1),
+                    Utils.ConvertY(py1)
                 ),
                 (
-                    Utils.ConvertX(max_x),
-                    Utils.ConvertY(c_y - displacement.y)
+                    Utils.ConvertX(px2),
+                    Utils.ConvertY(py2)
                 ),
                 color=Utils.red if c_y == 0 else Utils.light_gray,
                 thickness=1
             )
 
+            if self.camera_rotation:
+                px1, py1 = Utils.rotate_point(mid.x, mid.y, -max_x, -c_y - displacement.y, yaw)
+                px2, py2 = Utils.rotate_point(mid.x, mid.y, max_x, -c_y - displacement.y, yaw)
+            else:
+                px1, py1 = -max_x, -c_y - displacement.y
+                px2, py2 = max_x, -c_y - displacement.y
+
             cv2.line(
                 frame,
                 (
-                    Utils.ConvertX(-max_x),
-                    Utils.ConvertY(-c_y - displacement.y)
+                    Utils.ConvertX(px1),
+                    Utils.ConvertY(py1)
                 ),
                 (
-                    Utils.ConvertX(max_x),
-                    Utils.ConvertY(-c_y - displacement.y)
+                    Utils.ConvertX(px2),
+                    Utils.ConvertY(py2)
                 ),
                 color=Utils.red if c_y == 0 else Utils.light_gray,
                 thickness=1
             )
-            c_y += 5 / 100
+            c_y += self.grid_size
+
         self.frame = frame
 
     def save_video(self, video):

@@ -127,3 +127,18 @@ class Utils:
                 Utils.dict_merge(dct[k], merge_dct[k])
             else:
                 dct[k] = merge_dct[k]
+
+    def rotate_point(origin_x, origin_y, p_x, p_y, angle):
+        s = np.sin(angle)
+        c = np.cos(angle)
+
+        # Translate point to origin
+        p_x -= origin_x
+        p_y -= origin_y
+
+        # Rotate point
+        xnew = p_x * c - p_y * s
+        ynew = p_x * s + p_y * c
+
+        # Translate point back
+        return xnew + origin_x, ynew + origin_y

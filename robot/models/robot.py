@@ -113,9 +113,9 @@ class Robot:
             np.sum(np.array(c3[0], c3[1]) ** 2),
             np.sum(np.array(c4[0], c4[1]) ** 2)
         ])
-        legs_distance = np.divide(legs_distance, np.sum(legs_distance))  # proportional (sum to 1)
-        # Keep only touching legs
         ld = ma.masked_array(legs_distance, mask=np.invert(self.touching_legs))
+        ld = np.divide(ld, np.sum(ld))  # proportional (sum to 1)
+        # Keep only touching legs
 
         # Displacement proportionnal to weight repartition
         dx = np.sum(np.multiply(mx, ld))
