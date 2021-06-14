@@ -153,7 +153,6 @@ class Joint:
         self.x_offset = self.block_top.center.x
         self.d_top = np.sin(self.theta_s_top) * self.bars_top.length * 2
         self.d_bot = np.sin(self.theta_s_bot) * self.bars_bot.length * 2
-        print(f'start on {self.block_top.center.x}')
 
     def update_position(self, u_i, forward):
         """
