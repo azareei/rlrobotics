@@ -185,7 +185,7 @@ class Simulation:
 
             self.actuation2_direction = np.concatenate(
                 (np.zeros(steps), np.ones(steps)), axis=0
-            ) > 0
+            ) < 1
 
             self.actuation1 = np.concatenate(
                 (
