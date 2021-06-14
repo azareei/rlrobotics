@@ -132,19 +132,25 @@ class Robot:
             sinang = np.linalg.norm(cross)
             _angles.append(np.sign(cross) * np.arctan2(sinang, cosang))
 
+        _angles = np.array(_angles)
         masked_angles = ma.masked_array(_angles, mask=np.invert(self.touching_legs))
 
         # Cut off for very low values of yaw
-        yaw = np.sum(np.multiply(ld, masked_angles))
+        yaw = np.sum(np.multiply(masked_angles, ld))
         if abs(yaw) < 1e-10:
             yaw = 0.0
+        if len(self.position) > 0:
+            yaw += self.angle[-1][2]
 
-        delta = Coordinate(x=dx, y=dy, z=dz)
+        # Update dx and dy according to the heading of the robot
+        final_dx = dx * np.cos(yaw) + dy * np.sin(yaw)
+        final_dy = dx * np.sin(yaw) + dy * np.cos(yaw)
+
+        delta = Coordinate(x=final_dx, y=final_dy, z=dz)
         if len(self.position) == 0:
             self.position.append(-delta)
         else:
             self.position.append(self.position[-1] - delta)
-            yaw -= self.angle[-1][2]
 
         self.angle.append([pitch, roll, yaw])
 
