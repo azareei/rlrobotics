@@ -404,6 +404,7 @@ class Joint:
                 self.move_top_block(theta=-self.theta_s_top)
                 # Would need a transition between this jump
             if (position >= (max_left + self.d_top)) and (position <= max_right):
+                self.move_top_block(theta=self.theta_s_top)
                 self.move_mid_block(position=position)
                 self.move_top_block(theta=self.theta_s_top)
         else:
@@ -412,6 +413,7 @@ class Joint:
                 self.move_top_block(theta=self.theta_s_top)
                 # Would need a transition between this jump
             if (position <= (max_right - self.d_bot)) and (position >= max_left):
+                self.move_top_block(theta=-self.theta_s_top)
                 self.move_mid_block(position=position)
                 self.move_top_block(theta=-self.theta_s_top)
 
@@ -438,6 +440,7 @@ class Joint:
                 self.move_top_block(theta=self.theta_s_top)
                 # Would need a transition between this jump
             if (position <= (max_right - self.d_bot)) and (position >= max_left):
+                self.move_top_block(theta=-self.theta_s_top)
                 self.move_mid_block(position=position)
                 self.move_top_block(theta=-self.theta_s_top)
 
