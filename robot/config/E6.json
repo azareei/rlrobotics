@@ -1,8 +1,9 @@
 {
+    "Description": "Goes fast yaw-",
     "simulation": {
         "camera_robot_ref": true,
         "actuation": {
-            "steps": 50,
+            "steps": 100,
             "cycles": 1,
             "phase": 180
         },
@@ -10,7 +11,7 @@
     },
     "robot": {
         "J1": {
-            "sequence": "A"
+            "sequence": "H"
         },
         "J2": {
             "sequence": "B"
@@ -19,7 +20,7 @@
             "sequence": "A"
         },
         "J4": {
-            "sequence": "B"
+            "sequence": "H"
         }
     }
 }
