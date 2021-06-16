@@ -4,30 +4,22 @@
         "actuation": {
             "steps": 50,
             "cycles": 1,
-            "phase": 180
+            "phase": 0
         },
         "draw": true
     },
     "robot": {
         "J1": {
-            "sequence": "A",
-            
-            
+            "sequence": "B"
         },
         "J2": {
-            "sequence": "A",
-            
-            
+            "sequence": "B"
         },
         "J3": {
-            "sequence": "B",
-            
-            
+            "sequence": "A"
         },
         "J4": {
-            "sequence": "B",
-            
-            
+            "sequence": "A"
         }
     }
 }

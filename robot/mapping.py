@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 SIMULATE = True
 
 if SIMULATE:
-    sequences = ['A', 'C', 'E', 'G', 'I', 'J', 'B', 'D', 'F', 'H']
+    sequences = ['A', 'B']# 'C', 'E', 'G', 'I', 'J', 'B', 'D', 'F', 'H']
     theoretical_sequences = ['K', 'L', 'M', 'N', 'O']   # not used
 
     actuation = [0, 180]

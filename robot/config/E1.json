@@ -1,24 +1,26 @@
 {
+    "description": "Vladimir Backward",
     "simulation": {
         "camera_robot_ref": true,
         "actuation": {
-            "steps": 100,
+            "cycles": 5,
+            "steps": 50,
             "phase": 0
         },
         "draw": true
     },
     "robot": {
         "J1": {
-            "sequence": "D"
+            "sequence": "A"
         },
         "J2": {
-            "sequence": "D"
+            "sequence": "A"
         },
         "J3": {
-            "sequence": "D"
+            "sequence": "A"
         },
         "J4": {
-            "sequence": "D"
+            "sequence": "A"
         }
     }
 }

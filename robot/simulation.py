@@ -452,14 +452,22 @@ class Simulation:
 
         # X Position
         x = self.data['robot']['x']
+        x = x - x[0]
         y = self.data['robot']['y']
-        yaw = self.data['robot']['yaw']
+        y = y - y[0]
+        yaw = np.degrees(self.data['robot']['yaw'])
+        yaw = yaw - yaw[0]
+        max_text = 'max x : {:.1f}cm; max y : {:.1f}cm; max heading : {:.1f}°'.format(
+            x[len(x) - 1] * 100,
+            y[len(y) - 1] * 100,
+            yaw[len(y) - 1]
+        )
 
-        axs[0].plot(t, x - x[0], 'g-')
+        axs[0].plot(t, x, 'g-')
         axs[0].set_ylabel('x [m]', color='g')
 
         # Limit y axis
-        ymin, ymax = np.min(x - x[0]), np.max(x - x[0])
+        ymin, ymax = np.min(x), np.max(x)
         if abs(ymax) + abs(ymin) < 1e-2:
             mid = (ymin + ymax) / 2
             ymin = mid - 0.1
@@ -468,23 +476,23 @@ class Simulation:
 
         ax2 = axs[0].twinx()
 
-        ax2.plot(t, y - y[0], 'b-')
+        ax2.plot(t, y, 'b-')
         ax2.set_ylabel('y [m]', color='b')
 
         # Limit y axis
-        ymin, ymax = np.min(y - y[0]), np.max(y - y[0])
+        ymin, ymax = np.min(y), np.max(y)
         if abs(ymax) + abs(ymin) < 1e-2:
             mid = (ymin + ymax) / 2
             ymin = mid - 0.1
             ymax = mid + 0.1
         ax2.set_ylim(ymin, ymax)
 
-        axs[1].plot(t, np.degrees(yaw - yaw[0]), 'r-')
+        axs[1].plot(t, yaw, 'r-')
         axs[1].set_ylabel('heading [deg]', color='r')
         axs[1].grid()
 
         # Limit y axis
-        ymin, ymax = np.min(np.degrees(yaw - yaw[0])), np.max(np.degrees(yaw - yaw[0]))
+        ymin, ymax = np.min(yaw), np.max(yaw)
         if abs(ymax) + abs(ymin) < 5:
             mid = (ymin + ymax) / 2
             ymin = mid - 5
@@ -496,12 +504,13 @@ class Simulation:
         else:
             axs[1].set_xlabel('Cycle')
 
-        plt.title('Robot position and orientation sequence: {}{}{}{}-{}'.format(
+        plt.title('Robot attitude - Seq: [{}{}{}{}] - Phase: {}°\n{}'.format(
             self.robot.J1.sequence,
             self.robot.J2.sequence,
             self.robot.J3.sequence,
             self.robot.J4.sequence,
-            self.phase_diff
+            self.phase_diff,
+            max_text
         ))
         plt.setp(axs[0].get_xticklabels(), visible=False)
         plt.setp(axs[1].get_xticklabels(), visible=True)

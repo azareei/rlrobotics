@@ -231,7 +231,18 @@
                 "--config", "TURN_TRY.json"
             ],
             "console": "internalConsole"
-        },   
+        },
+        {
+            "name": "Experience 0",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "cwd": "${workspaceFolder}/robot/",
+            "args": [
+                "--config", "E0.json"
+            ],
+            "console": "internalConsole"
+        },  
         {
             "name": "Experience 1",
             "type": "python",
@@ -295,6 +306,28 @@
             "cwd": "${workspaceFolder}/robot/",
             "args": [
                 "--config", "E6.json"
+            ],
+            "console": "internalConsole"
+        },
+        {
+            "name": "Experience 7",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "cwd": "${workspaceFolder}/robot/",
+            "args": [
+                "--config", "E7.json"
+            ],
+            "console": "internalConsole"
+        },
+        {
+            "name": "Experience 8",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "cwd": "${workspaceFolder}/robot/",
+            "args": [
+                "--config", "E8.json"
             ],
             "console": "internalConsole"
         },
@@ -493,7 +526,7 @@
         },
         {
             "name": "COMPOUND - Experiences",
-            "configurations": ["Experience 1", "Experience 2", "Experience 3", "Experience 4", "Experience 5", "Experience 6"],
+            "configurations": ["Experience 0", "Experience 1", "Experience 2", "Experience 3", "Experience 4", "Experience 5", "Experience 6", "Experience 7"],
             "presentation": {
                 "hidden": false,
                 "group": "Batch",
