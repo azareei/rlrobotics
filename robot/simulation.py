@@ -24,6 +24,8 @@ class Simulation:
         self.phase_diff = s['actuation']['phase']
         self.reverse_actuation = s['actuation']['reverse']
         self.mapping = False
+        self.camera_rotation = s['camera_rotation']
+        self.grid_size = s['grid_size']
 
         self.robot = Robot(
             _J1=r['J1'], _J2=r['J2'],
@@ -34,12 +36,13 @@ class Simulation:
 
         if self.draw:
             # Initialize the videos
-            self.blocks_video = self.init_video('{0}/results/{1}{2}{3}{4}.mp4'.format(
+            self.blocks_video = self.init_video('{0}/results/{1}{2}{3}{4}-{5}.mp4'.format(
                 Path(__file__).resolve().parent,
                 self.robot.J1.sequence,
                 self.robot.J2.sequence,
                 self.robot.J3.sequence,
-                self.robot.J4.sequence
+                self.robot.J4.sequence,
+                self.phase_diff
             ))
 
         self.generate_actuation(self.phase_diff, self.reverse_actuation)
@@ -79,7 +82,7 @@ class Simulation:
     def draw_blocks(self):
         # Draw blocks
         if self.camera_in_robot_ref:
-            self.new_frame(self.robot.position[-1])
+            self.new_frame(self.robot.position[-1], self.robot.angle[-1][2])
             self.robot.draw(self.frame)
             self.blocks_video.write(self.frame)
         else:
@@ -95,7 +98,7 @@ class Simulation:
         self.create_main_frame()
         return VideoWriter(name, fourcc, float(Utils.FPS), (Utils.WIDTH, Utils.HEIGHT))
 
-    def new_frame(self, displacement):
+    def new_frame(self, displacement, yaw=0.0):
         frame = self.main_frame.copy()
         if not self.camera_in_robot_ref:
             self.frame = frame
@@ -105,68 +108,98 @@ class Simulation:
         max_coordinates = Utils.Pixel2Coordinate(Utils.WIDTH, Utils.HEIGHT)
         max_x = max_coordinates.x
         max_y = max_coordinates.y
+        mid = Utils.Pixel2Coordinate(Utils.HALF_WIDTH, Utils.HALF_HEIGHT)
 
         c_x = 0
         while c_x < (max_x + abs(displacement.x)):
+            if self.camera_rotation:
+                px1, py1 = Utils.rotate_point(mid.x, mid.y, c_x - displacement.x, -max_y, yaw)
+                px2, py2 = Utils.rotate_point(mid.x, mid.y, c_x - displacement.x, max_y, yaw)
+            else:
+                px1, py1 = c_x - displacement.x, -max_y
+                px2, py2 = c_x - displacement.x, max_y
+
             cv2.line(
                 frame,
                 (
-                    Utils.ConvertX(c_x - displacement.x),
-                    Utils.ConvertY(-max_y)
+                    Utils.ConvertX(px1),
+                    Utils.ConvertY(py1)
                 ),
                 (
-                    Utils.ConvertX(c_x - displacement.x),
-                    Utils.ConvertY(max_y)
+                    Utils.ConvertX(px2),
+                    Utils.ConvertY(py2)
                 ),
                 color=Utils.red if c_x == 0 else Utils.light_gray,
                 thickness=1
             )
 
+            if self.camera_rotation:
+                px1, py1 = Utils.rotate_point(mid.x, mid.y, -c_x - displacement.x, -max_y, yaw)
+                px2, py2 = Utils.rotate_point(mid.x, mid.y, -c_x - displacement.x, max_y, yaw)
+            else:
+                px1, py1 = -c_x - displacement.x, -max_y
+                px2, py2 = -c_x - displacement.x, max_y
+
             cv2.line(
                 frame,
                 (
-                    Utils.ConvertX(-c_x - displacement.x),
-                    Utils.ConvertY(-max_y)
+                    Utils.ConvertX(px1),
+                    Utils.ConvertY(py1)
                 ),
                 (
-                    Utils.ConvertX(-c_x - displacement.x),
-                    Utils.ConvertY(max_y)
+                    Utils.ConvertX(px2),
+                    Utils.ConvertY(py2)
                 ),
                 color=Utils.red if c_x == 0 else Utils.light_gray,
                 thickness=1
             )
-            c_x += 5 / 100
+            c_x += self.grid_size
 
         c_y = 0
         while c_y < (max_y + abs(displacement.y)):
+            if self.camera_rotation:
+                px1, py1 = Utils.rotate_point(mid.x, mid.y, -max_x, c_y - displacement.y, yaw)
+                px2, py2 = Utils.rotate_point(mid.x, mid.y, max_x, c_y - displacement.y, yaw)
+            else:
+                px1, py1 = -max_x, c_y - displacement.y
+                px2, py2 = max_x, c_y - displacement.y
+
             cv2.line(
                 frame,
                 (
-                    Utils.ConvertX(-max_x),
-                    Utils.ConvertY(c_y - displacement.y)
+                    Utils.ConvertX(px1),
+                    Utils.ConvertY(py1)
                 ),
                 (
-                    Utils.ConvertX(max_x),
-                    Utils.ConvertY(c_y - displacement.y)
+                    Utils.ConvertX(px2),
+                    Utils.ConvertY(py2)
                 ),
                 color=Utils.red if c_y == 0 else Utils.light_gray,
                 thickness=1
             )
 
+            if self.camera_rotation:
+                px1, py1 = Utils.rotate_point(mid.x, mid.y, -max_x, -c_y - displacement.y, yaw)
+                px2, py2 = Utils.rotate_point(mid.x, mid.y, max_x, -c_y - displacement.y, yaw)
+            else:
+                px1, py1 = -max_x, -c_y - displacement.y
+                px2, py2 = max_x, -c_y - displacement.y
+
             cv2.line(
                 frame,
                 (
-                    Utils.ConvertX(-max_x),
-                    Utils.ConvertY(-c_y - displacement.y)
+                    Utils.ConvertX(px1),
+                    Utils.ConvertY(py1)
                 ),
                 (
-                    Utils.ConvertX(max_x),
-                    Utils.ConvertY(-c_y - displacement.y)
+                    Utils.ConvertX(px2),
+                    Utils.ConvertY(py2)
                 ),
                 color=Utils.red if c_y == 0 else Utils.light_gray,
                 thickness=1
             )
-            c_y += 5 / 100
+            c_y += self.grid_size
+
         self.frame = frame
 
     def save_video(self, video):
@@ -186,7 +219,7 @@ class Simulation:
 
             self.actuation2_direction = np.concatenate(
                 (np.zeros(steps), np.ones(steps)), axis=0
-            ) > 0
+            ) < 1
 
             self.actuation1 = np.concatenate(
                 (
@@ -323,10 +356,10 @@ class Simulation:
         x = self.data['J1']['c_x']
         z = self.data['J1']['c_z']
 
-        j1_plot = axs[0, 0].scatter(x-x[0], z-z[0], c=u, cmap=cmap)
+        j1_plot = axs[1, 1].scatter(x-x[0], z-z[0], c=u, cmap=cmap)
         axs[1, 1].set_xlabel('X [m]')
         axs[1, 1].set_ylabel('Z [m]')
-        dx, dz = x[int(len(x)/30)] - x[0], z[int(len(z)/30)] - z[0]
+        dx, dz = x[int(len(x) / (30 * self.nb_cycles))] - x[0], z[int(len(z) / (30 * self.nb_cycles))] - z[0]
         axs[1, 1].arrow(0, 0, dx, dz, width=1e-4, head_width=1e-3, color=(0, 0, 0, 0.4))
         axs[1, 1].title.set_text('J1')
 
@@ -335,10 +368,10 @@ class Simulation:
         x = self.data['J2']['c_x']
         z = self.data['J2']['c_z']
 
-        j2_plot = axs[0, 1].scatter(x-x[0], z-z[0], c=u, cmap=cmap)
+        j2_plot = axs[1, 0].scatter(x-x[0], z-z[0], c=u, cmap=cmap)
         axs[1, 0].set_xlabel('X [m]')
         axs[1, 0].set_ylabel('Z [m]')
-        dx, dz = x[int(len(x)/25)] - x[0], z[int(len(z)/25)] - z[0]
+        dx, dz = x[int(len(x) / (30 * self.nb_cycles))] - x[0], z[int(len(z) / (30 * self.nb_cycles))] - z[0]
         axs[1, 0].arrow(0, 0, dx, dz, width=1e-4, head_width=1e-3, color=(0, 0, 0, 0.4))
         axs[1, 0].title.set_text('J2')
 
@@ -347,10 +380,10 @@ class Simulation:
         x = self.data['J3']['c_x']
         z = self.data['J3']['c_z']
 
-        j3_plot = axs[1, 0].scatter(x-x[0], z-z[0], c=u, cmap=cmap)
+        j3_plot = axs[0, 1].scatter(x-x[0], z-z[0], c=u, cmap=cmap)
         axs[0, 1].set_xlabel('X [m]')
         axs[0, 1].set_ylabel('Z [m]')
-        dx, dz = x[int(len(x)/25)] - x[0], z[int(len(z)/25)] - z[0]
+        dx, dz = x[int(len(x) / (30 * self.nb_cycles))] - x[0], z[int(len(z) / (30 * self.nb_cycles))] - z[0]
         axs[0, 1].arrow(0, 0, dx, dz, width=1e-4, head_width=1e-3, color=(0, 0, 0, 0.4))
         axs[0, 1].title.set_text('J3')
 
@@ -359,10 +392,10 @@ class Simulation:
         x = self.data['J4']['c_x']
         z = self.data['J4']['c_z']
 
-        j4_plot = axs[1, 1].scatter(x-x[0], z-z[0], c=u, cmap=cmap)
+        j4_plot = axs[0, 0].scatter(x-x[0], z-z[0], c=u, cmap=cmap)
         axs[0, 0].set_xlabel('X [m]')
         axs[0, 0].set_ylabel('Z [m]')
-        dx, dz = x[int(len(x)/25)] - x[0], z[int(len(z)/25)] - z[0]
+        dx, dz = x[int(len(x) / (30 * self.nb_cycles))] - x[0], z[int(len(z) / (30 * self.nb_cycles))] - z[0]
         axs[0, 0].arrow(0, 0, dx, dz, width=1e-4, head_width=1e-3, color=(0, 0, 0, 0.4))
         axs[0, 0].title.set_text('J4')
 
@@ -371,19 +404,21 @@ class Simulation:
         plt.colorbar(j3_plot, label='u [m]', ax=axs[1, 0])
         plt.colorbar(j4_plot, label='u [m]', ax=axs[1, 1])
 
-        fig.suptitle('Robot legs pattern | sequence: {}{}{}{}'.format(
+        fig.suptitle('Robot legs pattern | sequence: {}{}{}{}-{}'.format(
             self.robot.J1.sequence,
             self.robot.J2.sequence,
             self.robot.J3.sequence,
-            self.robot.J4.sequence
+            self.robot.J4.sequence,
+            self.phase_diff
         ), fontsize=20)
 
-        plt.savefig('{0}/results/{1}{2}{3}{4}.png'.format(
+        plt.savefig('{0}/results/{1}{2}{3}{4}-{5}.png'.format(
             Path(__file__).resolve().parent,
             self.robot.J1.sequence,
             self.robot.J2.sequence,
             self.robot.J3.sequence,
-            self.robot.J4.sequence
+            self.robot.J4.sequence,
+            self.phase_diff
         ))
 
         # J1
@@ -397,7 +432,7 @@ class Simulation:
         p = plt.scatter(x-x[0], z-z[0], c=u, cmap=cmap)
         plt.xlabel('X [m]')
         plt.ylabel('Z [m]')
-        dx, dz = x[int(len(x)/30)] - x[0], z[int(len(z)/30)] - z[0]
+        dx, dz = x[int(len(x) / (30 * self.nb_cycles))] - x[0], z[int(len(z) / (30 * self.nb_cycles))] - z[0]
         arrow = mpatches.FancyArrowPatch(
             (0, 0),
             (dx, dz),
@@ -424,37 +459,74 @@ class Simulation:
 
         # X Position
         x = self.data['robot']['x']
+        x = x - x[0]
         y = self.data['robot']['y']
-        yaw = self.data['robot']['yaw']
+        y = y - y[0]
+        yaw = np.degrees(self.data['robot']['yaw'])
+        yaw = yaw - yaw[0]
+        max_text = 'max x : {:.1f}cm; max y : {:.1f}cm; max heading : {:.1f}°'.format(
+            x[len(x) - 1] * 100,
+            y[len(y) - 1] * 100,
+            yaw[len(y) - 1]
+        )
 
-        axs[0].plot(t, x - x[0], 'g-')
-        axs[0].grid()
+        axs[0].plot(t, x, 'g-')
         axs[0].set_ylabel('x [m]', color='g')
+
+        # Limit y axis
+        ymin, ymax = np.min(x), np.max(x)
+        if abs(ymax) + abs(ymin) < 1e-2:
+            mid = (ymin + ymax) / 2
+            ymin = mid - 0.1
+            ymax = mid + 0.1
+        axs[0].set_ylim(ymin, ymax)
+
         ax2 = axs[0].twinx()
 
-        ax2.plot(t, y - y[0], 'b-')
+        ax2.plot(t, y, 'b-')
         ax2.set_ylabel('y [m]', color='b')
 
-        axs[1].plot(t, yaw - yaw[0], 'r-')
-        axs[1].set_ylabel('yaw [rad]', color='r')
+        # Limit y axis
+        ymin, ymax = np.min(y), np.max(y)
+        if abs(ymax) + abs(ymin) < 1e-2:
+            mid = (ymin + ymax) / 2
+            ymin = mid - 0.1
+            ymax = mid + 0.1
+        ax2.set_ylim(ymin, ymax)
+
+        axs[1].plot(t, yaw, 'r-')
+        axs[1].set_ylabel('heading [deg]', color='r')
+        axs[1].grid()
+
+        # Limit y axis
+        ymin, ymax = np.min(yaw), np.max(yaw)
+        if abs(ymax) + abs(ymin) < 5:
+            mid = (ymin + ymax) / 2
+            ymin = mid - 5
+            ymax = mid + 5
+        axs[1].set_ylim(ymin, ymax)
+
         if self.nb_cycles > 1:
             axs[1].set_xlabel('Cycles')
         else:
             axs[1].set_xlabel('Cycle')
-        axs[1].grid()
-        plt.title('Robot position and orientation sequence: {}{}{}{}'.format(
+
+        plt.title('Robot attitude - Seq: [{}{}{}{}] - Phase: {}°\n{}'.format(
             self.robot.J1.sequence,
             self.robot.J2.sequence,
             self.robot.J3.sequence,
-            self.robot.J4.sequence
+            self.robot.J4.sequence,
+            self.phase_diff,
+            max_text
         ))
         plt.setp(axs[0].get_xticklabels(), visible=False)
         plt.setp(axs[1].get_xticklabels(), visible=True)
 
-        plt.savefig('{0}/results/{1}{2}{3}{4}_motion.png'.format(
+        plt.savefig('{0}/results/{1}{2}{3}{4}-{5}_motion.png'.format(
             Path(__file__).resolve().parent,
             self.robot.J1.sequence,
             self.robot.J2.sequence,
             self.robot.J3.sequence,
-            self.robot.J4.sequence
+            self.robot.J4.sequence,
+            self.phase_diff
         ))

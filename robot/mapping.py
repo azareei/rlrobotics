@@ -6,6 +6,7 @@ from main import initialize_env
 import time
 import pandas as pd
 from pathlib import Path
+import numpy as np
 import matplotlib.pyplot as plt
 
 
@@ -57,15 +58,15 @@ yaw = df['yaw']
 act = df['actuation']
 
 # 3D Plot scatter
-fig = plt.figure()
+fig = plt.figure(figsize=(10, 10))
 ax = plt.axes(projection='3d')
 
 
 ax.set_xlabel('x[m]')
 ax.set_ylabel('y[m]')
-ax.set_zlabel('yaw[rad]')
+ax.set_zlabel('yaw[deg]')
 
-scatter = ax.scatter3D(x, y, yaw, c=act, cmap='rainbow')
+scatter = ax.scatter3D(x, y, np.degrees(yaw), c=act, cmap='rainbow', s=1.5)
 
 ax.legend(*scatter.legend_elements(),
           loc="upper left", title="Phase")
@@ -79,7 +80,7 @@ ax = plt.axes()
 ax.set_xlabel('x[m]')
 ax.set_ylabel('y[m]')
 
-scatter = ax.scatter(x, y, c=act, cmap='rainbow')
+scatter = ax.scatter(x, y, c=act, cmap='rainbow', s=1)
 ax.legend(*scatter.legend_elements(),
           loc='upper left', title='Phase')
 ax.title.set_text('Displacement x/y')
@@ -89,9 +90,9 @@ plt.savefig('{0}/results/_x_y.png'.format(
 fig = plt.figure()
 ax = plt.axes()
 ax.set_xlabel('x[m]')
-ax.set_ylabel('yaw[m]')
+ax.set_ylabel('yaw[deg]')
 
-scatter = ax.scatter(x, yaw, c=act, cmap='rainbow')
+scatter = ax.scatter(x, np.degrees(yaw), c=act, cmap='rainbow', s=1)
 ax.legend(*scatter.legend_elements(),
           loc='upper left', title='Phase')
 ax.title.set_text('Displacement x/yaw')
@@ -101,16 +102,11 @@ plt.savefig('{0}/results/_x_yaw.png'.format(
 fig = plt.figure()
 ax = plt.axes()
 ax.set_xlabel('y[m]')
-ax.set_ylabel('yaw[m]')
+ax.set_ylabel('yaw[deg]')
 
-scatter = ax.scatter(y, yaw, c=act, cmap='rainbow')
+scatter = ax.scatter(y, np.degrees(yaw), c=act, cmap='rainbow', s=1)
 ax.legend(*scatter.legend_elements(),
           loc='upper left', title='Phase')
 ax.title.set_text('Displacement y/yaw')
 plt.savefig('{0}/results/_y_yaw.png'.format(
     Path(__file__).resolve().parent,))
-
-
-
-
-

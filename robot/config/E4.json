@@ -1,25 +1,26 @@
 {
     "simulation": {
+        "Description": "Goes fast y-",
         "camera_robot_ref": true,
         "actuation": {
-            "steps": 50,
+            "steps": 100,
             "cycles": 1,
-            "phase": 0
+            "phase": 180
         },
         "draw": true
     },
     "robot": {
         "J1": {
-            "sequence": "D"
+            "sequence": "H"
         },
         "J2": {
-            "sequence": "D"
+            "sequence": "B"
         },
         "J3": {
             "sequence": "D"
         },
         "J4": {
-            "sequence": "D"
+            "sequence": "C"
         }
     }
 }

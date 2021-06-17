@@ -2,8 +2,7 @@
     "simulation": {
         "camera_robot_ref": true,
         "actuation": {
-            "steps": 50,
-            "cycles": 2,
+            "steps": 100,
             "phase": 0
         },
         "draw": true

@@ -99,20 +99,63 @@ class Robot:
         pitch, roll = self.update_orientation()
 
         dx, dy, dz = 0, 0, 0
-        yaw = 0.0
 
-        # First compute displalcement for X and Y
-        # Only compute with touching legs
+        # Select only the touching legs
         mx = ma.masked_array(mov_x, mask=np.invert(self.touching_legs))
         my = ma.masked_array(mov_y, mask=np.invert(self.touching_legs))
-        dx = np.sum(mx)
-        dy = np.sum(my)
 
-        delta = Coordinate(x=dx, y=dy, z=dz)
+        # create array of proportionnal reaction force
+        # We determine this with the distance (momentum)
+        c1 = self.J1.get_real_leg().to_list('xyz')
+        c2 = self.J2.get_real_leg().to_list('xyz')
+        c3 = self.J3.get_real_leg().to_list('xyz')
+        c4 = self.J4.get_real_leg().to_list('xyz')
+
+        legs_distance = np.array([
+            np.sum(np.array(c1[0], c1[1]) ** 2),
+            np.sum(np.array(c2[0], c2[1]) ** 2),
+            np.sum(np.array(c3[0], c3[1]) ** 2),
+            np.sum(np.array(c4[0], c4[1]) ** 2)
+        ])
+        ld = ma.masked_array(legs_distance, mask=np.invert(self.touching_legs))
+        ld = np.divide(ld, np.sum(ld))  # proportional (sum to 1)
+        # Keep only touching legs
+
+        # Displacement proportionnal to weight repartition
+        dx = np.sum(np.multiply(mx, ld))
+        dy = np.sum(np.multiply(my, ld))
+
+        _angles = []
+
+        # Compute yaw change
+        for c, m_x, m_y in zip([c1, c2, c3, c4], mov_x, mov_y):
+            v2 = np.array([c[0], c[1]])
+            v1 = np.array([c[0] - m_x, c[1] - m_y])
+            cosang = np.dot(v1, v2)
+            cross = np.cross(v1, v2)
+            sinang = np.linalg.norm(cross)
+            _angles.append(np.sign(cross) * np.arctan2(sinang, cosang))
+
+        _angles = np.array(_angles)
+        masked_angles = ma.masked_array(_angles, mask=np.invert(self.touching_legs))
+
+        # Cut off for very low values of yaw
+        yaw = np.sum(np.multiply(masked_angles, ld))
+        if abs(yaw) < 1e-10:
+            yaw = 0.0
+        if len(self.position) > 0:
+            yaw += self.angle[-1][2]
+
+        # Update dx and dy according to the heading of the robot
+        final_dx = dx * np.cos(yaw) + dy * np.sin(yaw)
+        final_dy = dx * np.sin(yaw) + dy * np.cos(yaw)
+
+        delta = Coordinate(x=final_dx, y=final_dy, z=dz)
         if len(self.position) == 0:
             self.position.append(-delta)
         else:
             self.position.append(self.position[-1] - delta)
+
         self.angle.append([pitch, roll, yaw])
 
     def update_orientation(self):

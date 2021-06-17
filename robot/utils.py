@@ -26,6 +26,7 @@ class Utils:
     red = (0, 0, 255)
     light_gray = (200, 200, 200)
     gray = (100, 100, 100)
+    blue = (255, 5, 5)
 
     # Text settings
     font = cv2.FONT_HERSHEY_PLAIN
@@ -115,7 +116,7 @@ class Utils:
         """ Recursive dict merge. Inspired by :meth:``dict.update()``, instead of
         updating only top-level keys, dict_merge recurses down into dicts nested
         to an arbitrary depth, updating keys. The ``merge_dct`` is merged into
-        ``dct``.
+        ``dct``. There is no overrite from default file. It preserve existing keys
         :param dct: dict onto which the merge is executed
         :param merge_dct: dct merged into dct
         :return: None
@@ -125,4 +126,20 @@ class Utils:
                     and isinstance(merge_dct[k], collections.Mapping)):
                 Utils.dict_merge(dct[k], merge_dct[k])
             else:
-                dct[k] = merge_dct[k]
+                if k not in dct.keys():
+                    dct[k] = merge_dct[k]
+
+    def rotate_point(origin_x, origin_y, p_x, p_y, angle):
+        s = np.sin(angle)
+        c = np.cos(angle)
+
+        # Translate point to origin
+        p_x -= origin_x
+        p_y -= origin_y
+
+        # Rotate point
+        xnew = p_x * c - p_y * s
+        ynew = p_x * s + p_y * c
+
+        # Translate point back
+        return xnew + origin_x, ynew + origin_y

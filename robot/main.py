@@ -22,7 +22,7 @@ def initialize_env(sequence='BBBB', phase=0, reverse=False):
             "simulation": {
                 "camera_robot_ref": True,
                 "actuation": {
-                    "steps": 10,  # TODO CHANGE
+                    "steps": 20,  # TODO CHANGE
                     "cycles": 1,
                     "phase": phase,
                     "reverse": reverse
