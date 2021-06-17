@@ -13,7 +13,7 @@ parser.add_argument('--config',
 args = parser.parse_args()
 
 
-def initialize_env(sequence='BBBB', phase=0):
+def initialize_env(sequence='BBBB', phase=0, reverse=False):
     if args.config is not None:
         with open(f'{Path(__file__).resolve().parent}/config/{args.config}') as param_file:
             params = json.load(param_file)
@@ -24,7 +24,8 @@ def initialize_env(sequence='BBBB', phase=0):
                 "actuation": {
                     "steps": 10,  # TODO CHANGE
                     "cycles": 1,
-                    "phase": phase
+                    "phase": phase,
+                    "reverse": reverse
                 },
                 "draw": False
             },

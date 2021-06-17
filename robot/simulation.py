@@ -22,12 +22,14 @@ class Simulation:
         self.nb_cycles = s['actuation']['cycles']
         self.draw = s['draw']
         self.phase_diff = s['actuation']['phase']
+        self.reverse_actuation = s['actuation']['reverse']
         self.mapping = False
 
         self.robot = Robot(
             _J1=r['J1'], _J2=r['J2'],
             _J3=r['J3'], _J4=r['J4'],
-            phase=self.phase_diff
+            phase=self.phase_diff,
+            reverse_actuation=self.reverse_actuation
         )
 
         if self.draw:
@@ -40,7 +42,7 @@ class Simulation:
                 self.robot.J4.sequence
             ))
 
-        self.generate_actuation(self.phase_diff)
+        self.generate_actuation(self.phase_diff, self.reverse_actuation)
 
     def simulate(self):
         """
@@ -173,7 +175,7 @@ class Simulation:
     def create_main_frame(self):
         self.main_frame = np.ones((Utils.HEIGHT, Utils.WIDTH, 3), dtype=np.uint8) * 255
 
-    def generate_actuation(self, phase):
+    def generate_actuation(self, phase, reverse=False):
         # Get maximum actuation movement
         steps = self.actuation_steps
         max_1, max_2 = self.robot.max_actuation()
@@ -230,6 +232,11 @@ class Simulation:
         self.actuation2 = np.tile(self.actuation2, self.nb_cycles)
         self.actuation1_direction = np.tile(self.actuation1_direction, self.nb_cycles)
         self.actuation2_direction = np.tile(self.actuation2_direction, self.nb_cycles)
+
+        if reverse:
+            t = self.actuation1
+            self.actuation1 = self.actuation2
+            self.actuation2 = t
 
     def get_joints_data(self, actuation, actuation_direction, joint):
         a_x, a_y, a_z = Utils.list_coord2list(joint.A)
