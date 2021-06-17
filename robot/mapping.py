@@ -13,10 +13,11 @@ import matplotlib.pyplot as plt
 SIMULATE = True
 
 if SIMULATE:
-    sequences = ['A', 'B']# 'C', 'E', 'G', 'I', 'J', 'B', 'D', 'F', 'H']
+    sequences = ['A', 'B']#, 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
     theoretical_sequences = ['K', 'L', 'M', 'N', 'O']   # not used
 
     actuation = [0, 180]
+    reverse_actuation = [False, True]
 
     start = time.time()
 
@@ -27,12 +28,13 @@ if SIMULATE:
             for s2 in sequences:
                 for s3 in sequences:
                     for s4 in sequences:
-                        seq = f'{s1}{s2}{s3}{s4}'
-                        sim = initialize_env(seq, act)
-                        sim.mapping = True
+                        for rev in reverse_actuation:
+                            seq = f'{s1}{s2}{s3}{s4}'
+                            sim = initialize_env(seq, act, rev)
+                            sim.mapping = True
 
-                        x, y, yaw = sim.simulate()
-                        results.append([seq, act, x, y, yaw])
+                            x, y, yaw = sim.simulate()
+                            results.append([seq, act, x, y, yaw])
 
     print(f'Simulation time : {(time.time() - start) / 60:.0f} minutes {(time.time() - start) % 60:.0f} secondes')
 

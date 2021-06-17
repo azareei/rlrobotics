@@ -13,7 +13,8 @@ class Joint:
     Represent a joint constituted by two blocs linked with two arms and a spring.
     """
     def __init__(self, _sequence, _structure_offset, _invert_y=False,
-                 _invert_init_angle=False, _bot_color=(0, 0, 0),
+                 _invert_init_angle=False, _reverse_actuation=False,
+                 _bot_color=(0, 0, 0),
                  _top_color=(255, 0, 0), _name='Joint',
                  _r1=3/100, _r2=3/100,
                  _theta1=0.785, _theta2=0.785,
@@ -30,6 +31,8 @@ class Joint:
         self.bot_color = _bot_color
         self.top_color = _top_color
         self.invert_init_angle = _invert_init_angle
+        if _reverse_actuation:
+            self.invert_init_angle = not self.invert_init_angle
         self.name = _name
 
         # Create first block
