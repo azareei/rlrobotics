@@ -7,6 +7,20 @@ This is the main file to initialize and generate the simulations. There is two w
 2)  Call initialize_env function from another python script with specific input. Used for testing
     multiple simulation at the same time, for example with mapping.py script
 
+
+Attributes
+----------
+parser : ArgumentParser
+    Attribute that handles the argument given when called in case 1)
+args : Parser argument
+    Contains the argument from command line. If called in case 2), will be None
+
+Methods
+-------
+initialize_env(sequence='BBBB', phase=0,, reverse=False)
+    Create a simulation environement with different parameters comming from the arguments or config
+    files.
+
 """
 import argparse
 import json
@@ -91,6 +105,5 @@ def initialize_env(sequence='BBBB', phase=0, reverse=False):
 
 
 if __name__ == "__main__":
-    # execute only if run as a script
     sim = initialize_env()
     sim.simulate()
