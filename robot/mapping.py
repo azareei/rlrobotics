@@ -11,14 +11,14 @@ repartition of the points.
 
 Attributes
 ----------
-realistic_sequences : list
+REALISTIC_SEQUENCES : list
     represent our 10 realistic sequences that are reachable.
-theoretical_sequences : list
+THEORETICAL_SEQUENCES : list
     represent 5 different sequences that should not be possible in reality even though we have observed in
     Vladimir work that it happens sometimes. Maily they involve to have both blocks moving at the same time.
-actuation_phase: list
+ACTUATION_PHASE: list
     Correspond to the list of phase difference we want to play with. Actually supports only 0 and 180 degrees.
-reverse_actuation : list
+REVERSE_ACTUATION : list
     Correspond to the list of boolean to reverse the actuation. Needed if we want to have symmetric results.
     Disable it if speed is important.
 results : list
@@ -30,6 +30,8 @@ SIMULATE : bool
     the 3D plots
 SIMULATE_THEORY_SEQ : bool
     If true, not only the realistic sequences will be tested but also the theoretical ones.
+STEPS : int
+    Represent the number of step used for a simulation.
 
 """
 
@@ -44,29 +46,29 @@ from main import initialize_env
 
 SIMULATE = True
 SIMULATE_THEORY_SEQ = False
-realistic_sequences = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
-theoretical_sequences = ['K', 'L', 'M', 'N', 'O']   # not used
+REALISTIC_SEQUENCES = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
+THEORETICAL_SEQUENCES = ['K', 'L', 'M', 'N', 'O']   # not used
+ACTUATION_PHASE = [0, 180]
+REVERSE_ACTUATION = [False, True]
+STEPS = 50
 
-actuation_phase = [0, 180]
-reverse_actuation = [False, True]
 results = []
-steps = 50
 
 if SIMULATE:
     if SIMULATE_THEORY_SEQ:
-        sequences = realistic_sequences + theoretical_sequences
+        sequences = REALISTIC_SEQUENCES + THEORETICAL_SEQUENCES
     else:
-        sequences = realistic_sequences
+        sequences = REALISTIC_SEQUENCES
 
     start = time.time()
-    for act in actuation_phase:
+    for act in ACTUATION_PHASE:
         for s1 in sequences:
             for s2 in sequences:
                 for s3 in sequences:
                     for s4 in sequences:
-                        for rev in reverse_actuation:
+                        for rev in REVERSE_ACTUATION:
                             seq = f'{s1}{s2}{s3}{s4}'
-                            sim = initialize_env(seq, act, rev, steps)
+                            sim = initialize_env(seq, act, rev, STEPS)
                             sim.mapping = True
 
                             x, y, yaw = sim.simulate()
