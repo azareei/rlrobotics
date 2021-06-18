@@ -2,18 +2,19 @@
 This script is used to produce all the possible sequences of the robot motion and add it to a table
 """
 
-from main import initialize_env
 import time
-import pandas as pd
 from pathlib import Path
-import numpy as np
-import matplotlib.pyplot as plt
 
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+
+from main import initialize_env
 
 SIMULATE = True
 
 if SIMULATE:
-    sequences = ['A', 'B']#, 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
+    sequences = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
     theoretical_sequences = ['K', 'L', 'M', 'N', 'O']   # not used
 
     actuation = [0, 180]

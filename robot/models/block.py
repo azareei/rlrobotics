@@ -1,5 +1,5 @@
-from coordinates import Coordinate
 import cv2
+from coordinates import Coordinate
 from utils import Utils
 
 

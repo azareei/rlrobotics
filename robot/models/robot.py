@@ -1,9 +1,10 @@
-from models.joint import Joint
-from coordinates import Coordinate
 import cv2
-from utils import Utils
 import numpy as np
 import numpy.ma as ma
+from coordinates import Coordinate
+from utils import Utils
+
+from models.joint import Joint
 
 
 class Robot:

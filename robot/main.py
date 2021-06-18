@@ -1,10 +1,9 @@
-from simulation import Simulation
 import argparse
 import json
 from pathlib import Path
 
+from simulation import Simulation
 from utils import Utils
-
 
 parser = argparse.ArgumentParser(description='')
 parser.add_argument('--config',
@@ -22,7 +21,7 @@ def initialize_env(sequence='BBBB', phase=0, reverse=False):
             "simulation": {
                 "camera_robot_ref": True,
                 "actuation": {
-                    "steps": 20,  # TODO CHANGE
+                    "steps": 50,  # TODO CHANGE
                     "cycles": 1,
                     "phase": phase,
                     "reverse": reverse

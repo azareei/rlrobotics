@@ -1,15 +1,17 @@
-from models.robot import Robot
-import numpy as np
-from pathlib import Path
-from coordinates import Coordinate
-import cv2
-from cv2 import VideoWriter, VideoWriter_fourcc
-from utils import Utils
 import time
+from pathlib import Path
+
+import cv2
+import numpy as np
 import pandas as pd
+import seaborn as sns
+from coordinates import Coordinate
+from cv2 import VideoWriter, VideoWriter_fourcc
 from matplotlib import pyplot as plt
 from matplotlib.colors import ListedColormap
-import seaborn as sns
+
+from models.robot import Robot
+from utils import Utils
 
 
 class Simulation:

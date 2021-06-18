@@ -1,11 +1,13 @@
-from models.block import Block
-from models.bar import Bar
-from models.spring import Spring
-from coordinates import Coordinate
-import numpy as np
-import cv2
-from utils import Utils
 from inspect import currentframe, getframeinfo
+
+import cv2
+import numpy as np
+from coordinates import Coordinate
+from utils import Utils
+
+from models.bar import Bar
+from models.block import Block
+from models.spring import Spring
 
 
 class Joint:
