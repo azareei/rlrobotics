@@ -36,7 +36,7 @@ parser.add_argument('--config',
 args = parser.parse_args()
 
 
-def initialize_env(sequence='BBBB', phase=0, reverse=False):
+def initialize_env(sequence='BBBB', phase=0, reverse=False, steps=20):
     """
     Entry point of the simulation, allows us to initialize a robot and a simulation
     environnement with a config file of with some basics parameters. 
@@ -59,6 +59,9 @@ def initialize_env(sequence='BBBB', phase=0, reverse=False):
     reverse : bool, optional
         represent a specific mode of the simulation where the actuation are reversed. It will
         be used only if there is no config file.
+    steps : int, optional
+        represent the number of step used for a simulation. It will be used only if there is
+        no config file.
 
     Returns
     -------
@@ -73,7 +76,7 @@ def initialize_env(sequence='BBBB', phase=0, reverse=False):
             "simulation": {
                 "camera_robot_ref": True,
                 "actuation": {
-                    "steps": 50,  # TODO CHANGE
+                    "steps": steps,  # TODO CHANGE
                     "cycles": 1,
                     "phase": phase,
                     "reverse": reverse
