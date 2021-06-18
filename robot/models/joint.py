@@ -5,7 +5,7 @@ import numpy as np
 from coordinates import Coordinate
 from utils import Utils
 
-from models.bar import Bar
+from models.arm import Arm
 from models.block import Block
 from models.spring import Spring
 
@@ -77,7 +77,7 @@ class Joint:
         )
 
         # Create the bars_bot
-        self.bars_bot = Bar(
+        self.bars_bot = Arm(
             self.block_bot.get_anchor(type="t"),
             self.block_mid.get_anchor(type="b"),
             _r1,
@@ -85,7 +85,7 @@ class Joint:
         )
 
         # Create the bars_top
-        self.bars_top = Bar(
+        self.bars_top = Arm(
             self.block_mid.get_anchor(type='t'),
             self.block_top.get_anchor(type='b'),
             _r2,
