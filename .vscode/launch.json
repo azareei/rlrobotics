@@ -13,6 +13,14 @@
             "console": "internalConsole"
         },
         {
+            "name": "Run AI",
+            "type": "python",
+            "request": "launch",
+            "program": "map.py",
+            "cwd": "${workspaceFolder}/controller",
+            "console": "internalConsole"
+        },
+        {
             "name": "AAAA 1C Draw",
             "type": "python",
             "request": "launch",
