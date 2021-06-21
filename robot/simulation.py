@@ -1,3 +1,78 @@
+"""
+Module simulation
+
+This module handles a complete simulation with different parameters. Then it will store the results
+of the simulation in different files.
+Typically Generate those files:
+A.png               -> Leg J1 pattern
+AAAA-0.png          -> 4 legs pattern
+AAAA-0.mp4          -> video of the simulation
+AAAA-0_motion.png   -> robot's displacement plots
+AAAA.csv            -> Data output in CSV format
+AAAA.pkl            -> Data output in pickle format (useful for pandas and python)
+
+Attributes
+----------
+camera_in_robot_ref : bool
+    If true, the camera will stick to the reference frame of the robot and we will see the ground moving.
+    If false, the camera will be fixed and the robot will move out of the frame.
+actuation_steps : int
+    Number of steps we want to compute for half a cycle.
+nb_cycles : int
+    Number of repetition of one cycle to compute. It can be usefull to do it longer to see a rotation better
+draw : bool
+    If true, drawing video will be done, otherwise drawing process will be skipped (faster execution)
+phase_diff : int
+    Can be 0 or 180. If 0, actuators will be in phase (extending at the same time), 180 will give actuators
+    running in opposite phase.
+reverse_actuation : bool
+    Used to generate symmetry in results. It will reverse all the actuations.
+mapping : bool
+    If true, it will not produce any output. Used to run batch of simulations. (for example mapping.py)
+grid_size : float
+    Specify the grid size of the background (in meter)
+robot : Robot
+    Robot
+actuation1_direction : numpy Array
+    Array containing the direction for all the steps. 1 corresponding to forward motion, 0 for backward
+actuation2_direction : numpy Array
+    Array containing the direction for all the steps. 1 corresponding to forward motion, 0 for backward
+actuation1 : numpy Array
+    Array containing the position of the actuation in 2*steps
+actuation2 : numpy Array
+    Array containing the position of the actuation in 2*steps
+blank_frame : numpy Array
+    blank image that is copied to generate a new frame instead of creating a new one.
+frame : numpy Array
+    current frame to be draw.
+
+Methods
+-------
+__init__(self, *params)
+    Initialize the simulatio environment including the robot and the actuators
+simulate(self)
+    Run the simulation given the parameters
+draw_blocks(self)
+    draw the robot, the different views and the legs
+init_video(self, name)
+    initialize a new video file
+new_frame(self displacement, yaw=0.0)
+    generate a new frame to draw with the correct background orientation and displacement
+save_video(self, video)
+    save the video file
+create_blank_frame(self)
+    initialize the first frame
+generate_actuation(self, phase, reverse=False)
+    Create the arrays of actuations that will be used during the simulation.
+get_joints_data(self, actuation, actuation_direction, joint)
+    Gather the different information we need on the displacement and position to save them
+save_data(self)
+    Save all the datapoint generated during the simulation
+plot_legs_motion(self)
+    Export the sequence pattern for all the legs
+plot_robot_motion(self)
+    Export the total displacement in X and Y and the heading for the simulation.
+"""
 import time
 from pathlib import Path
 
@@ -16,6 +91,14 @@ from utils import Utils
 
 class Simulation:
     def __init__(self, *params):
+        """
+        Initialize the simulation from the config files.
+
+        Parameters
+        ----------
+        *params : dictionary
+            Contain basically all the config file that were merged previously
+        """
         s = params[0]['simulation']
         r = params[0]['robot']
 
@@ -51,7 +134,16 @@ class Simulation:
 
     def simulate(self):
         """
-            Returns Displacement X, displacement Y, Orientation yaw
+        Run the simulation
+
+        Returns
+        -------
+            double
+                Displacement X
+            double
+                Displacement Y
+            double
+                Heading (yaw)
         """
         start_time = time.time()
         for a_1, a_2, d_1, d_2, s in zip(self.actuation1,
@@ -82,6 +174,9 @@ class Simulation:
         return self.robot.position[-1].x, self.robot.position[-1].y, self.robot.angle[-1][2]
 
     def draw_blocks(self):
+        """
+        Draw the robot, the legs and the different views of the robot in a frame
+        """
         # Draw blocks
         if self.camera_in_robot_ref:
             self.new_frame(self.robot.position[-1], self.robot.angle[-1][2])
@@ -96,12 +191,35 @@ class Simulation:
             self.blocks_video.write(self.frame)
 
     def init_video(self, name):
+        """
+        Create a new video in MP4 format
+
+        Parameters
+        ----------
+        name : str
+            File's name
+        
+        Returns
+        -------
+        VideoWriter
+        """
         fourcc = VideoWriter_fourcc('m', 'p', '4', 'v')
-        self.create_main_frame()
+        self.create_blank_frame()
         return VideoWriter(name, fourcc, float(Utils.FPS), (Utils.WIDTH, Utils.HEIGHT))
 
     def new_frame(self, displacement, yaw=0.0):
-        frame = self.main_frame.copy()
+        """
+        Create a new frame and draw the grid inside. The grid will move given the displacement
+        and the heading of the robot
+
+        Parameters
+        ----------
+        displacement : Coordinates
+            Coordinates of the robot
+        yaw : float, optional
+            The heading of the robot (zero by default)
+        """
+        frame = self.blank_frame.copy()
         if not self.camera_in_robot_ref:
             self.frame = frame
             return
@@ -207,10 +325,20 @@ class Simulation:
     def save_video(self, video):
         video.release()
 
-    def create_main_frame(self):
-        self.main_frame = np.ones((Utils.HEIGHT, Utils.WIDTH, 3), dtype=np.uint8) * 255
+    def create_blank_frame(self):
+        self.blank_frame = np.ones((Utils.HEIGHT, Utils.WIDTH, 3), dtype=np.uint8) * 255
 
     def generate_actuation(self, phase, reverse=False):
+        """
+        Create the different array of displacement for the artuators
+
+        Parameters
+        ----------
+        phase : int
+            Phase difference of the actuators, can be 0 or 180 (zero is both actuators extends at the same time)
+        reverse : bool, optional
+            Optional parameter to reverse the actuation. Used only to generate symmetric results.
+        """
         # Get maximum actuation movement
         steps = self.actuation_steps
         max_1, max_2 = self.robot.max_actuation()
@@ -274,6 +402,23 @@ class Simulation:
             self.actuation2 = t
 
     def get_joints_data(self, actuation, actuation_direction, joint):
+        """
+        Gather the data of a specific joint
+
+        Parameters
+        ----------
+        actuation : numpy Array
+            The associated actuation array for the joint
+        actuation_direction : numpy Array
+            The associated actuation_direction array to the joint
+        joint : Joint
+            The joint we want to gather data
+
+        Results
+        -------
+        DataFrame
+            A pandas dataframe that contains all the relevant data for the joint during the simulation
+        """
         a_x, a_y, a_z = Utils.list_coord2list(joint.A)
         b_x, b_y, b_z = Utils.list_coord2list(joint.B)
         c_x, c_y, c_z = Utils.list_coord2list(joint.C)
@@ -300,6 +445,10 @@ class Simulation:
         return df
 
     def save_data(self):
+        """
+        Gather all the data from the 4 joints to save them in a pandas dataframe and save them after the simulation.
+        Save in CSV and PKL format.
+        """
         J1 = self.get_joints_data(self.actuation1, self.actuation1_direction, self.robot.J1)
         J2 = self.get_joints_data(self.actuation2, self.actuation1_direction, self.robot.J2)
         J3 = self.get_joints_data(self.actuation2, self.actuation1_direction, self.robot.J3)
@@ -350,6 +499,9 @@ class Simulation:
         ))
 
     def plot_legs_motion(self):
+        """
+        Generate the plot for the patterns of the legs during one cycle of the simulation.
+        """
         fig, axs = plt.subplots(2, 2, figsize=(13, 10))
         cmap = ListedColormap(sns.color_palette("husl", 256).as_hex())
 
@@ -454,6 +606,9 @@ class Simulation:
         ))
 
     def plot_robot_motion(self):
+        """
+        Generate the plot for the robot displacement during the simulation + the orientation of the robot
+        """
         fig, axs = plt.subplots(2, 1, figsize=(10, 8))
 
         # X Axis is shared among subplots

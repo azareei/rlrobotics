@@ -1,5 +1,38 @@
 """
-This script is used to produce all the possible sequences of the robot motion and add it to a table
+Module mapping.py
+This script creates a table containing different sequences and their respective motion in x, y, heading
+with respect to a specific actuation.
+
+By default it will use only the realistic sequences but a boolean can make use also of the theoretical
+sequences if needed.
+
+At the end of the simulation, results are produced and especially 4 plots are saved representing the
+repartition of the points.
+
+Attributes
+----------
+REALISTIC_SEQUENCES : list
+    represent our 10 realistic sequences that are reachable.
+THEORETICAL_SEQUENCES : list
+    represent 5 different sequences that should not be possible in reality even though we have observed in
+    Vladimir work that it happens sometimes. Maily they involve to have both blocks moving at the same time.
+ACTUATION_PHASE: list
+    Correspond to the list of phase difference we want to play with. Actually supports only 0 and 180 degrees.
+REVERSE_ACTUATION : list
+    Correspond to the list of boolean to reverse the actuation. Needed if we want to have symmetric results.
+    Disable it if speed is important.
+results : list
+    Will store the results of the simulation. The results contains the sequence,
+    the actuation, the reverse actuation used and the final position of the robot
+    in x, y and yaw.
+SIMULATE : bool
+    Tells if the simulation will take place, if not the case, the script will use the pre-generated data to create
+    the 3D plots
+SIMULATE_THEORY_SEQ : bool
+    If true, not only the realistic sequences will be tested but also the theoretical ones.
+STEPS : int
+    Represent the number of step used for a simulation.
+
 """
 
 import time
@@ -12,34 +45,38 @@ import pandas as pd
 from main import initialize_env
 
 SIMULATE = True
+SIMULATE_THEORY_SEQ = False
+REALISTIC_SEQUENCES = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
+THEORETICAL_SEQUENCES = ['K', 'L', 'M', 'N', 'O']   # not used
+ACTUATION_PHASE = [0, 180]
+REVERSE_ACTUATION = [False, True]
+STEPS = 50
+
+results = []
 
 if SIMULATE:
-    sequences = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
-    theoretical_sequences = ['K', 'L', 'M', 'N', 'O']   # not used
-
-    actuation = [0, 180]
-    reverse_actuation = [False, True]
+    if SIMULATE_THEORY_SEQ:
+        sequences = REALISTIC_SEQUENCES + THEORETICAL_SEQUENCES
+    else:
+        sequences = REALISTIC_SEQUENCES
 
     start = time.time()
-
-    results = []
-
-    for act in actuation:
+    for act in ACTUATION_PHASE:
         for s1 in sequences:
             for s2 in sequences:
                 for s3 in sequences:
                     for s4 in sequences:
-                        for rev in reverse_actuation:
+                        for rev in REVERSE_ACTUATION:
                             seq = f'{s1}{s2}{s3}{s4}'
-                            sim = initialize_env(seq, act, rev)
+                            sim = initialize_env(seq, act, rev, STEPS)
                             sim.mapping = True
 
                             x, y, yaw = sim.simulate()
-                            results.append([seq, act, x, y, yaw])
+                            results.append([seq, act, rev, x, y, yaw])
 
     print(f'Simulation time : {(time.time() - start) / 60:.0f} minutes {(time.time() - start) % 60:.0f} secondes')
 
-    df = pd.DataFrame(results, columns=['sequence', 'actuation', 'x', 'y', 'yaw'])
+    df = pd.DataFrame(results, columns=['sequence', 'actuation', 'reverse', 'x', 'y', 'yaw'])
 
     df.to_pickle('{0}/results/_all_sequences.pkl'.format(
         Path(__file__).resolve().parent
