@@ -24,7 +24,8 @@ class Robot:
             _top_color=Utils.magenta,
             _name='J1',
             _r1=_J1['r1'], _r2=_J1['r2'],
-            _theta1=_J1['theta1'], _theta2=_J1['theta2']
+            _theta1=_J1['theta1'], _theta2=_J1['theta2'],
+            _leg_length=_J1['leg_length']
         )
         self.J4 = Joint(
             _J4['sequence'],
@@ -40,7 +41,8 @@ class Robot:
             _top_color=Utils.magenta,
             _name='J4',
             _r1=_J4['r1'], _r2=_J4['r2'],
-            _theta1=_J4['theta1'], _theta2=_J4['theta2']
+            _theta1=_J4['theta1'], _theta2=_J4['theta2'],
+            _leg_length=_J1['leg_length']
         )
 
         # Actuation 2
@@ -58,7 +60,8 @@ class Robot:
             _top_color=Utils.green,
             _name='J2',
             _r1=_J2['r1'], _r2=_J2['r2'],
-            _theta1=_J2['theta1'], _theta2=_J2['theta2']
+            _theta1=_J2['theta1'], _theta2=_J2['theta2'],
+            _leg_length=_J1['leg_length']
         )
         self.J3 = Joint(
             _J3['sequence'],
@@ -74,7 +77,8 @@ class Robot:
             _top_color=Utils.green,
             _name='J3',
             _r1=_J3['r1'], _r2=_J3['r2'],
-            _theta1=_J3['theta1'], _theta2=_J3['theta2']
+            _theta1=_J3['theta1'], _theta2=_J3['theta2'],
+            _leg_length=_J1['leg_length']
         )
 
         self.position = []

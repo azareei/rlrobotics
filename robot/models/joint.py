@@ -14,17 +14,13 @@ class Joint:
     """
     Represent a joint constituted by two blocs linked with two arms and a spring.
     """
-    def __init__(self, _sequence, _structure_offset, _invert_y=False,
-                 _invert_init_angle=False, _reverse_actuation=False,
-                 _bot_color=(0, 0, 0),
-                 _top_color=(255, 0, 0), _name='Joint',
-                 _r1=3/100, _r2=3/100,
-                 _theta1=0.785, _theta2=0.785,
-                 _legs_length=5 / 100):
-        # We define the following for now:
-        #   anchor distance to side of the block is 1cm
-        #   width is 6cm
-        #   height is 6 cm
+    def __init__(self, _sequence, _structure_offset,
+                 _invert_y, _invert_init_angle, _reverse_actuation,
+                 _bot_color, _top_color,
+                 _name,
+                 _r1, _r2,
+                 _theta1, _theta2,
+                 _leg_length):
 
         # Define sequence
         self.sequence = _sequence
@@ -111,7 +107,7 @@ class Joint:
         self.theta_i_bot = 0
         self.theta_i_top = 0
 
-        self.legs_length = _legs_length
+        self.leg_length = _leg_length
 
         self.A = []
         self.B = []
@@ -122,7 +118,7 @@ class Joint:
         self.init_position()
 
     def compute_leg_height(self, _A, _B):
-        tmp = self.legs_length**2 - ((_B.x - _A.x) / 2)**2
+        tmp = self.leg_length**2 - ((_B.x - _A.x) / 2)**2
         return Coordinate(x=(_A.x + _B.x)/2, y=(_A.y + _B.y)/2, z=np.sqrt(tmp))
 
     def get_real_leg(self):
