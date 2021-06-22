@@ -26,11 +26,11 @@ length = 0
 # Getting our AI, which we call "brain", and that contains our neural network that represents our Q-function
 # x, y, yaw
 action2rotation = [
-    [8, 0, 0],
-    [0, 8, 0],
-    [0, 0, 10],
-    [0, 0, -10]
+    [6, 0, 20],
+    [6, 0, -20],
+    [6, 0, 0]
 ]
+
 brain = Dqn(5, len(action2rotation), 0.9)
 last_reward = 0
 scores = []
@@ -60,6 +60,9 @@ class Car(Widget):
 
     angle = NumericProperty(0)
     rotation = NumericProperty(0)
+    velocity_x = NumericProperty(0)
+    velocity_y = NumericProperty(0)
+    velocity = ReferenceListProperty(velocity_x, velocity_y)
     sensor1_x = NumericProperty(0)
     sensor1_y = NumericProperty(0)
     sensor1 = ReferenceListProperty(sensor1_x, sensor1_y)
@@ -74,7 +77,7 @@ class Car(Widget):
     signal3 = NumericProperty(0)
 
     def move(self, displacement):
-        self.pos = Vector(*self.velocity) + self.pos
+        self.pos = Vector(displacement[0], displacement[1]).rotate(self.angle) + self.pos
         self.rotation = displacement[2]
         self.angle = self.angle + self.rotation
         self.sensor1 = Vector(30, 0).rotate(self.angle) + self.pos
