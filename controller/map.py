@@ -1,5 +1,5 @@
 from pathlib import Path
-
+import random
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -12,18 +12,21 @@ from kivy.properties import NumericProperty, ReferenceListProperty
 from kivy.uix.button import Button
 from kivy.uix.widget import Widget
 from kivy.vector import Vector
+from kivy.core.window import Window
 
 # Importing the Dqn object from our AI in ai.py
 from dqn import Dqn
 
 # Adding this line if we don't want the right click to put a red point
 Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
+Window.size = (1200, 800)
 
 # Introducing last_x and last_y, used to keep the last point in memory when we draw the sand on the map
 last_x = 0
 last_y = 0
 n_points = 0
 length = 0
+goal_reached_nb = 0
 
 
 # Getting our AI, which we call "brain", and that contains our neural network that represents our Q-function
@@ -68,8 +71,8 @@ def init():
     global goal_y
     global first_update
     sand = np.zeros((width, height))
-    goal_x = 20
-    goal_y = height - 20
+    goal_x = 30
+    goal_y = height - 30
     first_update = False
 
 
@@ -153,6 +156,10 @@ class Car(Widget):
             self.signal6 = 1.
 
 
+class Goal(Widget):
+    pass
+
+
 class Ball1(Widget):
     pass
 
@@ -187,6 +194,7 @@ class Game(Widget):
     ball4 = Ball4()
     ball5 = Ball5()
     ball6 = Ball6()
+    goal = Goal()
 
     def serve_car(self):
         self.car.center = self.center
@@ -232,12 +240,13 @@ class Game(Widget):
         self.ball4.pos = self.car.sensor4
         self.ball5.pos = self.car.sensor5
         self.ball6.pos = self.car.sensor6
+        self.goal.pos = Vector(goal_x, goal_y)
 
         self.steps += 1
 
         # print(f'{distance} {scores[-1]}')
         if sand[int(self.car.x), int(self.car.y)] > 0:
-            last_reward = -50  # sand reward
+            last_reward = -100  # sand reward
             self.car.velocity = Vector(0.01, 0).rotate(self.car.angle)
         else:  # otherwise
             self.car.velocity = Vector(1, 0).rotate(self.car.angle)
@@ -245,7 +254,7 @@ class Game(Widget):
             if distance < last_distance:
                 last_reward = 1 * abs(last_distance - distance) / 6
         # score based also on orientation
-        last_reward += (1-abs(orientation)) * 1
+        last_reward += (1-abs(orientation)) * 0.9
 
         if self.car.x < 10:
             self.car.x = 10
@@ -260,9 +269,15 @@ class Game(Widget):
             self.car.y = self.height - 10
             last_reward = -10
 
-        if distance < 100:
-            goal_x = self.width-goal_x
-            goal_y = self.height-goal_y
+        if distance < 50:
+            global goal_reached_nb
+            goal_reached_nb += 1
+            if goal_reached_nb < 10:
+                goal_x = self.width-goal_x
+                goal_y = self.height-goal_y
+            else:
+                goal_x = random.randint(10, width-10)
+                goal_y = random.randint(10, height-10)
             last_reward = self.last_steps - self.steps  # reward for reaching the objective faster than last round
             self.last_steps = self.steps
             self.steps = 0
