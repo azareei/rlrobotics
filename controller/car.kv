@@ -2,7 +2,7 @@
 # ref: https://kivy.org/docs/tutorials/pong.html
 
 <Car>:
-    size: 20, 10
+    size: 20, 20
     canvas:
         PushMatrix
         Rotate:
@@ -17,7 +17,7 @@
     size: 10,10
     canvas:
         Color:
-            rgba: 1,0,0,1
+            rgba: 0,1,0,1
         Ellipse:
             pos: self.pos
             size: self.size
@@ -25,7 +25,7 @@
     size: 10,10
     canvas:
         Color:
-            rgba: 0,1,1,1
+            rgba: 0,1,0,1
         Ellipse:
             pos: self.pos
             size: self.size
@@ -34,7 +34,33 @@
     size: 10,10
     canvas:
         Color:
-            rgba: 1,1,0,1
+            rgba: 0,1,0,1
+        Ellipse:
+            pos: self.pos
+            size: self.size
+
+<Ball4>:
+    size: 10,10
+    canvas:
+        Color:
+            rgba: 1,0,0,1
+        Ellipse:
+            pos: self.pos
+            size: self.size
+<Ball5>:
+    size: 10,10
+    canvas:
+        Color:
+            rgba: 1,0,0,1
+        Ellipse:
+            pos: self.pos
+            size: self.size
+
+<Ball6>:
+    size: 10,10
+    canvas:
+        Color:
+            rgba: 1,0,0,1
         Ellipse:
             pos: self.pos
             size: self.size
@@ -44,6 +70,9 @@
     ball1: game_ball1
     ball2: game_ball2
     ball3: game_ball3
+    ball4: game_ball4
+    ball5: game_ball5
+    ball6: game_ball6
 
     Car:
         id: game_car
@@ -56,4 +85,13 @@
         center: self.parent.center
     Ball3:
         id: game_ball3
+        center: self.parent.center
+    Ball4:
+        id: game_ball4
+        center: self.parent.center
+    Ball5:
+        id: game_ball5
+        center: self.parent.center
+    Ball6:
+        id: game_ball6
         center: self.parent.center
