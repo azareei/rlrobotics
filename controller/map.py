@@ -31,9 +31,9 @@ length = 0
 def load_data():
     df = pd.read_pickle(f'{Path(__file__).resolve().parent}/_all_sequences.pkl')
     # round close to zero values to zero
-    df['x'] = df['x'].where(df['x'] < 1e-5, 0)
-    df['y'] = df['y'].where(df['y'] < 1e-5, 0)
-    df['yaw'] = df['yaw'].where(df['yaw'] < 1e-5, 0)
+    df['x'] = df['x'].where(abs(df['x']) > 1e-3, 0)
+    df['y'] = df['y'].where(abs(df['y']) > 1e-3, 0)
+    df['yaw'] = df['yaw'].where(abs(df['yaw']) > 1e-2, 0)
 
     # Remove duplicates
     df = df.drop_duplicates(subset=['x', 'y', 'yaw'])
@@ -46,6 +46,11 @@ def load_data():
 
 
 action2rotation = load_data()
+# action2rotation = [
+#     [6, 0, 0],
+#     [0, 0, 20],
+#     [0, 0, -20]
+# ]
 print(f'Number of actions : {len(action2rotation)}')
 brain = Dqn(8, len(action2rotation), 0.9)
 last_reward = 0
@@ -69,7 +74,6 @@ def init():
 
 
 class Car(Widget):
-
     angle = NumericProperty(0)
     rotation = NumericProperty(0)
     velocity_x = NumericProperty(0)
@@ -103,6 +107,8 @@ class Car(Widget):
     def move(self, displacement):
         self.pos = Vector(displacement[3], displacement[4]).rotate(self.angle) + self.pos
         self.rotation = displacement[5]
+        # self.pos = Vector(displacement[0], displacement[1]).rotate(self.angle) + self.pos
+        # self.rotation = displacement[2]
         self.angle = self.angle + self.rotation
 
         self.sensor1 = Vector(30, 0).rotate(self.angle) + self.pos
@@ -231,25 +237,28 @@ class Game(Widget):
 
         # print(f'{distance} {scores[-1]}')
         if sand[int(self.car.x), int(self.car.y)] > 0:
-            last_reward = -500  # sand reward
+            last_reward = -50  # sand reward
+            self.car.velocity = Vector(0.01, 0).rotate(self.car.angle)
         else:  # otherwise
-            last_reward = -0.1  # driving away from objective reward
+            self.car.velocity = Vector(1, 0).rotate(self.car.angle)
+            last_reward = -1 * abs(last_distance - distance) / 6
             if distance < last_distance:
-                last_reward = 0.1  # driving towards objective reward
-        self.car.velocity = Vector(1, 0).rotate(self.car.angle)
+                last_reward = 1 * abs(last_distance - distance) / 6
+        # score based also on orientation
+        last_reward += (1-abs(orientation)) * 1
 
         if self.car.x < 10:
             self.car.x = 10
-            last_reward = -1  # too close to edges of the wall reward
+            last_reward = -10  # too close to edges of the wall reward
         if self.car.x > self.width - 10:
             self.car.x = self.width - 10
-            last_reward = -1
+            last_reward = -10
         if self.car.y < 10:
             self.car.y = 10
-            last_reward = -1
+            last_reward = -10
         if self.car.y > self.height - 10:
             self.car.y = self.height - 10
-            last_reward = -1
+            last_reward = -10
 
         if distance < 100:
             goal_x = self.width-goal_x

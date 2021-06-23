@@ -8,8 +8,8 @@ class Network(nn.Module):
         super(Network, self).__init__()
         self.input_size = input_size
         self.nb_action = nb_action
-        self.fc1 = nn.Linear(input_size, 128)
-        self.fc2 = nn.Linear(128, nb_action)
+        self.fc1 = nn.Linear(input_size, 64)
+        self.fc2 = nn.Linear(64, nb_action)
 
     def forward(self, state):
         x = F.relu(self.fc1(state))
