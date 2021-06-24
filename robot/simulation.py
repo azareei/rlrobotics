@@ -161,7 +161,7 @@ class Simulation:
         end_time = time.time()
 
         seq = f'{self.robot.J1.sequence}{self.robot.J2.sequence}{self.robot.J3.sequence}{self.robot.J4.sequence}'
-        print(f'Simulation time [{seq}] : {(end_time - start_time):.2f}s')
+        print(f'Simulation time [{seq}]-{self.phase_diff}-{self.reverse_actuation} : {(end_time - start_time):.2f}s')
 
         if self.draw:
             self.save_video(self.blocks_video)
@@ -198,7 +198,7 @@ class Simulation:
         ----------
         name : str
             File's name
-        
+
         Returns
         -------
         VideoWriter

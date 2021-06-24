@@ -34,7 +34,7 @@ goal_reached_nb = 0
 def load_data():
     df = pd.read_pickle(f'{Path(__file__).resolve().parent}/_all_sequences.pkl')
     # round close to zero values to zero
-    df['x'] = df['x'].where(abs(df['x']) > 1e-3, 0)
+    df['x'] = df['x'].where(abs(df['x']) > 1e-2, 0)
     df['y'] = df['y'].where(abs(df['y']) > 1e-3, 0)
     df['yaw'] = df['yaw'].where(abs(df['yaw']) > 1e-2, 0)
 

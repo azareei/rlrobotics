@@ -46,11 +46,11 @@ from main import initialize_env
 
 SIMULATE = True
 SIMULATE_THEORY_SEQ = False
-REALISTIC_SEQUENCES = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
+REALISTIC_SEQUENCES = ['A', 'C', 'E', 'G', 'I', 'B', 'D', 'F', 'H', 'J']
 THEORETICAL_SEQUENCES = ['K', 'L', 'M', 'N', 'O']   # not used
 ACTUATION_PHASE = [0, 180]
 REVERSE_ACTUATION = [False, True]
-STEPS = 50
+STEPS = 10
 
 results = []
 
@@ -61,11 +61,11 @@ if SIMULATE:
         sequences = REALISTIC_SEQUENCES
 
     start = time.time()
-    for act in ACTUATION_PHASE:
-        for s1 in sequences:
-            for s2 in sequences:
-                for s3 in sequences:
-                    for s4 in sequences:
+    for s1 in sequences:
+        for s2 in sequences:
+            for s3 in sequences:
+                for s4 in sequences:
+                    for act in ACTUATION_PHASE:
                         for rev in REVERSE_ACTUATION:
                             seq = f'{s1}{s2}{s3}{s4}'
                             sim = initialize_env(seq, act, rev, STEPS)
