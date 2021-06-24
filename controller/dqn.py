@@ -10,7 +10,6 @@ from replay_memory import ReplayMemory
 
 
 class Dqn():
-
     def __init__(self, input_size, nb_action, gamma):
         self.gamma = gamma
         self.reward_window = []
@@ -21,8 +20,11 @@ class Dqn():
         self.last_action = 0
         self.last_reward = 0
 
+        # The higher the temperature, the more exploration will happens
+        self.temperature = 10
+
     def select_action(self, state):
-        probs = F.softmax(self.model(Variable(state))*10)  # T(Temperature)=10
+        probs = F.softmax(self.model(Variable(state)) * self.temperature)
         action = probs.multinomial(1)
         return action.data[0, 0]
 

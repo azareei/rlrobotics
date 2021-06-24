@@ -1,21 +1,21 @@
-from pathlib import Path
 import random
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-# Importing the Kivy packages
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.config import Config
+from kivy.core.window import Window
 from kivy.graphics import Color, Line
-from kivy.properties import NumericProperty, ReferenceListProperty
 from kivy.uix.button import Button
+from kivy.uix.label import Label
 from kivy.uix.widget import Widget
 from kivy.vector import Vector
-from kivy.core.window import Window
-from kivy.uix.label import Label
 
-# Importing the Dqn object from our AI in ai.py
+from controller_widgets import (Ball1, Ball2, Ball3, Ball4, Ball5, Ball6, Car,
+                                Goal)
 from dqn import Dqn
 
 # Adding this line if we don't want the right click to put a red point
@@ -54,136 +54,12 @@ print(f'Number of actions : {len(action2rotation)}')
 brain = Dqn(8, len(action2rotation), 0.9)
 last_reward = 0
 last_action = 0
+last_distance = 0
 last_nb_steps = 1e5
 cum_rewards = 0
 scores = []
 
-# Initializing the map
 first_update = True
-
-last_distance = 0
-
-
-def init():
-    global sand
-    global goal_x
-    global goal_y
-    global first_update
-    global scorelabel
-    sand = np.zeros((width, height))
-    goal_x = 30
-    goal_y = height - 30
-    first_update = False
-
-
-class Car(Widget):
-    angle = NumericProperty(0)
-    rotation = NumericProperty(0)
-    velocity_x = NumericProperty(0)
-    velocity_y = NumericProperty(0)
-    velocity = ReferenceListProperty(velocity_x, velocity_y)
-    sensor1_x = NumericProperty(0)
-    sensor1_y = NumericProperty(0)
-    sensor1 = ReferenceListProperty(sensor1_x, sensor1_y)
-    sensor2_x = NumericProperty(0)
-    sensor2_y = NumericProperty(0)
-    sensor2 = ReferenceListProperty(sensor2_x, sensor2_y)
-    sensor3_x = NumericProperty(0)
-    sensor3_y = NumericProperty(0)
-    sensor3 = ReferenceListProperty(sensor3_x, sensor3_y)
-    sensor4_x = NumericProperty(0)
-    sensor4_y = NumericProperty(0)
-    sensor4 = ReferenceListProperty(sensor4_x, sensor4_y)
-    sensor5_x = NumericProperty(0)
-    sensor5_y = NumericProperty(0)
-    sensor5 = ReferenceListProperty(sensor5_x, sensor5_y)
-    sensor6_x = NumericProperty(0)
-    sensor6_y = NumericProperty(0)
-    sensor6 = ReferenceListProperty(sensor6_x, sensor6_y)
-    signal1 = NumericProperty(0)
-    signal2 = NumericProperty(0)
-    signal3 = NumericProperty(0)
-    signal4 = NumericProperty(0)
-    signal5 = NumericProperty(0)
-    signal6 = NumericProperty(0)
-
-    def move(self, displacement):
-        self.pos = Vector(displacement[3], displacement[4]).rotate(self.angle) + self.pos
-        self.rotation = displacement[5]
-        # self.pos = Vector(displacement[0], displacement[1]).rotate(self.angle) + self.pos
-        # self.rotation = displacement[2]
-        self.angle = self.angle + self.rotation
-
-        self.sensor1 = Vector(30, 0).rotate(self.angle) + self.pos
-        self.sensor2 = Vector(30, 0).rotate((self.angle+30) % 360) + self.pos
-        self.sensor3 = Vector(30, 0).rotate((self.angle-30) % 360) + self.pos
-
-        self.sensor4 = Vector(-30, 0).rotate(self.angle) + self.pos
-        self.sensor5 = Vector(-30, 0).rotate((self.angle-30) % 360) + self.pos
-        self.sensor6 = Vector(-30, 0).rotate((self.angle+30) % 360) + self.pos
-
-        self.signal1 = int(
-            np.sum(sand[int(self.sensor1_x)-10:int(self.sensor1_x)+10,
-                        int(self.sensor1_y)-10:int(self.sensor1_y)+10]))/400.
-        self.signal2 = int(
-            np.sum(sand[int(self.sensor2_x)-10:int(self.sensor2_x)+10,
-                        int(self.sensor2_y)-10:int(self.sensor2_y) + 10])) / 400.
-        self.signal3 = int(
-            np.sum(sand[int(self.sensor3_x)-10:int(self.sensor3_x)+10,
-                        int(self.sensor3_y)-10:int(self.sensor3_y) + 10])) / 400.
-
-        self.signal4 = int(
-            np.sum(sand[int(self.sensor4_x)-10:int(self.sensor4_x)+10,
-                        int(self.sensor4_y)-10:int(self.sensor4_y)+10]))/400.
-        self.signal5 = int(
-            np.sum(sand[int(self.sensor5_x)-10:int(self.sensor5_x)+10,
-                        int(self.sensor5_y)-10:int(self.sensor5_y) + 10])) / 400.
-        self.signal6 = int(
-            np.sum(sand[int(self.sensor6_x)-10:int(self.sensor6_x)+10,
-                        int(self.sensor6_y)-10:int(self.sensor6_y) + 10])) / 400.
-
-        if self.sensor1_x > width-10 or self.sensor1_x < 10 or self.sensor1_y > height-10 or self.sensor1_y < 10:
-            self.signal1 = 1.
-        if self.sensor2_x > width-10 or self.sensor2_x < 10 or self.sensor2_y > height-10 or self.sensor2_y < 10:
-            self.signal2 = 1.
-        if self.sensor3_x > width-10 or self.sensor3_x < 10 or self.sensor3_y > height-10 or self.sensor3_y < 10:
-            self.signal3 = 1.
-        if self.sensor4_x > width-10 or self.sensor4_x < 10 or self.sensor4_y > height-10 or self.sensor4_y < 10:
-            self.signal4 = 1.
-        if self.sensor5_x > width-10 or self.sensor5_x < 10 or self.sensor5_y > height-10 or self.sensor5_y < 10:
-            self.signal5 = 1.
-        if self.sensor6_x > width-10 or self.sensor6_x < 10 or self.sensor6_y > height-10 or self.sensor6_y < 10:
-            self.signal6 = 1.
-
-
-class Goal(Widget):
-    pass
-
-
-class Ball1(Widget):
-    pass
-
-
-class Ball2(Widget):
-    pass
-
-
-class Ball3(Widget):
-    pass
-
-
-class Ball4(Widget):
-    pass
-
-
-class Ball5(Widget):
-    pass
-
-
-class Ball6(Widget):
-    pass
-
-# Creating the game class
 
 
 class Game(Widget):
@@ -233,7 +109,7 @@ class Game(Widget):
         action = brain.update(last_reward, last_signal)
         scores.append(brain.score())
         displacement = action2rotation[action]
-        self.car.move(displacement)
+        self.car.move(displacement, sand, width, height)
         distance = np.sqrt((self.car.x - goal_x)**2 + (self.car.y - goal_y)**2)
         self.ball1.pos = self.car.sensor1
         self.ball2.pos = self.car.sensor2
@@ -301,36 +177,17 @@ class Game(Widget):
             action2rotation[action][0]
         )
 
-# Adding the painting tools
 
-
-class MyPaintWidget(Widget):
-    def on_touch_down(self, touch):
-        global length, n_points, last_x, last_y
-        with self.canvas:
-            Color(0.8, 0.7, 0)
-            touch.ud['line'] = Line(points=(touch.x, touch.y), width=10)
-            last_x = int(touch.x)
-            last_y = int(touch.y)
-            n_points = 0
-            length = 0
-            sand[int(touch.x), int(touch.y)] = 1
-
-    def on_touch_move(self, touch):
-        global length, n_points, last_x, last_y
-        if touch.button == 'left':
-            touch.ud['line'].points += [touch.x, touch.y]
-            x = int(touch.x)
-            y = int(touch.y)
-            length += np.sqrt(max((x - last_x)**2 + (y - last_y)**2, 2))
-            n_points += 1.
-            density = n_points/(length)
-            touch.ud['line'].width = int(20 * density + 1)
-            sand[int(touch.x) - 10:int(touch.x) + 10, int(touch.y) - 10:int(touch.y) + 10] = 1
-            last_x = x
-            last_y = y
-
-# Adding the API Buttons (clear, save and load)
+def init():
+    global sand
+    global goal_x
+    global goal_y
+    global first_update
+    global scorelabel
+    sand = np.zeros((width, height))
+    goal_x = 30
+    goal_y = height - 30
+    first_update = False
 
 
 class CarApp(App):
@@ -339,7 +196,7 @@ class CarApp(App):
         parent = Game()
         parent.serve_car()
         Clock.schedule_interval(parent.update, 1.0/120.0)
-        self.painter = MyPaintWidget()
+        self.painter = SandPaintWidget()
         clearbtn = Button(text='clear')
         savebtn = Button(text='save', pos=(parent.width, 0))
         loadbtn = Button(text='load', pos=(2 * parent.width, 0))
@@ -376,6 +233,33 @@ class CarApp(App):
     def load(self, obj):
         print("loading last saved brain...")
         brain.load()
+
+
+class SandPaintWidget(Widget):
+    def on_touch_down(self, touch):
+        global length, n_points, last_x, last_y
+        with self.canvas:
+            Color(0.8, 0.7, 0)
+            touch.ud['line'] = Line(points=(touch.x, touch.y), width=10)
+            last_x = int(touch.x)
+            last_y = int(touch.y)
+            n_points = 0
+            length = 0
+            sand[int(touch.x), int(touch.y)] = 1
+
+    def on_touch_move(self, touch):
+        global length, n_points, last_x, last_y
+        if touch.button == 'left':
+            touch.ud['line'].points += [touch.x, touch.y]
+            x = int(touch.x)
+            y = int(touch.y)
+            length += np.sqrt(max((x - last_x)**2 + (y - last_y)**2, 2))
+            n_points += 1.
+            density = n_points/(length)
+            touch.ud['line'].width = int(20 * density + 1)
+            sand[int(touch.x) - 10:int(touch.x) + 10, int(touch.y) - 10:int(touch.y) + 10] = 1
+            last_x = x
+            last_y = y
 
 
 # Running the whole thing
