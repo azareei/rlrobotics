@@ -22,7 +22,7 @@ class Dqn():
         self.last_reward = 0
 
     def select_action(self, state):
-        probs = F.softmax(self.model(Variable(state))*9)  # T(Temperature)=10
+        probs = F.softmax(self.model(Variable(state))*10)  # T(Temperature)=10
         action = probs.multinomial(1)
         return action.data[0, 0]
 

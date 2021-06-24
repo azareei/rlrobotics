@@ -53,6 +53,8 @@ action2rotation = load_data()
 print(f'Number of actions : {len(action2rotation)}')
 brain = Dqn(8, len(action2rotation), 0.9)
 last_reward = 0
+last_action = 0
+last_nb_steps = 1e5
 cum_rewards = 0
 scores = []
 
@@ -255,6 +257,12 @@ class Game(Widget):
         # score based also on orientation
         last_reward += (1-abs(orientation)) * 0.9
 
+        # Score also based on sequence change
+        global last_action
+        if action2rotation[last_action][0] == action2rotation[action][0]:
+            last_reward += 0.02
+        last_action = action
+
         if self.car.x < 10:
             self.car.x = 10
             last_reward = -10  # too close to edges of the wall reward
@@ -271,7 +279,7 @@ class Game(Widget):
         if distance < 50:
             global goal_reached_nb
             goal_reached_nb += 1
-            if goal_reached_nb < 10:
+            if goal_reached_nb < 100:
                 goal_x = self.width-goal_x
                 goal_y = self.height-goal_y
             else:
@@ -279,12 +287,16 @@ class Game(Widget):
                 goal_y = random.randint(10, height-10)
             last_reward = self.last_steps - self.steps  # reward for reaching the objective faster than last round
             self.last_steps = self.steps
+            global last_nb_steps
+            last_nb_steps = self.steps
             self.steps = 0
             cum_rewards = 0
+
         cum_rewards += last_reward
         last_distance = distance
         global scorelabel
-        scorelabel.text = 'Reward : {:.1f}\nSequence : {}'.format(
+        scorelabel.text = 'Last run steps : {:.0f}\nReward : {:.1f}\nSequence : {}'.format(
+            last_nb_steps,
             cum_rewards,
             action2rotation[action][0]
         )
