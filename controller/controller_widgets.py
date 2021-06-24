@@ -4,7 +4,7 @@ from kivy.vector import Vector
 import numpy as np
 
 
-class Car(Widget):
+class Robot(Widget):
     angle = NumericProperty(0)
     rotation = NumericProperty(0)
     velocity_x = NumericProperty(0)

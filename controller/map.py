@@ -14,7 +14,7 @@ from kivy.uix.label import Label
 from kivy.uix.widget import Widget
 from kivy.vector import Vector
 
-from controller_widgets import (Ball1, Ball2, Ball3, Ball4, Ball5, Ball6, Car,
+from controller_widgets import (Ball1, Ball2, Ball3, Ball4, Ball5, Ball6, Robot,
                                 Goal)
 from dqn import Dqn
 
@@ -63,7 +63,7 @@ first_update = True
 
 
 class Game(Widget):
-    car = Car()
+    robot = Robot()
     ball1 = Ball1()
     ball2 = Ball2()
     ball3 = Ball3()
@@ -72,10 +72,10 @@ class Game(Widget):
     ball6 = Ball6()
     goal = Goal()
 
-    def serve_car(self):
-        self.car.center = self.center
-        self.car.angle = 0
-        self.car.velocity = Vector(1, 0)
+    def serve_robot(self):
+        self.robot.center = self.center
+        self.robot.angle = 0
+        self.robot.velocity = Vector(1, 0)
 
     def update(self, dt):
 
@@ -96,37 +96,36 @@ class Game(Widget):
             self.last_steps = 0
             init()
 
-        xx = goal_x - self.car.x
-        yy = goal_y - self.car.y
-        orientation = Vector(*self.car.velocity).angle((xx, yy))/180.
+        xx = goal_x - self.robot.x
+        yy = goal_y - self.robot.y
+        orientation = Vector(*self.robot.velocity).angle((xx, yy))/180.
 
         last_signal = [
-            self.car.signal1, self.car.signal2, self.car.signal3,
-            self.car.signal4, self.car.signal5, self.car.signal6,
+            self.robot.signal1, self.robot.signal2, self.robot.signal3,
+            self.robot.signal4, self.robot.signal5, self.robot.signal6,
             orientation, -orientation
         ]
 
         action = brain.update(last_reward, last_signal)
         scores.append(brain.score())
         displacement = action2rotation[action]
-        self.car.move(displacement, sand, width, height)
-        distance = np.sqrt((self.car.x - goal_x)**2 + (self.car.y - goal_y)**2)
-        self.ball1.pos = self.car.sensor1
-        self.ball2.pos = self.car.sensor2
-        self.ball3.pos = self.car.sensor3
-        self.ball4.pos = self.car.sensor4
-        self.ball5.pos = self.car.sensor5
-        self.ball6.pos = self.car.sensor6
+        self.robot.move(displacement, sand, width, height)
+        distance = np.sqrt((self.robot.x - goal_x)**2 + (self.robot.y - goal_y)**2)
+        self.ball1.pos = self.robot.sensor1
+        self.ball2.pos = self.robot.sensor2
+        self.ball3.pos = self.robot.sensor3
+        self.ball4.pos = self.robot.sensor4
+        self.ball5.pos = self.robot.sensor5
+        self.ball6.pos = self.robot.sensor6
         self.goal.pos = Vector(goal_x, goal_y)
 
         self.steps += 1
 
-        # print(f'{distance} {scores[-1]}')
-        if sand[int(self.car.x), int(self.car.y)] > 0:
+        if sand[int(self.robot.x), int(self.robot.y)] > 0:
             last_reward = -100  # sand reward
-            self.car.velocity = Vector(0.01, 0).rotate(self.car.angle)
+            self.robot.velocity = Vector(0.01, 0).rotate(self.robot.angle)
         else:  # otherwise
-            self.car.velocity = Vector(1, 0).rotate(self.car.angle)
+            self.robot.velocity = Vector(1, 0).rotate(self.robot.angle)
             last_reward = -1 * abs(last_distance - distance) / 6
             if distance < last_distance:
                 last_reward = 1 * abs(last_distance - distance) / 6
@@ -139,17 +138,17 @@ class Game(Widget):
             last_reward += 0.02
         last_action = action
 
-        if self.car.x < 10:
-            self.car.x = 10
+        if self.robot.x < 10:
+            self.robot.x = 10
             last_reward = -10  # too close to edges of the wall reward
-        if self.car.x > self.width - 10:
-            self.car.x = self.width - 10
+        if self.robot.x > self.width - 10:
+            self.robot.x = self.width - 10
             last_reward = -10
-        if self.car.y < 10:
-            self.car.y = 10
+        if self.robot.y < 10:
+            self.robot.y = 10
             last_reward = -10
-        if self.car.y > self.height - 10:
-            self.car.y = self.height - 10
+        if self.robot.y > self.height - 10:
+            self.robot.y = self.height - 10
             last_reward = -10
 
         if distance < 50:
@@ -190,11 +189,11 @@ def init():
     first_update = False
 
 
-class CarApp(App):
+class RobotApp(App):
 
     def build(self):
         parent = Game()
-        parent.serve_car()
+        parent.serve_robot()
         Clock.schedule_interval(parent.update, 1.0/120.0)
         self.painter = SandPaintWidget()
         clearbtn = Button(text='clear')
@@ -264,4 +263,4 @@ class SandPaintWidget(Widget):
 
 # Running the whole thing
 if __name__ == '__main__':
-    CarApp().run()
+    RobotApp().run()

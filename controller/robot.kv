@@ -1,7 +1,7 @@
 #:kivy 1.0.9
 # ref: https://kivy.org/docs/tutorials/pong.html
 
-<Car>:
+<Robot>:
     size: 20, 20
     canvas:
         PushMatrix
@@ -75,7 +75,7 @@
             size: self.size
 
 <Game>:
-    car: game_car
+    robot: game_robot
     ball1: game_ball1
     ball2: game_ball2
     ball3: game_ball3
@@ -84,8 +84,8 @@
     ball6: game_ball6
     goal: game_goal
 
-    Car:
-        id: game_car
+    Robot:
+        id: game_robot
         center: self.parent.center
     Ball1:
         id: game_ball1
