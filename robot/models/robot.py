@@ -1,3 +1,48 @@
+"""
+Module robot
+
+Contains all the methods and attributes of a robot. Including 4 joints.
+
+Attributes
+----------
+J1 : Joint
+    Top right joint of the robot
+J2 : Joint
+    Bottom right joint of the robot
+J3 : Joint
+    Top left joint of the robot
+J4 : Joint
+    Bottom left joint of the robot
+position : list
+    List of the position (Coordinates) of the robot's frame for each simulation step
+angle : list
+    List of the angles (pitch, roll, yaw) of the robo's frame for each simulation step
+
+Methods
+-------
+__init__(self, _J1, _J2, _J3, _J4, phase, reverse_actuation)
+    Create an instance of the robot with its 4 Joints
+update_position(self, actuation_1, actuation2, actuation_1_dit, actuation_2_dir)
+    Compute the displacement of the 4 Joints
+update_attitude(self, mov_x, mov_y)
+    Basically the friction model with the computation of the displacement of the robot
+    and its change in orientation
+update_orientation(self)
+    Compute the pitch/roll orientation of the robot AND compute which legs are touching
+    the floor
+update_ground(self, pitch, roll)
+    Function to compute the ground distance
+draw(self, frame)
+    Draw the robot frame
+draw_joints(self, frame)
+    Draw the robot's joints
+draw_legs(self, frame)
+    Draw the side view of the legs
+draw_angle(self, frame)
+    Draw the views that represent the attitude of the robot
+max_actuation(self)
+    Compute the maximum possible actuation that are allowed by the legs
+"""
 import cv2
 import numpy as np
 import numpy.ma as ma
