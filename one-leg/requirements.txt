@@ -1,5 +1,0 @@
-coordinates
-flake8
-numpy
-matplotlib
-opencv-python
