@@ -55,6 +55,7 @@ brain = Dqn(8, len(action2rotation), 0.9)
 last_reward = 0
 last_action = 0
 last_distance = 0
+last_orientation = 0
 last_nb_steps = 1e5
 cum_rewards = 0
 scores = []
@@ -84,6 +85,7 @@ class Game(Widget):
         global cum_rewards
         global scores
         global last_distance
+        global last_orientation
         global goal_x
         global goal_y
         global width
@@ -130,8 +132,11 @@ class Game(Widget):
             if distance < last_distance:
                 last_reward = 1 * abs(last_distance - distance) / 6
         # score based also on orientation
-        last_reward += (1-abs(orientation)) * 0.9
-
+        #last_reward += (1-abs(orientation)) * 0.9
+        if abs(last_orientation) < abs(orientation):
+            last_reward -= 0.2
+        else:
+            last_reward += 0.2
         # Score also based on sequence change
         global last_action
         if action2rotation[last_action][0] == action2rotation[action][0]:
@@ -170,10 +175,11 @@ class Game(Widget):
         cum_rewards += last_reward
         last_distance = distance
         global scorelabel
-        scorelabel.text = 'Last run steps : {:.0f}\nReward : {:.1f}\nSequence : {}'.format(
+        scorelabel.text = 'Last run steps : {:.0f}\nReward : {:.1f}\nSequence : {}\nGoals completed : {}'.format(
             last_nb_steps,
             cum_rewards,
-            action2rotation[action][0]
+            action2rotation[action][0],
+            goal_reached_nb
         )
 
 
@@ -184,8 +190,8 @@ def init():
     global first_update
     global scorelabel
     sand = np.zeros((width, height))
-    goal_x = 30
-    goal_y = height - 30
+    goal_x = 50
+    goal_y = height - 50
     first_update = False
 
 
