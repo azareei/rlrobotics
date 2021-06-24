@@ -13,6 +13,7 @@ from kivy.uix.button import Button
 from kivy.uix.widget import Widget
 from kivy.vector import Vector
 from kivy.core.window import Window
+from kivy.uix.label import Label
 
 # Importing the Dqn object from our AI in ai.py
 from dqn import Dqn
@@ -32,7 +33,7 @@ goal_reached_nb = 0
 # Getting our AI, which we call "brain", and that contains our neural network that represents our Q-function
 # x, y, yaw
 def load_data():
-    df = pd.read_pickle(f'{Path(__file__).resolve().parent}/_all_sequences.pkl')
+    df = pd.read_pickle(f'{Path(__file__).resolve().parent}/AB_sequences.pkl')
     # round close to zero values to zero
     df['x'] = df['x'].where(abs(df['x']) > 1e-2, 0)
     df['y'] = df['y'].where(abs(df['y']) > 1e-3, 0)
@@ -49,14 +50,10 @@ def load_data():
 
 
 action2rotation = load_data()
-# action2rotation = [
-#     [6, 0, 0],
-#     [0, 0, 20],
-#     [0, 0, -20]
-# ]
 print(f'Number of actions : {len(action2rotation)}')
 brain = Dqn(8, len(action2rotation), 0.9)
 last_reward = 0
+cum_rewards = 0
 scores = []
 
 # Initializing the map
@@ -70,6 +67,7 @@ def init():
     global goal_x
     global goal_y
     global first_update
+    global scorelabel
     sand = np.zeros((width, height))
     goal_x = 30
     goal_y = height - 30
@@ -205,6 +203,7 @@ class Game(Widget):
 
         global brain
         global last_reward
+        global cum_rewards
         global scores
         global last_distance
         global goal_x
@@ -281,7 +280,14 @@ class Game(Widget):
             last_reward = self.last_steps - self.steps  # reward for reaching the objective faster than last round
             self.last_steps = self.steps
             self.steps = 0
+            cum_rewards = 0
+        cum_rewards += last_reward
         last_distance = distance
+        global scorelabel
+        scorelabel.text = 'Reward : {:.1f}\nSequence : {}'.format(
+            cum_rewards,
+            action2rotation[action][0]
+        )
 
 # Adding the painting tools
 
@@ -328,6 +334,16 @@ class CarApp(App):
         clearbtn.bind(on_release=self.clear_canvas)
         savebtn.bind(on_release=self.save)
         loadbtn.bind(on_release=self.load)
+
+        global scorelabel
+        scorelabel = Label(
+            text="Score",
+            pos=(0.3 * parent.width, 2 * parent.height),
+            halign="left",
+            size_hint=(1.0, 1.0)
+        )
+        scorelabel.bind(size=scorelabel.setter('text_size'))
+        parent.add_widget(scorelabel)
         parent.add_widget(self.painter)
         parent.add_widget(clearbtn)
         parent.add_widget(savebtn)
