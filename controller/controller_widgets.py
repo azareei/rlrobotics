@@ -1,7 +1,6 @@
 from kivy.properties import NumericProperty, ReferenceListProperty
 from kivy.uix.widget import Widget
 from kivy.vector import Vector
-import numpy as np
 
 
 class Robot(Widget):
@@ -35,7 +34,7 @@ class Robot(Widget):
     signal5 = NumericProperty(0)
     signal6 = NumericProperty(0)
 
-    def move(self, displacement, sand, width, height):
+    def move(self, displacement, width, height):
         self.pos = Vector(displacement[3], displacement[4]).rotate(self.angle) + self.pos
         self.rotation = displacement[5]
         # self.pos = Vector(displacement[0], displacement[1]).rotate(self.angle) + self.pos
@@ -53,28 +52,6 @@ class Robot(Widget):
         # Only gives signal if in the direction of motion
         # velocity_angle = Vector(*self.velocity).angle(Vector(1, 0))
         # print(f'{velocity_angle} {(self.angle+180) % 360 - 180}')
-
-        # Front signals
-        self.signal1 = int(
-            np.sum(sand[int(self.sensor1_x)-10:int(self.sensor1_x)+10,
-                        int(self.sensor1_y)-10:int(self.sensor1_y)+10]))/400.
-        self.signal2 = int(
-            np.sum(sand[int(self.sensor2_x)-10:int(self.sensor2_x)+10,
-                        int(self.sensor2_y)-10:int(self.sensor2_y) + 10])) / 400.
-        self.signal3 = int(
-            np.sum(sand[int(self.sensor3_x)-10:int(self.sensor3_x)+10,
-                        int(self.sensor3_y)-10:int(self.sensor3_y) + 10])) / 400.
-
-        # Back signals
-        self.signal4 = int(
-            np.sum(sand[int(self.sensor4_x)-10:int(self.sensor4_x)+10,
-                        int(self.sensor4_y)-10:int(self.sensor4_y)+10]))/400.
-        self.signal5 = int(
-            np.sum(sand[int(self.sensor5_x)-10:int(self.sensor5_x)+10,
-                        int(self.sensor5_y)-10:int(self.sensor5_y) + 10])) / 400.
-        self.signal6 = int(
-            np.sum(sand[int(self.sensor6_x)-10:int(self.sensor6_x)+10,
-                        int(self.sensor6_y)-10:int(self.sensor6_y) + 10])) / 400.
 
         if self.sensor1_x > width-10 or self.sensor1_x < 10 or \
                 self.sensor1_y > height-10 or self.sensor1_y < 10:

@@ -78,7 +78,7 @@ class Game(Widget):
         self.robot.angle = 0
         self.robot.velocity = Vector(1, 0)
 
-    def update(self, dt):
+    def update(self):
 
         global model
         global last_reward
@@ -111,7 +111,7 @@ class Game(Widget):
         action = model.update(last_reward, last_signal)
         scores.append(model.score())
         displacement = list_actions[action]
-        self.robot.move(displacement, sand, width, height)
+        self.robot.move(displacement, width, height)
         distance = np.sqrt((self.robot.x - goal_x)**2 + (self.robot.y - goal_y)**2)
         self.ball1.pos = self.robot.sensor1
         self.ball2.pos = self.robot.sensor2
@@ -123,14 +123,9 @@ class Game(Widget):
 
         self.steps += 1
 
-        if sand[int(self.robot.x), int(self.robot.y)] > 0:
-            last_reward = -100  # sand reward
-            self.robot.velocity = Vector(0.01, 0).rotate(self.robot.angle)
-        else:  # otherwise
-            self.robot.velocity = Vector(1, 0).rotate(self.robot.angle)
-            last_reward = (last_distance - distance) / 6
-            # if distance < last_distance:
-            #     last_reward = 1 * abs(last_distance - distance) / 6
+        self.robot.velocity = Vector(1, 0).rotate(self.robot.angle)
+        last_reward = (last_distance - distance) / 6
+
         # score based also on orientation
         #  last_reward += (1-abs(orientation)) * 0.9
         if abs(last_orientation) < abs(orientation):
@@ -187,12 +182,10 @@ class Game(Widget):
 
 
 def init():
-    global sand
     global goal_x
     global goal_y
     global first_update
     global scorelabel
-    sand = np.zeros((width, height))
     goal_x = 50
     goal_y = height - 50
     first_update = False
@@ -204,10 +197,8 @@ class RobotApp(App):
         parent = Game()
         parent.serve_robot()
         Clock.schedule_interval(parent.update, 1.0/120.0)
-        clearbtn = Button(text='clear')
         savebtn = Button(text='save', pos=(parent.width, 0))
         loadbtn = Button(text='load', pos=(2 * parent.width, 0))
-        clearbtn.bind(on_release=self.clear_canvas)
         savebtn.bind(on_release=self.save)
         loadbtn.bind(on_release=self.load)
 
@@ -220,15 +211,9 @@ class RobotApp(App):
         )
         scorelabel.bind(size=scorelabel.setter('text_size'))
         parent.add_widget(scorelabel)
-        parent.add_widget(clearbtn)
         parent.add_widget(savebtn)
         parent.add_widget(loadbtn)
         return parent
-
-    def clear_canvas(self, obj):
-        global sand
-        self.painter.canvas.clear()
-        sand = np.zeros((width, height))
 
     def save(self, obj):
         model.save()
