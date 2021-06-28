@@ -40,7 +40,7 @@ class Robot(Widget):
         self.rotation = displacement[5]
         # self.pos = Vector(displacement[0], displacement[1]).rotate(self.angle) + self.pos
         # self.rotation = displacement[2]
-        self.angle = self.angle + self.rotation
+        self.angle += self.rotation
 
         self.sensor1 = Vector(30, 0).rotate(self.angle) + self.pos
         self.sensor2 = Vector(30, 0).rotate((self.angle+30) % 360) + self.pos
@@ -50,6 +50,11 @@ class Robot(Widget):
         self.sensor5 = Vector(-30, 0).rotate((self.angle-30) % 360) + self.pos
         self.sensor6 = Vector(-30, 0).rotate((self.angle+30) % 360) + self.pos
 
+        # Only gives signal if in the direction of motion
+        # velocity_angle = Vector(*self.velocity).angle(Vector(1, 0))
+        # print(f'{velocity_angle} {(self.angle+180) % 360 - 180}')
+
+        # Front signals
         self.signal1 = int(
             np.sum(sand[int(self.sensor1_x)-10:int(self.sensor1_x)+10,
                         int(self.sensor1_y)-10:int(self.sensor1_y)+10]))/400.
@@ -60,6 +65,7 @@ class Robot(Widget):
             np.sum(sand[int(self.sensor3_x)-10:int(self.sensor3_x)+10,
                         int(self.sensor3_y)-10:int(self.sensor3_y) + 10])) / 400.
 
+        # Back signals
         self.signal4 = int(
             np.sum(sand[int(self.sensor4_x)-10:int(self.sensor4_x)+10,
                         int(self.sensor4_y)-10:int(self.sensor4_y)+10]))/400.

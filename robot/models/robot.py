@@ -175,7 +175,7 @@ class Robot:
         dx = np.sum(np.multiply(mx, ld))
         dy = np.sum(np.multiply(my, ld))
 
-        _angles = []
+        phi = []
 
         # Compute yaw change
         for c, m_x, m_y in zip([c1, c2, c3, c4], mov_x, mov_y):
@@ -184,15 +184,15 @@ class Robot:
             cosang = np.dot(v1, v2)
             cross = np.cross(v1, v2)
             sinang = np.linalg.norm(cross)
-            _angles.append(np.sign(cross) * np.arctan2(sinang, cosang))
+            phi.append(np.sign(cross) * np.arctan2(sinang, cosang))
 
-        _angles = np.array(_angles)
-        masked_angles = ma.masked_array(_angles, mask=np.invert(self.touching_legs))
+        phi = np.array(phi)
+        masked_phi = ma.masked_array(phi, mask=np.invert(self.touching_legs))
 
         # Cut off for very low values of yaw
-        yaw = np.sum(np.multiply(masked_angles, ld))
+        yaw = np.sum(np.multiply(masked_phi, ld))
         if abs(yaw) < 1e-10:
-            yaw = 0.0
+            yaw = 0.
         if len(self.position) > 0:
             yaw += self.angle[-1][2]
 

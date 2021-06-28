@@ -20,7 +20,7 @@ from dqn import Dqn
 
 # Adding this line if we don't want the right click to put a red point
 Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
-Window.size = (1200, 800)
+Window.size = (1280, 720)
 
 # Introducing last_x and last_y, used to keep the last point in memory when we draw the sand on the map
 last_x = 0
@@ -33,7 +33,7 @@ goal_reached_nb = 0
 # Getting our AI, which we call "brain", and that contains our neural network that represents our Q-function
 # x, y, yaw
 def load_data():
-    df = pd.read_pickle(f'{Path(__file__).resolve().parent}/AB_sequences.pkl')
+    df = pd.read_pickle(f'{Path(__file__).resolve().parent}/_all_sequences.pkl')
     # round close to zero values to zero
     df['x'] = df['x'].where(abs(df['x']) > 1e-2, 0)
     df['y'] = df['y'].where(abs(df['y']) > 1e-3, 0)
@@ -128,11 +128,11 @@ class Game(Widget):
             self.robot.velocity = Vector(0.01, 0).rotate(self.robot.angle)
         else:  # otherwise
             self.robot.velocity = Vector(1, 0).rotate(self.robot.angle)
-            last_reward = -1 * abs(last_distance - distance) / 6
-            if distance < last_distance:
-                last_reward = 1 * abs(last_distance - distance) / 6
+            last_reward = (last_distance - distance) / 6
+            # if distance < last_distance:
+            #     last_reward = 1 * abs(last_distance - distance) / 6
         # score based also on orientation
-        #last_reward += (1-abs(orientation)) * 0.9
+        #  last_reward += (1-abs(orientation)) * 0.9
         if abs(last_orientation) < abs(orientation):
             last_reward -= 0.2
         else:
@@ -162,10 +162,11 @@ class Game(Widget):
             if goal_reached_nb < 100:
                 goal_x = self.width-goal_x
                 goal_y = self.height-goal_y
+                last_reward = self.last_steps - self.steps  # reward for reaching the objective faster than last round
             else:
                 goal_x = random.randint(10, width-10)
                 goal_y = random.randint(10, height-10)
-            last_reward = self.last_steps - self.steps  # reward for reaching the objective faster than last round
+
             self.last_steps = self.steps
             global last_nb_steps
             last_nb_steps = self.steps
