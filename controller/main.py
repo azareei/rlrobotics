@@ -8,7 +8,6 @@ from kivy.app import App
 from kivy.clock import Clock
 from kivy.config import Config
 from kivy.core.window import Window
-from kivy.graphics import Color, Line
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.widget import Widget
@@ -81,7 +80,7 @@ class Game(Widget):
 
     def update(self, dt):
 
-        global brain
+        global model
         global last_reward
         global cum_rewards
         global scores
@@ -205,7 +204,6 @@ class RobotApp(App):
         parent = Game()
         parent.serve_robot()
         Clock.schedule_interval(parent.update, 1.0/120.0)
-        self.painter = SandPaintWidget()
         clearbtn = Button(text='clear')
         savebtn = Button(text='save', pos=(parent.width, 0))
         loadbtn = Button(text='load', pos=(2 * parent.width, 0))
@@ -222,7 +220,6 @@ class RobotApp(App):
         )
         scorelabel.bind(size=scorelabel.setter('text_size'))
         parent.add_widget(scorelabel)
-        parent.add_widget(self.painter)
         parent.add_widget(clearbtn)
         parent.add_widget(savebtn)
         parent.add_widget(loadbtn)
@@ -242,33 +239,6 @@ class RobotApp(App):
     def load(self, obj):
         model.load()
         print("Loaded model")
-
-
-class SandPaintWidget(Widget):
-    def on_touch_down(self, touch):
-        global length, n_points, last_x, last_y
-        with self.canvas:
-            Color(0.8, 0.7, 0)
-            touch.ud['line'] = Line(points=(touch.x, touch.y), width=10)
-            last_x = int(touch.x)
-            last_y = int(touch.y)
-            n_points = 0
-            length = 0
-            sand[int(touch.x), int(touch.y)] = 1
-
-    def on_touch_move(self, touch):
-        global length, n_points, last_x, last_y
-        if touch.button == 'left':
-            touch.ud['line'].points += [touch.x, touch.y]
-            x = int(touch.x)
-            y = int(touch.y)
-            length += np.sqrt(max((x - last_x)**2 + (y - last_y)**2, 2))
-            n_points += 1.
-            density = n_points/(length)
-            touch.ud['line'].width = int(20 * density + 1)
-            sand[int(touch.x) - 10:int(touch.x) + 10, int(touch.y) - 10:int(touch.y) + 10] = 1
-            last_x = x
-            last_y = y
 
 
 # Running the whole thing

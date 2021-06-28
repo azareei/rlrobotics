@@ -16,7 +16,7 @@
             "name": "Run AI",
             "type": "python",
             "request": "launch",
-            "program": "map.py",
+            "program": "main.py",
             "cwd": "${workspaceFolder}/controller",
             "console": "internalConsole"
         },
