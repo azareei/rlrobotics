@@ -621,7 +621,7 @@ class Simulation:
         y = y - y[0]
         yaw = np.degrees(self.data['robot']['yaw'])
         yaw = yaw - yaw[0]
-        max_text = 'max x : {:.1f}cm; max y : {:.1f}cm; max heading : {:.1f}°'.format(
+        max_text = 'Final x : {:.1f}cm; Final y : {:.1f}cm; Final heading : {:.1f}°'.format(
             x[len(x) - 1] * 100,
             y[len(y) - 1] * 100,
             yaw[len(y) - 1]

@@ -22,18 +22,13 @@ from dqn import Dqn
 Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
 Window.size = (1280, 720)
 
-# Introducing last_x and last_y, used to keep the last point in memory when we draw the sand on the map
-last_x = 0
-last_y = 0
 n_points = 0
 length = 0
 goal_reached_nb = 0
 
 
-# Getting our AI, which we call "brain", and that contains our neural network that represents our Q-function
-# x, y, yaw
 def load_data():
-    df = pd.read_pickle(f'{Path(__file__).resolve().parent}/_all_sequences.pkl')
+    df = pd.read_pickle(f'{Path(__file__).resolve().parent}/AB_sequences.pkl')
     # round close to zero values to zero
     df['x'] = df['x'].where(abs(df['x']) > 1e-2, 0)
     df['y'] = df['y'].where(abs(df['y']) > 1e-3, 0)
@@ -46,12 +41,18 @@ def load_data():
     df['yaw'] = np.degrees(df['yaw'])
     df['x'] = np.multiply(df['x'], 100)
     df['y'] = np.multiply(df['y'], 100)
+
+    # Separate the actuation phase between 0 and 180 and keep only reverse to false (remove symmetry)
+    df = df[df["actuation"] == 0]
+
+    df = df[df['reverse']]
+    # df = df[~df['reverse']]
     return df.values.tolist()
 
 
-action2rotation = load_data()
-print(f'Number of actions : {len(action2rotation)}')
-brain = Dqn(8, len(action2rotation), 0.9)
+list_actions = load_data()
+print(f'Number of actions : {len(list_actions)}')
+model = Dqn(8, len(list_actions), 0.9)
 last_reward = 0
 last_action = 0
 last_distance = 0
@@ -108,9 +109,9 @@ class Game(Widget):
             orientation, -orientation
         ]
 
-        action = brain.update(last_reward, last_signal)
-        scores.append(brain.score())
-        displacement = action2rotation[action]
+        action = model.update(last_reward, last_signal)
+        scores.append(model.score())
+        displacement = list_actions[action]
         self.robot.move(displacement, sand, width, height)
         distance = np.sqrt((self.robot.x - goal_x)**2 + (self.robot.y - goal_y)**2)
         self.ball1.pos = self.robot.sensor1
@@ -135,11 +136,13 @@ class Game(Widget):
         #  last_reward += (1-abs(orientation)) * 0.9
         if abs(last_orientation) < abs(orientation):
             last_reward -= 0.2
+        elif abs(last_orientation) == abs(orientation):
+            last_reward += 0.
         else:
             last_reward += 0.2
         # Score also based on sequence change
         global last_action
-        if action2rotation[last_action][0] == action2rotation[action][0]:
+        if list_actions[last_action][0] == list_actions[action][0]:
             last_reward += 0.02
         last_action = action
 
@@ -179,7 +182,7 @@ class Game(Widget):
         scorelabel.text = 'Last run steps : {:.0f}\nReward : {:.1f}\nSequence : {}\nGoals completed : {}'.format(
             last_nb_steps,
             cum_rewards,
-            action2rotation[action][0],
+            list_actions[action][0],
             goal_reached_nb
         )
 
@@ -231,14 +234,14 @@ class RobotApp(App):
         sand = np.zeros((width, height))
 
     def save(self, obj):
-        print("saving brain...")
-        brain.save()
+        model.save()
+        print("Saved model")
         plt.plot(scores)
         plt.show()
 
     def load(self, obj):
-        print("loading last saved brain...")
-        brain.load()
+        model.load()
+        print("Loaded model")
 
 
 class SandPaintWidget(Widget):
