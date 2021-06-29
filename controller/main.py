@@ -13,8 +13,7 @@ from kivy.uix.label import Label
 from kivy.uix.widget import Widget
 from kivy.vector import Vector
 
-from controller_widgets import (Ball1, Ball2, Ball3, Ball4, Ball5, Ball6, Robot,
-                                Goal)
+from controller_widgets import SignalBack, SignalFront, Robot, Goal
 from dqn import Dqn
 
 # Adding this line if we don't want the right click to put a red point
@@ -24,6 +23,14 @@ Window.size = (1280, 720)
 n_points = 0
 length = 0
 goal_reached_nb = 0
+last_reward = 0
+last_action = 0
+last_distance = 0
+last_orientation = 0
+last_nb_steps = 1e5
+cum_rewards = 0
+scores = []
+first_update = True
 
 
 def load_data():
@@ -49,28 +56,29 @@ def load_data():
     return df.values.tolist()
 
 
+def init():
+    global goal_x
+    global goal_y
+    global first_update
+    global scorelabel
+    goal_x = 50
+    goal_y = height - 50
+    first_update = False
+
+
 list_actions = load_data()
 print(f'Number of actions : {len(list_actions)}')
 model = Dqn(8, len(list_actions), 0.9)
-last_reward = 0
-last_action = 0
-last_distance = 0
-last_orientation = 0
-last_nb_steps = 1e5
-cum_rewards = 0
-scores = []
-
-first_update = True
 
 
 class Game(Widget):
     robot = Robot()
-    ball1 = Ball1()
-    ball2 = Ball2()
-    ball3 = Ball3()
-    ball4 = Ball4()
-    ball5 = Ball5()
-    ball6 = Ball6()
+    signal1 = SignalFront()
+    signal2 = SignalFront()
+    signal3 = SignalFront()
+    signal4 = SignalBack()
+    signal5 = SignalBack()
+    signal6 = SignalBack()
     goal = Goal()
 
     def serve_robot(self):
@@ -78,7 +86,7 @@ class Game(Widget):
         self.robot.angle = 0
         self.robot.velocity = Vector(1, 0)
 
-    def update(self):
+    def update(self, time_interval):
 
         global model
         global last_reward
@@ -113,12 +121,12 @@ class Game(Widget):
         displacement = list_actions[action]
         self.robot.move(displacement, width, height)
         distance = np.sqrt((self.robot.x - goal_x)**2 + (self.robot.y - goal_y)**2)
-        self.ball1.pos = self.robot.sensor1
-        self.ball2.pos = self.robot.sensor2
-        self.ball3.pos = self.robot.sensor3
-        self.ball4.pos = self.robot.sensor4
-        self.ball5.pos = self.robot.sensor5
-        self.ball6.pos = self.robot.sensor6
+        self.signal1.pos = self.robot.sensor1
+        self.signal2.pos = self.robot.sensor2
+        self.signal3.pos = self.robot.sensor3
+        self.signal4.pos = self.robot.sensor4
+        self.signal5.pos = self.robot.sensor5
+        self.signal6.pos = self.robot.sensor6
         self.goal.pos = Vector(goal_x, goal_y)
 
         self.steps += 1
@@ -179,16 +187,6 @@ class Game(Widget):
             list_actions[action][0],
             goal_reached_nb
         )
-
-
-def init():
-    global goal_x
-    global goal_y
-    global first_update
-    global scorelabel
-    goal_x = 50
-    goal_y = height - 50
-    first_update = False
 
 
 class RobotApp(App):

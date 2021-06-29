@@ -77,25 +77,9 @@ class Goal(Widget):
     pass
 
 
-class Ball1(Widget):
+class SignalFront(Widget):
     pass
 
 
-class Ball2(Widget):
-    pass
-
-
-class Ball3(Widget):
-    pass
-
-
-class Ball4(Widget):
-    pass
-
-
-class Ball5(Widget):
-    pass
-
-
-class Ball6(Widget):
+class SignalBack(Widget):
     pass

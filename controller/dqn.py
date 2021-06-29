@@ -60,14 +60,13 @@ class Dqn():
     def save(self):
         torch.save({'state_dict': self.model.state_dict(),
                     'optimizer': self.optimizer.state_dict(),
-                    }, 'last_brain.pth')
+                    }, 'last_model.pth')
 
     def load(self):
-        if os.path.isfile('last_brain.pth'):
-            print("=> loading checkpoint...")
-            checkpoint = torch.load('last_brain.pth')
+        if os.path.isfile('last_model.pth'):
+            checkpoint = torch.load('last_model.pth')
             self.model.load_state_dict(checkpoint['state_dict'])
             self.optimizer.load_state_dict(checkpoint['optimizer'])
-            print("done !")
+            print("Model loaded")
         else:
-            print("no checkpoint found...")
+            print("Model not found")

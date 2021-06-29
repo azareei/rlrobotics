@@ -13,7 +13,7 @@
             size: self.size
         PopMatrix
 
-<Ball1>:
+<SignalFront>:
     size: 10,10
     canvas:
         Color:
@@ -21,16 +21,7 @@
         Ellipse:
             pos: self.pos
             size: self.size
-<Ball2>:
-    size: 10,10
-    canvas:
-        Color:
-            rgba: 0,1,0,1
-        Ellipse:
-            pos: self.pos
-            size: self.size
-
-<Ball3>:
+<Signal2>:
     size: 10,10
     canvas:
         Color:
@@ -39,7 +30,16 @@
             pos: self.pos
             size: self.size
 
-<Ball4>:
+<Signal3>:
+    size: 10,10
+    canvas:
+        Color:
+            rgba: 0,1,0,1
+        Ellipse:
+            pos: self.pos
+            size: self.size
+
+<SignalBack>:
     size: 10,10
     canvas:
         Color:
@@ -47,7 +47,7 @@
         Ellipse:
             pos: self.pos
             size: self.size
-<Ball5>:
+<Signal5>:
     size: 10,10
     canvas:
         Color:
@@ -56,7 +56,7 @@
             pos: self.pos
             size: self.size
 
-<Ball6>:
+<Signal6>:
     size: 10,10
     canvas:
         Color:
@@ -76,33 +76,33 @@
 
 <Game>:
     robot: game_robot
-    ball1: game_ball1
-    ball2: game_ball2
-    ball3: game_ball3
-    ball4: game_ball4
-    ball5: game_ball5
-    ball6: game_ball6
+    signal1: game_ball1
+    signal2: game_ball2
+    signal3: game_ball3
+    signal4: game_ball4
+    signal5: game_ball5
+    signal6: game_ball6
     goal: game_goal
 
     Robot:
         id: game_robot
         center: self.parent.center
-    Ball1:
+    SignalFront:
         id: game_ball1
         center: self.parent.center
-    Ball2:
+    SignalFront:
         id: game_ball2
         center: self.parent.center
-    Ball3:
+    SignalFront:
         id: game_ball3
         center: self.parent.center
-    Ball4:
+    SignalBack:
         id: game_ball4
         center: self.parent.center
-    Ball5:
+    SignalBack:
         id: game_ball5
         center: self.parent.center
-    Ball6:
+    SignalBack:
         id: game_ball6
         center: self.parent.center
     Goal:
