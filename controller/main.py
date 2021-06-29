@@ -34,7 +34,7 @@ first_update = True
 
 
 def load_data():
-    df = pd.read_pickle(f'{Path(__file__).resolve().parent}/AB_sequences.pkl')
+    df = pd.read_pickle(f'{Path(__file__).resolve().parent}/_all_sequences.pkl')
     # round close to zero values to zero
     df['x'] = df['x'].where(abs(df['x']) > 1e-2, 0)
     df['y'] = df['y'].where(abs(df['y']) > 1e-3, 0)
@@ -195,8 +195,8 @@ class RobotApp(App):
         parent = Game()
         parent.serve_robot()
         Clock.schedule_interval(parent.update, 1.0/120.0)
-        savebtn = Button(text='save', pos=(parent.width, 0))
-        loadbtn = Button(text='load', pos=(2 * parent.width, 0))
+        savebtn = Button(text='save', pos=(0, 0))
+        loadbtn = Button(text='load', pos=(parent.width, 0))
         savebtn.bind(on_release=self.save)
         loadbtn.bind(on_release=self.load)
 
