@@ -34,6 +34,11 @@ class Robot(Widget):
     signal5 = NumericProperty(0)
     signal6 = NumericProperty(0)
 
+    def sensor_value(self, sensorx, sensory, width, height):
+        if sensorx > width-10 or sensorx < 10 or sensory > height-10 or sensory < 10:
+            return 1.
+        return 0.
+
     def move(self, displacement, width, height):
         self.pos = Vector(displacement[3], displacement[4]).rotate(self.angle) + self.pos
         self.rotation = displacement[5]
@@ -52,25 +57,12 @@ class Robot(Widget):
         # Only gives signal if in the direction of motion
         # velocity_angle = Vector(*self.velocity).angle(Vector(1, 0))
         # print(f'{velocity_angle} {(self.angle+180) % 360 - 180}')
-
-        if self.sensor1_x > width-10 or self.sensor1_x < 10 or \
-                self.sensor1_y > height-10 or self.sensor1_y < 10:
-            self.signal1 = 1.
-        if self.sensor2_x > width-10 or self.sensor2_x < 10 or \
-                self.sensor2_y > height-10 or self.sensor2_y < 10:
-            self.signal2 = 1.
-        if self.sensor3_x > width-10 or self.sensor3_x < 10 or \
-                self.sensor3_y > height-10 or self.sensor3_y < 10:
-            self.signal3 = 1.
-        if self.sensor4_x > width-10 or self.sensor4_x < 10 or \
-                self.sensor4_y > height-10 or self.sensor4_y < 10:
-            self.signal4 = 1.
-        if self.sensor5_x > width-10 or self.sensor5_x < 10 or \
-                self.sensor5_y > height-10 or self.sensor5_y < 10:
-            self.signal5 = 1.
-        if self.sensor6_x > width-10 or self.sensor6_x < 10 or \
-                self.sensor6_y > height-10 or self.sensor6_y < 10:
-            self.signal6 = 1.
+        self.signal1 = self.sensor_value(self.sensor1_x, self.sensor1_y, width, height)
+        self.signal2 = self.sensor_value(self.sensor2_x, self.sensor2_y, width, height)
+        self.signal3 = self.sensor_value(self.sensor3_x, self.sensor3_y, width, height)
+        self.signal4 = self.sensor_value(self.sensor4_x, self.sensor4_y, width, height)
+        self.signal5 = self.sensor_value(self.sensor5_x, self.sensor5_y, width, height)
+        self.signal6 = self.sensor_value(self.sensor6_x, self.sensor6_y, width, height)
 
 
 class Goal(Widget):
