@@ -30,11 +30,12 @@ last_orientation = 0
 last_nb_steps = 1e5
 cum_rewards = 0
 scores = []
+steps_memory = []
 first_update = True
 
 
 def load_data():
-    df = pd.read_pickle(f'{Path(__file__).resolve().parent}/_all_sequences.pkl')
+    df = pd.read_pickle(f'{Path(__file__).resolve().parent}/AB_sequences.pkl')
     # round close to zero values to zero
     df['x'] = df['x'].where(abs(df['x']) > 1e-2, 0)
     df['y'] = df['y'].where(abs(df['y']) > 1e-3, 0)
@@ -150,25 +151,35 @@ class Game(Widget):
 
         if self.robot.x < 10:
             self.robot.x = 10
-            last_reward = -10  # too close to edges of the wall reward
+            last_reward = -50  # too close to edges of the wall reward
         if self.robot.x > self.width - 10:
             self.robot.x = self.width - 10
-            last_reward = -10
+            last_reward = -50
         if self.robot.y < 10:
             self.robot.y = 10
-            last_reward = -10
+            last_reward = -50
         if self.robot.y > self.height - 10:
             self.robot.y = self.height - 10
-            last_reward = -10
+            last_reward = -50
 
         if distance < 50:
             global goal_reached_nb
+            global steps_memory
             goal_reached_nb += 1
             if goal_reached_nb < 100:
                 goal_x = self.width-goal_x
                 goal_y = self.height-goal_y
+                steps_memory.append(self.steps)
                 last_reward = self.last_steps - self.steps  # reward for reaching the objective faster than last round
             else:
+                if goal_reached_nb == 100:
+                    _, axs = plt.subplots(1, 1)
+                    i = range(len(steps_memory))
+                    axs[0].plot(i, steps_memory)
+                    axs[0].set_title('# steps to reach goal')
+                    axs[0].set_xlabel('iteration')
+                    axs[0].set_ylabel('steps')
+                    plt.savefig(f'{Path(__file__).resolve().parent}/perf.png')
                 goal_x = random.randint(10, width-10)
                 goal_y = random.randint(10, height-10)
 
