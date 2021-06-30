@@ -31,11 +31,12 @@ last_nb_steps = 1e5
 cum_rewards = 0
 scores = []
 steps_memory = []
+seq_change_memory = []
 first_update = True
 
 
 def load_data():
-    df = pd.read_pickle(f'{Path(__file__).resolve().parent}/AB_sequences.pkl')
+    df = pd.read_pickle(f'{Path(__file__).resolve().parent}/_all_sequences.pkl')
     # round close to zero values to zero
     df['x'] = df['x'].where(abs(df['x']) > 1e-2, 0)
     df['y'] = df['y'].where(abs(df['y']) > 1e-3, 0)
@@ -52,7 +53,7 @@ def load_data():
     # Separate the actuation phase between 0 and 180 and keep only reverse to false (remove symmetry)
     df = df[df["actuation"] == 0]
 
-    df = df[df['reverse']]
+    df = df[~df['reverse']]
     # df = df[~df['reverse']]
     return df.values.tolist()
 
@@ -105,6 +106,7 @@ class Game(Widget):
         if first_update:
             self.steps = 0
             self.last_steps = 0
+            self.seq_change = 0
             init()
 
         xx = goal_x - self.robot.x
@@ -147,6 +149,9 @@ class Game(Widget):
         global last_action
         if list_actions[last_action][0] == list_actions[action][0]:
             last_reward += 0.02
+        else:
+            self.seq_change += 1
+
         last_action = action
 
         if self.robot.x < 10:
@@ -165,28 +170,33 @@ class Game(Widget):
         if distance < 50:
             global goal_reached_nb
             global steps_memory
+            global seq_change_memory
+            global last_nb_steps
             goal_reached_nb += 1
-            if goal_reached_nb < 100:
+            if goal_reached_nb < 150:
                 goal_x = self.width-goal_x
                 goal_y = self.height-goal_y
                 steps_memory.append(self.steps)
+                seq_change_memory.append(self.seq_change)
                 last_reward = self.last_steps - self.steps  # reward for reaching the objective faster than last round
             else:
-                if goal_reached_nb == 100:
+                if goal_reached_nb == 150:
                     _, axs = plt.subplots(1, 1)
                     i = range(len(steps_memory))
-                    axs[0].plot(i, steps_memory)
-                    axs[0].set_title('# steps to reach goal')
-                    axs[0].set_xlabel('iteration')
-                    axs[0].set_ylabel('steps')
+                    axs.plot(i, steps_memory, 'r-', label='steps')
+                    axs.plot(i, seq_change_memory, 'b-', label='sequence change')
+                    axs.set_title('# steps and # sequence change to reach goal')
+                    axs.set_xlabel('iteration')
+                    axs.set_ylabel('#', color='r')
+                    axs.legend()
                     plt.savefig(f'{Path(__file__).resolve().parent}/perf.png')
                 goal_x = random.randint(10, width-10)
                 goal_y = random.randint(10, height-10)
 
             self.last_steps = self.steps
-            global last_nb_steps
             last_nb_steps = self.steps
             self.steps = 0
+            self.seq_change = 0
             cum_rewards = 0
 
         cum_rewards += last_reward
