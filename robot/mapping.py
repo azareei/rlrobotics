@@ -118,7 +118,7 @@ ax = plt.axes()
 ax.set_xlabel('x[m]')
 ax.set_ylabel('y[m]')
 
-scatter = ax.scatter(x, y, c=act, cmap='rainbow', s=1)
+scatter = ax.scatter(x, y, c=act, cmap='rainbow', s=1.5)
 ax.legend(*scatter.legend_elements(),
           loc='upper left', title='Phase')
 ax.title.set_text('Displacement x/y')
@@ -130,7 +130,7 @@ ax = plt.axes()
 ax.set_xlabel('x[m]')
 ax.set_ylabel('yaw[deg]')
 
-scatter = ax.scatter(x, np.degrees(yaw), c=act, cmap='rainbow', s=1)
+scatter = ax.scatter(x, np.degrees(yaw), c=act, cmap='rainbow', s=1.5)
 ax.legend(*scatter.legend_elements(),
           loc='upper left', title='Phase')
 ax.title.set_text('Displacement x/yaw')
@@ -142,7 +142,7 @@ ax = plt.axes()
 ax.set_xlabel('y[m]')
 ax.set_ylabel('yaw[deg]')
 
-scatter = ax.scatter(y, np.degrees(yaw), c=act, cmap='rainbow', s=1)
+scatter = ax.scatter(y, np.degrees(yaw), c=act, cmap='rainbow', s=1.5)
 ax.legend(*scatter.legend_elements(),
           loc='upper left', title='Phase')
 ax.title.set_text('Displacement y/yaw')

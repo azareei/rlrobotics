@@ -52,7 +52,6 @@ def load_data():
 
     # Separate the actuation phase between 0 and 180 and keep only reverse to false (remove symmetry)
     df = df[df["actuation"] == 0]
-
     df = df[~df['reverse']]
     # df = df[~df['reverse']]
     return df.values.tolist()
@@ -63,8 +62,8 @@ def init():
     global goal_y
     global first_update
     global scorelabel
-    goal_x = 50
-    goal_y = height - 50
+    goal_x = 150
+    goal_y = height - 150
     first_update = False
 
 
@@ -173,23 +172,26 @@ class Game(Widget):
             global seq_change_memory
             global last_nb_steps
             goal_reached_nb += 1
-            if goal_reached_nb < 150:
+            if goal_reached_nb <= 50000:
                 goal_x = self.width-goal_x
                 goal_y = self.height-goal_y
                 steps_memory.append(self.steps)
                 seq_change_memory.append(self.seq_change)
                 last_reward = self.last_steps - self.steps  # reward for reaching the objective faster than last round
-            else:
-                if goal_reached_nb == 150:
+                if len(steps_memory) % 5 == 0:
                     _, axs = plt.subplots(1, 1)
                     i = range(len(steps_memory))
                     axs.plot(i, steps_memory, 'r-', label='steps')
                     axs.plot(i, seq_change_memory, 'b-', label='sequence change')
                     axs.set_title('# steps and # sequence change to reach goal')
                     axs.set_xlabel('iteration')
-                    axs.set_ylabel('#', color='r')
+                    axs.set_ylabel('#')
                     axs.legend()
                     plt.savefig(f'{Path(__file__).resolve().parent}/perf.png')
+                    merged_list = [i, steps_memory, seq_change_memory]
+                    df = pd.DataFrame(np.array(merged_list).T, columns=['iteration', 'steps', 'sequence switch'])
+                    df.to_csv(f'{Path(__file__).resolve().parent}/perf.csv')
+            else:
                 goal_x = random.randint(10, width-10)
                 goal_y = random.randint(10, height-10)
 
