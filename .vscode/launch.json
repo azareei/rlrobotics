@@ -21,6 +21,14 @@
             "console": "internalConsole"
         },
         {
+            "name": "Plot Energy",
+            "type": "python",
+            "request": "launch",
+            "program": "energy.py",
+            "cwd": "${workspaceFolder}/energy",
+            "console": "internalConsole"
+        },
+        {
             "name": "AAAA 1C Draw",
             "type": "python",
             "request": "launch",
