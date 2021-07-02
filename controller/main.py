@@ -1,3 +1,6 @@
+# Code was inspired by Jerry Qu. https://github.com/Jerry2001Qu/Self-Driving-Car
+# Specifically for the UI part with Kivy and the Deep Q Learning implementation.
+
 import random
 from pathlib import Path
 
