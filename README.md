@@ -21,3 +21,9 @@ There is 3 main categories.
     is created.
     
 
+# Reinforcement learning:
+The following video shows how the robot learns to maneuver and reaches the selected targets using only two sequences of A and B.
+
+
+https://user-images.githubusercontent.com/6335541/128372029-25700f9b-fdf0-4664-a8fc-7a0123efefe9.mp4
+
